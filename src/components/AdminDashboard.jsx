@@ -1,92 +1,68 @@
-import React, { useState, useEffect } from 'react';
-import * as FormeEngine from '../engine/formeEngine';
-import { fetchSubscribersFromDB, deleteSubscriberFromDB, fetchCustomersFromDB, fetchInquiriesFromDB } from '../services/api';
+import React, { useState, useEffect, useMemo } from 'react';
+import { 
+  fetchProductsFromDB, 
+  saveProductToDB, 
+  deleteProductFromDB, 
+  fetchOrdersFromDB, 
+  updateOrderStatusInDB,
+  fetchSubscribersFromDB, 
+  deleteSubscriberFromDB, 
+  fetchCustomersFromDB, 
+  fetchInquiriesFromDB 
+} from '../services/api';
 
 export default function AdminDashboard({
-  orders,
+  orders: propOrders = [],
   onUpdateOrderStatus,
-  products,
+  products: propProducts = [],
   onAddProduct,
   onUpdateProductStock,
   onUpdateProductPrice,
   onDeleteProduct,
-  onImportCatalog,
   themeConfig,
   onUpdateTheme,
-  onCloseAdmin,
-  onTryOnProduct
+  onCloseAdmin
 }) {
-  const [activeTab, setActiveTab] = useState('products'); // 'products' | 'appearance' | 'orders' | 'logistics' | 'subscribers'
+  const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'products' | 'orders' | 'customers' | 'subscribers' | 'appearance'
   
-  // Subscribers & Customers State (MongoDB)
+  // Live MongoDB States
+  const [liveProducts, setLiveProducts] = useState(propProducts);
+  const [liveOrders, setLiveOrders] = useState(propOrders);
   const [subscribers, setSubscribers] = useState([]);
   const [customers, setCustomers] = useState([]);
   const [inquiries, setInquiries] = useState([]);
-  const [copiedEmails, setCopiedEmails] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [lastRefreshed, setLastRefreshed] = useState(new Date());
 
-  useEffect(() => {
-    fetchSubscribersFromDB().then(data => {
-      if (Array.isArray(data)) setSubscribers(data);
-    });
-    fetchCustomersFromDB().then(data => {
-      if (Array.isArray(data)) setCustomers(data);
-    });
-    fetchInquiriesFromDB().then(data => {
-      if (Array.isArray(data)) setInquiries(data);
-    });
-  }, [activeTab]);
+  // Products Tab Filter: 'all' | 'women' | 'men' | 'kids'
+  const [productDepartmentFilter, setProductDepartmentFilter] = useState('all');
+  const [productSearchQuery, setProductSearchQuery] = useState('');
 
-  const handleDeleteSubscriber = async (id) => {
-    if (!window.confirm("Remove this subscriber from MongoDB?")) return;
-    const ok = await deleteSubscriberFromDB(id);
-    if (ok) {
-      setSubscribers(prev => prev.filter(s => s._id !== id));
-    }
-  };
-
-  const handleCopySubscriberEmails = () => {
-    if (subscribers.length === 0) return;
-    const list = subscribers.map(s => s.email).join(', ');
-    navigator.clipboard.writeText(list);
-    setCopiedEmails(true);
-    setTimeout(() => setCopiedEmails(false), 3000);
-  };
-
-  // Editor Modal State
-  const [isEditorOpen, setIsEditorOpen] = useState(false);
-  const [editorMode, setEditorMode] = useState('create'); // 'create' | 'edit'
-  const [editProductId, setEditProductId] = useState(null);
-
-  // Guide Dialog State
-  const [isGuideOpen, setIsGuideOpen] = useState(false);
-
-  // Order filters
+  // Orders Tab Filters
   const [orderFilterStatus, setOrderFilterStatus] = useState('all');
   const [orderFilterPayment, setOrderFilterPayment] = useState('all');
   const [orderSearchQuery, setOrderSearchQuery] = useState('');
   const [selectedOrderDetails, setSelectedOrderDetails] = useState(null);
 
-  // Editor Form State
-  const [formState, setFormState] = useState({
-    name: 'The Artisan Linen Shirt',
-    person: 'women',
-    slot: 'top',
-    style: 'shirt',
-    price: 13500,
-    originalPrice: 16000,
-    colorName: 'Olive Green',
+  // Product Add / Edit Modal State
+  const [isProductModalOpen, setIsProductModalOpen] = useState(false);
+  const [editingProductId, setEditingProductId] = useState(null);
+  const [productForm, setProductForm] = useState({
+    name: '',
+    person: 'women', // 'women' | 'men' | 'kids'
+    category: 'Outerwear',
+    slot: 'outer',
+    price: 15000,
+    originalPrice: 18000,
+    primaryColor: 'Olive Green',
     colorHex: '#364634',
-    description: 'A relaxed silhouette tailored from breathable natural fibers.',
-    stockXS: 4,
-    stockS: 8,
-    stockM: 10,
-    stockL: 5,
-    stockXL: 2,
-    assetX: 100,
-    assetY: 125,
-    assetWidth: 200,
-    assetHeight: 200,
-    customSrc: ''
+    imageUrl: '',
+    description: '',
+    stockXS: 5,
+    stockS: 10,
+    stockM: 12,
+    stockL: 8,
+    stockXL: 4
   });
 
   // Appearance Form State
@@ -95,870 +71,753 @@ export default function AdminDashboard({
   const [camelColor, setCamelColor] = useState(themeConfig?.camel || "#C69F6F");
   const [linenColor, setLinenColor] = useState(themeConfig?.linen || "#FAF8F5");
   const [onyxColor, setOnyxColor] = useState(themeConfig?.onyx || "#111315");
+  const [copiedEmails, setCopiedEmails] = useState(false);
 
-  const presetThemes = [
-    {
-      name: "ZAYTOUN Heritage",
-      olive: "#364634",
-      camel: "#C69F6F",
-      linen: "#FAF8F5",
-      onyx: "#111315"
-    },
-    {
-      name: "Sahara Dune",
-      olive: "#2D3F2C",
-      camel: "#C29B68",
-      linen: "#F7F4EE",
-      onyx: "#17181A"
-    },
-    {
-      name: "Noir & Antique Gold",
-      olive: "#1F2321",
-      camel: "#D4AF37",
-      linen: "#FFFFFF",
-      onyx: "#0C0D0E"
-    },
-    {
-      name: "Terracotta & Sage",
-      olive: "#5E735B",
-      camel: "#99583D",
-      linen: "#F5F2EB",
-      onyx: "#1C1917"
+  // Sync initial and refresh from MongoDB Atlas
+  const loadAllDataFromMongoDB = async () => {
+    setLoading(true);
+    try {
+      const [dbProds, dbOrders, dbSubs, dbCusts, dbInqs] = await Promise.all([
+        fetchProductsFromDB(),
+        fetchOrdersFromDB(),
+        fetchSubscribersFromDB(),
+        fetchCustomersFromDB(),
+        fetchInquiriesFromDB()
+      ]);
+
+      if (Array.isArray(dbProds) && dbProds.length > 0) setLiveProducts(dbProds);
+      if (Array.isArray(dbOrders)) setLiveOrders(dbOrders);
+      if (Array.isArray(dbSubs)) setSubscribers(dbSubs);
+      if (Array.isArray(dbCusts)) setCustomers(dbCusts);
+      if (Array.isArray(dbInqs)) setInquiries(dbInqs);
+      setLastRefreshed(new Date());
+    } catch (err) {
+      console.warn("Error refreshing MongoDB data:", err);
+    } finally {
+      setLoading(false);
     }
-  ];
-
-  const handleApplyPreset = (preset) => {
-    setOliveColor(preset.olive);
-    setCamelColor(preset.camel);
-    setLinenColor(preset.linen);
-    setOnyxColor(preset.onyx);
   };
 
-  // Open Create Modal
-  const handleOpenCreate = () => {
-    setEditorMode('create');
-    setEditProductId(null);
-    setFormState({
-      name: 'New Atelier Piece',
+  useEffect(() => {
+    loadAllDataFromMongoDB();
+  }, []);
+
+  // Update when parent props change
+  useEffect(() => {
+    if (propProducts && propProducts.length > 0) setLiveProducts(propProducts);
+  }, [propProducts]);
+
+  useEffect(() => {
+    if (propOrders && propOrders.length > 0) setLiveOrders(propOrders);
+  }, [propOrders]);
+
+  // Total Revenue Calculation from Orders
+  const totalRevenue = useMemo(() => {
+    return liveOrders.reduce((sum, ord) => sum + Number(ord.total || ord.pricing?.finalTotal || 0), 0);
+  }, [liveOrders]);
+
+  // Filtered Products by Department & Search
+  const filteredProducts = useMemo(() => {
+    return liveProducts.filter((p) => {
+      const departmentMatch = 
+        productDepartmentFilter === 'all' || 
+        (p.person || p.gender || '').toLowerCase() === productDepartmentFilter.toLowerCase();
+      
+      const q = productSearchQuery.trim().toLowerCase();
+      const searchMatch = 
+        !q || 
+        (p.name && p.name.toLowerCase().includes(q)) ||
+        (p.category && p.category.toLowerCase().includes(q)) ||
+        (p.primaryColor && p.primaryColor.toLowerCase().includes(q));
+
+      return departmentMatch && searchMatch;
+    });
+  }, [liveProducts, productDepartmentFilter, productSearchQuery]);
+
+  // Filtered Orders
+  const filteredOrders = useMemo(() => {
+    return liveOrders.filter((order) => {
+      const statusMatch =
+        orderFilterStatus === 'all' ||
+        (order.status || 'processing').toLowerCase() === orderFilterStatus.toLowerCase();
+      const paymentMatch =
+        orderFilterPayment === 'all' || order.paymentMethod === orderFilterPayment;
+      const q = orderSearchQuery.trim().toLowerCase();
+      const searchMatch =
+        !q ||
+        (order.orderNumber && order.orderNumber.toLowerCase().includes(q)) ||
+        (order.customer?.firstName && order.customer.firstName.toLowerCase().includes(q)) ||
+        (order.customer?.lastName && order.customer.lastName.toLowerCase().includes(q)) ||
+        (order.customer?.email && order.customer.email.toLowerCase().includes(q)) ||
+        (order.customer?.phone && order.customer.phone.toLowerCase().includes(q)) ||
+        (order.customer?.city && order.customer.city.toLowerCase().includes(q));
+
+      return statusMatch && paymentMatch && searchMatch;
+    });
+  }, [liveOrders, orderFilterStatus, orderFilterPayment, orderSearchQuery]);
+
+  // Low Stock Items in Catalog (<= 4 available)
+  const lowStockProducts = useMemo(() => {
+    return liveProducts.filter((p) => {
+      const total = p.stock !== undefined
+        ? Number(p.stock)
+        : p.stockPerSize
+          ? Object.values(p.stockPerSize).reduce((acc, v) => acc + Number(v), 0)
+          : 0;
+      return total <= 4;
+    });
+  }, [liveProducts]);
+
+  // Open Create Product Modal
+  const handleOpenCreateProduct = () => {
+    setEditingProductId(null);
+    setProductForm({
+      name: '',
       person: 'women',
+      category: 'Women\'s Pret',
       slot: 'top',
-      style: 'knit',
-      price: 12500,
-      originalPrice: 15000,
-      colorName: 'Olive Green',
+      price: 14500,
+      originalPrice: 16500,
+      primaryColor: 'Olive Green',
       colorHex: '#364634',
-      description: 'Crafted in pure earth tones with structured drape.',
+      imageUrl: 'https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=1000&q=80',
+      description: 'Handcrafted luxury piece tailored in breathable Belgian linen and pure fibers.',
       stockXS: 5,
       stockS: 10,
-      stockM: 10,
-      stockL: 5,
-      stockXL: 2,
-      assetX: 100,
-      assetY: 125,
-      assetWidth: 200,
-      assetHeight: 200,
-      customSrc: ''
+      stockM: 12,
+      stockL: 8,
+      stockXL: 4
     });
-    setIsEditorOpen(true);
+    setIsProductModalOpen(true);
   };
 
-  // Open Edit Modal
-  const handleOpenEdit = (product) => {
-    setEditorMode('edit');
-    setEditProductId(product.id);
-    const activeColor = product.colors?.[0] || { name: 'Olive Green', hex: '#364634' };
-    setFormState({
-      name: product.name,
-      person: product.person || 'women',
-      slot: product.slot || 'top',
-      style: product.style || 'knit',
-      price: product.price || 10000,
-      originalPrice: product.originalPrice || product.price,
-      colorName: activeColor.name,
-      colorHex: activeColor.hex,
-      description: product.description || '',
-      stockXS: product.stockPerSize?.XS ?? 5,
-      stockS: product.stockPerSize?.S ?? 10,
-      stockM: product.stockPerSize?.M ?? 10,
-      stockL: product.stockPerSize?.L ?? 5,
-      stockXL: product.stockPerSize?.XL ?? 2,
-      assetX: product.asset?.x ?? 100,
-      assetY: product.asset?.y ?? 125,
-      assetWidth: product.asset?.width ?? 200,
-      assetHeight: product.asset?.height ?? 200,
-      customSrc: product.asset?.src ?? ''
+  // Open Edit Product Modal
+  const handleOpenEditProduct = (prod) => {
+    setEditingProductId(prod.id);
+    setProductForm({
+      name: prod.name || '',
+      person: prod.person || prod.gender || 'women',
+      category: prod.category || 'Apparel',
+      slot: prod.slot || 'top',
+      price: prod.price || 0,
+      originalPrice: prod.originalPrice || prod.price || 0,
+      primaryColor: prod.primaryColor || prod.colorName || 'Olive Green',
+      colorHex: prod.color || '#364634',
+      imageUrl: prod.images?.[0] || prod.image || '',
+      description: prod.description || '',
+      stockXS: prod.stockPerSize?.XS ?? 5,
+      stockS: prod.stockPerSize?.S ?? 10,
+      stockM: prod.stockPerSize?.M ?? 12,
+      stockL: prod.stockPerSize?.L ?? 8,
+      stockXL: prod.stockPerSize?.XL ?? 4
     });
-    setIsEditorOpen(true);
+    setIsProductModalOpen(true);
   };
 
-  // File cutout upload
-  const handleImageCutoutUpload = (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (file.size > 3 * 1024 * 1024) {
-      alert("Image is too large. Please use a PNG or WebP under 3 MB.");
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      setFormState((prev) => ({
-        ...prev,
-        style: 'custom',
-        customSrc: event.target.result
-      }));
-    };
-    reader.readAsDataURL(file);
-  };
-
-  // Dynamic preview garment for live sticky mannequin in editor
-  const previewGarment = {
-    id: editProductId || 'forme-preview',
-    name: formState.name,
-    person: formState.person,
-    slot: formState.slot,
-    style: formState.style,
-    price: Number(formState.price),
-    description: formState.description,
-    colors: [{ name: formState.colorName, hex: formState.colorHex }],
-    asset:
-      formState.style === 'custom' && formState.customSrc
-        ? {
-            src: formState.customSrc,
-            x: Number(formState.assetX),
-            y: Number(formState.assetY),
-            width: Number(formState.assetWidth),
-            height: Number(formState.assetHeight)
-          }
-        : undefined
-  };
-
-  const editorMannequinSvg = FormeEngine.mannequin(formState.person, [
-    { product: previewGarment, variant: 0 }
-  ]);
-
-  // Handle Form Submit (Add or Update)
-  const handleSubmitPiece = (e) => {
+  // Save Product to MongoDB Atlas
+  const handleSaveProduct = async (e) => {
     e.preventDefault();
-    if (!formState.name.trim()) {
-      alert("Please enter a garment title.");
+    if (!productForm.name.trim()) {
+      alert("Please enter a product title.");
       return;
     }
 
-    const cleanName = formState.name.trim().replace(/[<>]/g, '');
-    const cleanDesc = (formState.description || '').trim().replace(/[<>]/g, '');
-    const validPrice = Math.max(100, Math.min(2000000, Number(formState.price) || 1000));
-    const validOrigPrice = Math.max(validPrice, Math.min(2000000, Number(formState.originalPrice) || validPrice));
-    const validHex = /^#[0-9A-Fa-f]{6}$/.test(formState.colorHex) ? formState.colorHex : '#364634';
+    const stockMap = {
+      XS: Number(productForm.stockXS) || 0,
+      S: Number(productForm.stockS) || 0,
+      M: Number(productForm.stockM) || 0,
+      L: Number(productForm.stockL) || 0,
+      XL: Number(productForm.stockXL) || 0
+    };
+    const totalStock = Object.values(stockMap).reduce((a, b) => a + b, 0);
 
-    const targetId = editProductId || `forme-${Date.now().toString(36)}`;
-    const newPiece = {
+    const targetId = editingProductId || `forme-${Date.now().toString(36)}`;
+    const productPayload = {
       id: targetId,
-      name: cleanName,
-      slug: cleanName.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-      person: formState.person,
-      category:
-        formState.person === 'women'
-          ? "Women's Pret"
-          : formState.person === 'men'
-          ? "Men's Collection"
-          : "Kids Pret",
-      slot: formState.slot,
-      style: formState.style,
-      collection: "Earth Edit 2026",
-      price: validPrice,
-      originalPrice: validOrigPrice,
-      badge: editorMode === 'create' ? "New Arrival" : "Atelier Curated",
-      rating: 5.0,
-      reviewCount: 1,
-      primaryColor: formState.colorName,
+      name: productForm.name.trim(),
+      slug: productForm.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+      person: productForm.person,
+      gender: productForm.person,
+      category: productForm.category,
+      slot: productForm.slot,
+      price: Number(productForm.price),
+      originalPrice: Number(productForm.originalPrice || productForm.price),
+      primaryColor: productForm.primaryColor,
+      color: productForm.colorHex,
+      colorName: productForm.primaryColor,
       colors: [
-        { name: formState.colorName, hex: validHex, bgClass: `bg-[${validHex}]` },
-        { name: "Desert Camel", hex: "#C69F6F", bgClass: "bg-[#C69F6F]" },
-        { name: "Obsidian Black", hex: "#111315", bgClass: "bg-[#111315]" }
+        { name: productForm.primaryColor, hex: productForm.colorHex, bgClass: `bg-[${productForm.colorHex}]` }
       ],
-      sizes: formState.person === 'kids' ? ["4–5", "6–7", "8–9", "10–11"] : ["XS", "S", "M", "L", "XL"],
-      stockPerSize: {
-        XS: Math.max(0, parseInt(formState.stockXS, 10) || 0),
-        S: Math.max(0, parseInt(formState.stockS, 10) || 0),
-        M: Math.max(0, parseInt(formState.stockM, 10) || 0),
-        L: Math.max(0, parseInt(formState.stockL, 10) || 0),
-        XL: Math.max(0, parseInt(formState.stockXL, 10) || 0)
-      },
-      images: [
-        "https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=1000&q=80",
-        "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1000&q=80"
+      sizes: ['XS', 'S', 'M', 'L', 'XL'],
+      stock: totalStock,
+      stockPerSize: stockMap,
+      images: productForm.imageUrl ? [productForm.imageUrl] : [
+        "https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=1000&q=80"
       ],
-      description: cleanDesc,
-      fabric: "100% Sustainable Linen / Mongolian Cashmere Blend",
-      care: "Delicate dry clean or hand wash cold.",
-      fit: "Tailored comfortable silhouette.",
-      asset: previewGarment.asset
+      description: productForm.description
     };
 
-    if (editorMode === 'edit') {
-      onDeleteProduct(targetId);
-    }
-    onAddProduct(newPiece);
-    setIsEditorOpen(false);
-  };
-
-  // Export JSON Catalog
-  const handleExportCatalog = () => {
-    const catalogData = {
-      version: 1,
-      theme: {
-        brand: themeConfig?.brand || "ZAYTOUN & CO.",
-        olive: themeConfig?.olive || "#364634",
-        camel: themeConfig?.camel || "#C69F6F"
-      },
-      products: products
-    };
-
-    const blob = new Blob([JSON.stringify(catalogData, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `products.json`;
-    link.click();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-  };
-
-  // Import JSON Catalog
-  const handleImportFile = (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      try {
-        const json = JSON.parse(event.target.result);
-        const validated = FormeEngine.validateCatalog(json);
-        onImportCatalog(validated.products);
-        if (validated.theme) {
-          onUpdateTheme(validated.theme);
-        }
-        alert(`Successfully imported catalog with ${validated.products.length} garments.`);
-      } catch (err) {
-        alert("Invalid catalog JSON: " + err.message);
+    // Update in MongoDB
+    const saved = await saveProductToDB(productPayload);
+    
+    // Update local state
+    setLiveProducts(prev => {
+      const idx = prev.findIndex(p => p.id === targetId);
+      if (idx >= 0) {
+        const next = [...prev];
+        next[idx] = saved || productPayload;
+        return next;
       }
-    };
-    reader.readAsText(file);
+      return [saved || productPayload, ...prev];
+    });
+
+    if (onAddProduct && !editingProductId) {
+      onAddProduct(saved || productPayload);
+    }
+
+    setIsProductModalOpen(false);
+    alert(`✅ Product "${productForm.name}" successfully saved to MongoDB Atlas!`);
+  };
+
+  // Delete Product from MongoDB
+  const handleDeleteProductClick = async (productId, productName) => {
+    if (!window.confirm(`Are you sure you want to delete "${productName}" from MongoDB Atlas?`)) return;
+    
+    const success = await deleteProductFromDB(productId);
+    setLiveProducts(prev => prev.filter(p => p.id !== productId));
+    if (onDeleteProduct) onDeleteProduct(productId);
+
+    if (success) {
+      alert("✅ Product removed from database.");
+    }
+  };
+
+  // Update Order Status in MongoDB
+  const handleStatusChange = async (orderId, newStatus) => {
+    setLiveOrders(prev =>
+      prev.map(ord => (ord.id === orderId || ord.orderNumber === orderId ? { ...ord, status: newStatus } : ord))
+    );
+    if (onUpdateOrderStatus) onUpdateOrderStatus(orderId, newStatus);
+    await updateOrderStatusInDB(orderId, newStatus);
+  };
+
+  // Copy Subscriber Emails (CSV)
+  const handleCopySubscriberEmails = () => {
+    if (subscribers.length === 0) return;
+    const list = subscribers.map(s => s.email).join(', ');
+    navigator.clipboard.writeText(list);
+    setCopiedEmails(true);
+    setTimeout(() => setCopiedEmails(false), 3000);
+  };
+
+  // Delete Subscriber from MongoDB
+  const handleDeleteSub = async (id) => {
+    if (!window.confirm("Remove this subscriber from MongoDB?")) return;
+    const ok = await deleteSubscriberFromDB(id);
+    if (ok) {
+      setSubscribers(prev => prev.filter(s => s._id !== id));
+    }
   };
 
   // Save Appearance
   const handleSaveAppearance = (e) => {
     e.preventDefault();
-    onUpdateTheme({
-      brand: brandName.trim() || "ZAYTOUN & CO.",
-      olive: oliveColor,
-      camel: camelColor,
-      linen: linenColor,
-      onyx: onyxColor
-    });
-    alert("Store colors and brand appearance updated successfully!");
-  };
-
-  const handleResetAppearance = () => {
-    setBrandName("ZAYTOUN & CO.");
-    setOliveColor("#364634");
-    setCamelColor("#C69F6F");
-    setLinenColor("#FAF8F5");
-    setOnyxColor("#111315");
-    onUpdateTheme({
-      brand: "ZAYTOUN & CO.",
-      olive: "#364634",
-      camel: "#C69F6F",
-      linen: "#FAF8F5",
-      onyx: "#111315"
-    });
-  };
-
-  // Order stats & filtering
-  const totalRevenue = orders.reduce((acc, order) => {
-    return acc + (order.pricing?.finalTotal || order.amount || 0);
-  }, 0);
-
-  const filteredOrders = orders.filter((order) => {
-    const statusMatches =
-      orderFilterStatus === 'all' ||
-      (order.status || 'Processing').toLowerCase() === orderFilterStatus.toLowerCase();
-    const paymentMatches =
-      orderFilterPayment === 'all' || order.paymentMethod === orderFilterPayment;
-    const q = orderSearchQuery.trim().toLowerCase();
-    const searchMatches =
-      !q ||
-      (order.orderNumber && order.orderNumber.toLowerCase().includes(q)) ||
-      (order.customer?.firstName && order.customer.firstName.toLowerCase().includes(q)) ||
-      (order.customer?.lastName && order.customer.lastName.toLowerCase().includes(q)) ||
-      (order.customer?.city && order.customer.city.toLowerCase().includes(q));
-
-    return statusMatches && paymentMatches && searchMatches;
-  });
-
-  const getStatusBadge = (status) => {
-    switch (status) {
-      case 'Pending':
-        return 'bg-amber-100 text-amber-900 border border-amber-300';
-      case 'Processing':
-        return 'bg-blue-100 text-blue-900 border border-blue-300';
-      case 'Dispatched':
-        return 'bg-purple-100 text-purple-900 border border-purple-300';
-      case 'Delivered':
-        return 'bg-emerald-100 text-emerald-900 border border-emerald-300';
-      case 'Cancelled':
-        return 'bg-gray-100 text-gray-700 border border-gray-300';
-      default:
-        return 'bg-olive-100 text-olive-900 border border-olive-300';
+    if (onUpdateTheme) {
+      onUpdateTheme({
+        brand: brandName.trim() || "ZAYTOUN & CO.",
+        olive: oliveColor,
+        camel: camelColor,
+        linen: linenColor,
+        onyx: onyxColor
+      });
     }
-  };
-
-  const getPaymentBadge = (method) => {
-    switch (method) {
-      case 'cod':
-        return 'bg-amber-100 text-amber-900 border-amber-200';
-      case 'card':
-        return 'bg-blue-100 text-blue-900 border-blue-200';
-      case 'jazzcash':
-        return 'bg-red-100 text-red-900 border-red-200';
-      case 'easypaisa':
-        return 'bg-emerald-100 text-emerald-900 border-emerald-200';
-      default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
-    }
+    alert("Store appearance and palette updated!");
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF8F5] dark:bg-[#191C17] text-onyx-950 dark:text-linen-100 font-sans flex flex-col transition-colors">
+    <div className="min-h-screen bg-[#FAF8F5] dark:bg-[#121411] text-onyx-950 dark:text-linen-100 font-sans flex flex-col transition-colors">
       
-      {/* Top Navbar */}
-      <header className="sticky top-0 z-30 bg-[#FAF8F5]/90 dark:bg-[#191C17]/90 backdrop-blur-md border-b border-linen-300 dark:border-onyx-800 px-4 sm:px-8 h-20 flex items-center justify-between">
+      {/* Top Executive Header */}
+      <header className="sticky top-0 z-30 bg-[#FAF8F5]/95 dark:bg-[#121411]/95 backdrop-blur-md border-b border-linen-300 dark:border-onyx-800 px-4 sm:px-8 h-20 flex items-center justify-between shadow-sm">
         <div className="flex items-center space-x-3">
-          <span className="font-editorial text-2xl font-bold tracking-[0.2em] uppercase">
-            {themeConfig?.brand || "ZAYTOUN"}
+          <span className="font-editorial text-2xl font-black tracking-tight text-onyx-950 dark:text-white uppercase">
+            {brandName}
           </span>
-          <span className="text-[10px] uppercase font-bold tracking-widest text-camel-700 dark:text-camel-400 border-l border-linen-300 dark:border-onyx-800 pl-3">
-            Atelier Studio
-          </span>
+          <div className="border-l border-linen-300 dark:border-onyx-800 pl-3 flex items-center space-x-2">
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+            </span>
+            <span className="text-[11px] uppercase font-bold tracking-wider text-emerald-800 dark:text-emerald-400">
+              MongoDB Atlas Live
+            </span>
+          </div>
         </div>
 
-        <button
-          onClick={onCloseAdmin}
-          className="flex items-center space-x-2 text-xs font-bold uppercase tracking-wider text-onyx-800 dark:text-linen-200 hover:text-olive-700 dark:hover:text-camel-400 transition"
-        >
-          <span>← Return to Storefront</span>
-        </button>
+        <div className="flex items-center space-x-3">
+          <button
+            onClick={loadAllDataFromMongoDB}
+            disabled={loading}
+            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg border border-linen-300 dark:border-onyx-700 bg-white dark:bg-onyx-900 text-xs font-semibold text-onyx-800 dark:text-linen-200 hover:border-camel-500 shadow-sm transition active:scale-95"
+            title="Refresh database records"
+          >
+            <span className={loading ? "animate-spin" : ""}>🔄</span>
+            <span className="hidden sm:inline">{loading ? "Connecting..." : "Refresh MongoDB"}</span>
+          </button>
+
+          <button
+            onClick={onCloseAdmin}
+            className="flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-olive-800 hover:bg-olive-900 text-white text-xs font-bold uppercase tracking-wider shadow transition active:scale-95"
+          >
+            <span>← Storefront</span>
+          </button>
+        </div>
       </header>
 
-      {/* Main Studio Container */}
-      <main className="max-w-[1500px] w-full mx-auto px-4 sm:px-8 py-10 flex-1 space-y-8">
+      {/* Main Container */}
+      <main className="max-w-[1500px] w-full mx-auto px-4 sm:px-8 py-8 flex-1 space-y-8">
         
-        {/* FORME-Inspired Dashboard Header */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        {/* Title & Live Counters Banner */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-2 border-b border-linen-300 dark:border-onyx-800">
           <div>
-            <div className="text-[10px] uppercase font-bold tracking-[0.2em] text-camel-700 dark:text-camel-400">
-              YOUR STORE, YOUR WAY
-            </div>
-            <h1 className="font-editorial text-4xl sm:text-6xl font-bold text-onyx-950 dark:text-linen-50 mt-1">
-              The studio<span className="text-camel-600">.</span>
+            <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-camel-600 dark:text-camel-400 font-bold">
+              ATELIER EXECUTIVE SYSTEM
+            </span>
+            <h1 className="font-editorial text-3xl sm:text-5xl font-bold text-onyx-950 dark:text-linen-50 mt-1">
+              Admin & Database Portal
             </h1>
-            <p className="text-xs sm:text-sm text-onyx-600 dark:text-linen-300 mt-1">
-              A little space to curate your collection and align garments on your 2D mannequin model.
+            <p className="text-xs text-onyx-600 dark:text-linen-400 mt-1">
+              Live MongoDB cluster connection • Last synced: {lastRefreshed.toLocaleTimeString()}
             </p>
           </div>
 
           <button
-            onClick={handleOpenCreate}
-            className="bg-olive-800 hover:bg-olive-900 text-white font-bold text-xs uppercase tracking-wider px-6 py-3.5 rounded-sm shadow-md transition active:scale-95 flex items-center space-x-2 self-start sm:self-auto"
+            onClick={handleOpenCreateProduct}
+            className="bg-olive-800 hover:bg-olive-900 text-white font-bold text-xs uppercase tracking-wider px-5 py-3 rounded-xl shadow-md transition active:scale-95 flex items-center space-x-2 self-start md:self-auto"
           >
-            <span>+ Add a piece</span>
+            <span>+ Add New Garment</span>
           </button>
         </div>
 
-        {/* Studio Note Banner */}
-        <div className="p-4 rounded-xl bg-linen-200/60 dark:bg-onyx-900 border border-linen-300 dark:border-onyx-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-          <div className="flex items-center space-x-3 text-onyx-700 dark:text-linen-200">
-            <span className="text-base text-olive-700 dark:text-camel-400">ℹ</span>
-            <span>
-              This atelier studio saves edits in this browser. Export your catalog as <strong>products.json</strong> to share or deploy, and test live Try-On on the model directly.
-            </span>
-          </div>
+        {/* Executive Tabs Bar */}
+        <div className="sticky top-20 z-20 bg-[#FAF8F5]/95 dark:bg-[#121411]/95 backdrop-blur-md pt-2 pb-0 -mx-4 sm:-mx-8 px-4 sm:px-8 border-b border-linen-300 dark:border-onyx-800 text-xs font-semibold overflow-x-auto flex items-center space-x-6 scrollbar-none">
           <button
-            onClick={() => setIsGuideOpen(true)}
-            className="text-xs font-bold text-olive-800 dark:text-camel-400 hover:underline flex items-center space-x-1 whitespace-nowrap self-start sm:self-auto"
+            onClick={() => setActiveTab('overview')}
+            className={`pb-3 transition whitespace-nowrap flex items-center space-x-1.5 ${
+              activeTab === 'overview'
+                ? 'text-onyx-950 dark:text-linen-50 font-bold border-b-2 border-olive-700 dark:border-camel-400'
+                : 'text-onyx-500 dark:text-linen-400 hover:text-onyx-900'
+            }`}
           >
-            <span>Integration guide</span>
-            <span>↗</span>
+            <span>📊 Overview</span>
           </button>
-        </div>
 
-        {/* Tabs Bar (Sticky with horizontal scroll) */}
-        <div className="sticky top-20 z-20 bg-[#FAF8F5]/95 dark:bg-[#191C17]/95 backdrop-blur-md pt-2 pb-0 -mx-4 sm:-mx-8 px-4 sm:px-8 border-b border-linen-300 dark:border-onyx-800 text-xs font-semibold overflow-x-auto flex items-center space-x-6 sm:space-x-8 scrollbar-none">
           <button
             onClick={() => setActiveTab('products')}
-            className={`pb-3 transition relative whitespace-nowrap ${
+            className={`pb-3 transition whitespace-nowrap flex items-center space-x-1.5 ${
               activeTab === 'products'
                 ? 'text-onyx-950 dark:text-linen-50 font-bold border-b-2 border-olive-700 dark:border-camel-400'
                 : 'text-onyx-500 dark:text-linen-400 hover:text-onyx-900'
             }`}
           >
-            Products ({products.length})
+            <span>👗 Products Catalog</span>
+            <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-linen-200 dark:bg-onyx-800">
+              {liveProducts.length}
+            </span>
           </button>
-          <button
-            onClick={() => setActiveTab('appearance')}
-            className={`pb-3 transition relative ${
-              activeTab === 'appearance'
-                ? 'text-onyx-950 dark:text-linen-50 font-bold border-b-2 border-olive-700 dark:border-camel-400'
-                : 'text-onyx-500 dark:text-linen-400 hover:text-onyx-900'
-            }`}
-          >
-            Appearance & Palette
-          </button>
+
           <button
             onClick={() => setActiveTab('orders')}
-            className={`pb-3 transition relative ${
+            className={`pb-3 transition whitespace-nowrap flex items-center space-x-1.5 ${
               activeTab === 'orders'
                 ? 'text-onyx-950 dark:text-linen-50 font-bold border-b-2 border-olive-700 dark:border-camel-400'
                 : 'text-onyx-500 dark:text-linen-400 hover:text-onyx-900'
             }`}
           >
-            Customer Orders & Pakistani Gateways ({orders.length})
+            <span>📦 Orders & Shipments</span>
+            <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-linen-200 dark:bg-onyx-800">
+              {liveOrders.length}
+            </span>
           </button>
+
           <button
-            onClick={() => setActiveTab('logistics')}
-            className={`pb-3 transition relative ${
-              activeTab === 'logistics'
+            onClick={() => setActiveTab('customers')}
+            className={`pb-3 transition whitespace-nowrap flex items-center space-x-1.5 ${
+              activeTab === 'customers'
                 ? 'text-onyx-950 dark:text-linen-50 font-bold border-b-2 border-olive-700 dark:border-camel-400'
                 : 'text-onyx-500 dark:text-linen-400 hover:text-onyx-900'
             }`}
           >
-            Logistics & Couriers (TCS / Leopards / Trax)
+            <span>👤 Customers</span>
+            <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-linen-200 dark:bg-onyx-800">
+              {customers.length}
+            </span>
           </button>
+
           <button
             onClick={() => setActiveTab('subscribers')}
-            className={`pb-3 transition relative ${
+            className={`pb-3 transition whitespace-nowrap flex items-center space-x-1.5 ${
               activeTab === 'subscribers'
                 ? 'text-onyx-950 dark:text-linen-50 font-bold border-b-2 border-olive-700 dark:border-camel-400'
                 : 'text-onyx-500 dark:text-linen-400 hover:text-onyx-900'
             }`}
           >
-            Audience & Subscribers ({subscribers.length})
+            <span>📬 Subscribers & Messages</span>
+            <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-linen-200 dark:bg-onyx-800">
+              {subscribers.length + inquiries.length}
+            </span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('appearance')}
+            className={`pb-3 transition whitespace-nowrap flex items-center space-x-1.5 ${
+              activeTab === 'appearance'
+                ? 'text-onyx-950 dark:text-linen-50 font-bold border-b-2 border-olive-700 dark:border-camel-400'
+                : 'text-onyx-500 dark:text-linen-400 hover:text-onyx-900'
+            }`}
+          >
+            <span>🎨 Palette & Brand</span>
           </button>
         </div>
 
         {/* =========================================================================
-            TAB 1: PRODUCTS TABLE (Exact FORME Studio layout)
+            TAB 1: EXECUTIVE OVERVIEW DASHBOARD
         ========================================================================= */}
-        {activeTab === 'products' && (
-          <div className="space-y-4">
-            
-            {/* Toolbar */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-2">
-              <div className="text-xs text-onyx-500 dark:text-linen-400">
-                <span>{products.length} pieces in catalog</span> •{' '}
-                <span>{products.filter((p) => p.person === 'women').length} Women</span> •{' '}
-                <span>{products.filter((p) => p.person === 'men').length} Men</span> •{' '}
-                <span>{products.filter((p) => p.person === 'kids').length} Kids</span>
+        {activeTab === 'overview' && (
+          <div className="space-y-8 animate-fadeIn">
+            {/* 6 Key MongoDB Metrics Cards */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+              <div className="p-4 rounded-2xl bg-white dark:bg-onyx-900 border border-linen-300 dark:border-onyx-800 shadow-sm">
+                <span className="text-[10px] uppercase font-bold text-onyx-500 dark:text-linen-400 tracking-wider">
+                  Total Revenue
+                </span>
+                <p className="text-xl sm:text-2xl font-black text-olive-800 dark:text-camel-400 mt-1">
+                  Rs. {totalRevenue.toLocaleString()}
+                </p>
+                <span className="text-[10px] text-emerald-600 font-semibold">● Paid & COD Booked</span>
               </div>
 
-              <div className="flex items-center space-x-3">
-                <label className="border border-linen-300 dark:border-onyx-700 hover:border-camel-400 text-onyx-800 dark:text-linen-200 text-xs font-semibold px-4 py-2 rounded cursor-pointer transition flex items-center space-x-1.5">
-                  <span>↑ Import JSON</span>
-                  <input type="file" accept=".json,application/json" onChange={handleImportFile} className="hidden" />
-                </label>
+              <div className="p-4 rounded-2xl bg-white dark:bg-onyx-900 border border-linen-300 dark:border-onyx-800 shadow-sm">
+                <span className="text-[10px] uppercase font-bold text-onyx-500 dark:text-linen-400 tracking-wider">
+                  Total Orders
+                </span>
+                <p className="text-xl sm:text-2xl font-black text-onyx-950 dark:text-white mt-1">
+                  {liveOrders.length}
+                </p>
+                <span className="text-[10px] text-onyx-500">In MongoDB Atlas</span>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-white dark:bg-onyx-900 border border-linen-300 dark:border-onyx-800 shadow-sm">
+                <span className="text-[10px] uppercase font-bold text-onyx-500 dark:text-linen-400 tracking-wider">
+                  Total Garments
+                </span>
+                <p className="text-xl sm:text-2xl font-black text-onyx-950 dark:text-white mt-1">
+                  {liveProducts.length}
+                </p>
+                <span className="text-[10px] text-camel-600 font-semibold">
+                  {liveProducts.filter(p => (p.person || p.gender) === 'women').length}W • {liveProducts.filter(p => (p.person || p.gender) === 'men').length}M
+                </span>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-white dark:bg-onyx-900 border border-linen-300 dark:border-onyx-800 shadow-sm">
+                <span className="text-[10px] uppercase font-bold text-onyx-500 dark:text-linen-400 tracking-wider">
+                  Customers
+                </span>
+                <p className="text-xl sm:text-2xl font-black text-onyx-950 dark:text-white mt-1">
+                  {customers.length}
+                </p>
+                <span className="text-[10px] text-onyx-500">Google Verified</span>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-white dark:bg-onyx-900 border border-linen-300 dark:border-onyx-800 shadow-sm">
+                <span className="text-[10px] uppercase font-bold text-onyx-500 dark:text-linen-400 tracking-wider">
+                  Subscribers
+                </span>
+                <p className="text-xl sm:text-2xl font-black text-onyx-950 dark:text-white mt-1">
+                  {subscribers.length}
+                </p>
+                <span className="text-[10px] text-emerald-600 font-semibold">Newsletter Active</span>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-white dark:bg-onyx-900 border border-linen-300 dark:border-onyx-800 shadow-sm">
+                <span className="text-[10px] uppercase font-bold text-onyx-500 dark:text-linen-400 tracking-wider">
+                  Inquiries
+                </span>
+                <p className="text-xl sm:text-2xl font-black text-onyx-950 dark:text-white mt-1">
+                  {inquiries.length}
+                </p>
+                <span className="text-[10px] text-onyx-500">Concierge Desk</span>
+              </div>
+            </div>
+
+            {/* Low Inventory Alert Banner (if any item has <= 4 stock) */}
+            {lowStockProducts.length > 0 && (
+              <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                <div className="flex items-center space-x-3 text-amber-900 dark:text-amber-200">
+                  <span className="text-lg">⚠️</span>
+                  <div>
+                    <strong>Low Stock Inventory Alert: </strong>
+                    <span>{lowStockProducts.length} garments have critical scarcity (4 or fewer remaining).</span>
+                  </div>
+                </div>
                 <button
-                  onClick={handleExportCatalog}
-                  className="border border-linen-300 dark:border-onyx-700 hover:border-camel-400 text-onyx-800 dark:text-linen-200 text-xs font-semibold px-4 py-2 rounded transition flex items-center space-x-1.5"
+                  onClick={() => setActiveTab('products')}
+                  className="font-bold text-amber-800 dark:text-amber-300 underline text-xs"
                 >
-                  <span>↓ Export catalog</span>
+                  Inspect in Products Catalog →
                 </button>
               </div>
-            </div>
+            )}
 
-            {/* Products Table (Scrollable with Sticky Header) */}
-            <div className="overflow-x-auto max-h-[70vh] overflow-y-auto rounded-xl border border-linen-300 dark:border-onyx-800 bg-white dark:bg-onyx-900 shadow-sm scrollbar-thin">
-              <table className="w-full text-left text-xs border-collapse">
-                <thead className="sticky top-0 z-10 bg-linen-100 dark:bg-onyx-950 text-onyx-500 dark:text-linen-400 border-b border-linen-200 dark:border-onyx-800 font-bold uppercase tracking-wider text-[10px] shadow-sm">
-                  <tr>
-                    <th className="py-3.5 px-5">Piece</th>
-                    <th className="py-3.5 px-4">Collection</th>
-                    <th className="py-3.5 px-4">Category</th>
-                    <th className="py-3.5 px-4">Price</th>
-                    <th className="py-3.5 px-4">Try-on Asset</th>
-                    <th className="py-3.5 px-5 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-linen-200 dark:divide-onyx-800">
-                  {products.map((p) => {
-                    const primaryColor = p.colors?.[0] || { name: 'Olive Green', hex: '#364634' };
-                    return (
-                      <tr key={p.id} className="hover:bg-linen-50 dark:hover:bg-onyx-800/40 transition">
-                        
-                        {/* Piece Name & Thumbnail */}
-                        <td className="py-3.5 px-5">
-                          <div className="flex items-center space-x-3.5">
-                            <div
-                              className="w-10 h-12 bg-linen-100 dark:bg-onyx-950 rounded overflow-hidden flex items-center justify-center p-0.5 flex-shrink-0"
-                              dangerouslySetInnerHTML={{ __html: FormeEngine.thumb(p, 0) }}
-                            />
-                            <div>
-                              <strong className="block text-onyx-950 dark:text-linen-50 text-xs font-bold">
-                                {p.name}
-                              </strong>
-                              <small className="block text-[10px] text-onyx-500 dark:text-linen-400">
-                                {primaryColor.name} • {p.style || p.slot}
-                              </small>
-                            </div>
-                          </div>
-                        </td>
-
-                        {/* Collection */}
-                        <td className="py-3.5 px-4 capitalize font-medium text-onyx-700 dark:text-linen-300">
-                          {p.person}
-                        </td>
-
-                        {/* Category Slot */}
-                        <td className="py-3.5 px-4 uppercase tracking-wider text-[11px] font-semibold text-onyx-600 dark:text-linen-400">
-                          {p.slot}
-                        </td>
-
-                        {/* Price */}
-                        <td className="py-3.5 px-4 font-bold text-olive-800 dark:text-camel-300">
-                          Rs. {p.price.toLocaleString()}
-                        </td>
-
-                        {/* Try-on asset badge */}
-                        <td className="py-3.5 px-4">
-                          {p.style === 'custom' ? (
-                            <span className="inline-block px-2.5 py-1 rounded-full text-[10px] font-bold bg-camel-100 dark:bg-onyx-800 text-camel-800 dark:text-camel-300">
-                              Custom Cutout (X:{p.asset?.x || 100} Y:{p.asset?.y || 125})
-                            </span>
-                          ) : (
-                            <span className="inline-block px-2.5 py-1 rounded-full text-[10px] font-medium bg-linen-200 dark:bg-onyx-800 text-onyx-700 dark:text-linen-300 uppercase">
-                              Vector {p.style || p.slot}
-                            </span>
-                          )}
-                        </td>
-
-                        {/* Row Actions */}
-                        <td className="py-3.5 px-5 text-right space-x-3">
-                          {onTryOnProduct && (
-                            <button
-                              onClick={() => onTryOnProduct(p)}
-                              className="font-bold text-olive-700 dark:text-camel-400 hover:underline"
-                              title="Equip on storefront model"
-                            >
-                              👗 Try on Model
-                            </button>
-                          )}
-                          <button
-                            onClick={() => handleOpenEdit(p)}
-                            className="font-semibold text-onyx-700 dark:text-linen-300 hover:text-onyx-950 hover:underline"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => {
-                              if (confirm(`Remove "${p.name}" from catalog?`)) {
-                                onDeleteProduct(p.id);
-                              }
-                            }}
-                            className="font-semibold text-red-600 dark:text-red-400 hover:underline"
-                          >
-                            Delete
-                          </button>
-                        </td>
-
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-
-          </div>
-        )}
-
-        {/* =========================================================================
-            TAB 2: APPEARANCE & PALETTE (Live Store Customizer)
-        ========================================================================= */}
-        {activeTab === 'appearance' && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            
-            {/* Left Column: Form & Presets (7 cols) */}
-            <div className="lg:col-span-7 bg-white dark:bg-onyx-900 rounded-2xl border border-linen-300 dark:border-onyx-800 p-8 shadow-sm space-y-6">
-              <div>
-                <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-camel-700 dark:text-camel-400">
-                  STORE THEME & PALETTE
-                </span>
-                <h2 className="font-editorial text-3xl font-bold text-onyx-950 dark:text-linen-50 mt-1">
-                  Customize Store Colors & Brand
-                </h2>
-                <p className="text-xs text-onyx-600 dark:text-linen-300 mt-1">
-                  Adjust your primary accents, backgrounds, and brand name. Changes take effect across the entire website instantly.
-                </p>
-              </div>
-
-              {/* Curated Preset Themes */}
-              <div className="space-y-2">
-                <label className="block font-bold text-onyx-800 dark:text-linen-200 text-xs">
-                  Quick Preset Palettes
-                </label>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                  {presetThemes.map(preset => (
-                    <button
-                      key={preset.name}
-                      type="button"
-                      onClick={() => handleApplyPreset(preset)}
-                      className="p-2.5 rounded-xl border border-linen-300 dark:border-onyx-800 hover:border-camel-500 text-left transition active:scale-95 bg-linen-100/60 dark:bg-onyx-950/60"
-                    >
-                      <div className="flex items-center space-x-1.5 mb-1.5">
-                        <span className="w-3 h-3 rounded-full" style={{ backgroundColor: preset.olive }} />
-                        <span className="w-3 h-3 rounded-full" style={{ backgroundColor: preset.camel }} />
-                        <span className="w-3 h-3 rounded-full border border-black/10" style={{ backgroundColor: preset.linen }} />
-                      </div>
-                      <span className="text-[10px] font-mono font-bold text-onyx-800 dark:text-linen-200 block truncate">
-                        {preset.name}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <form onSubmit={handleSaveAppearance} className="space-y-5 text-xs">
+            {/* Recent Orders Section */}
+            <div className="bg-white dark:bg-onyx-900 rounded-2xl border border-linen-300 dark:border-onyx-800 shadow-sm overflow-hidden">
+              <div className="p-5 border-b border-linen-200 dark:border-onyx-800 flex items-center justify-between">
                 <div>
-                  <label className="block font-bold text-onyx-800 dark:text-linen-200 mb-1.5">
-                    Store Brand Name
-                  </label>
-                  <input
-                    type="text"
-                    maxLength={28}
-                    required
-                    value={brandName}
-                    onChange={(e) => setBrandName(e.target.value)}
-                    className="w-full bg-linen-50 dark:bg-onyx-800 border border-linen-300 dark:border-onyx-700 rounded p-2.5 text-xs text-onyx-950 dark:text-linen-50 font-bold"
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {/* Primary Accent (Olive) */}
-                  <div>
-                    <label className="block font-bold text-onyx-800 dark:text-linen-200 mb-1.5">
-                      Primary Accent Color
-                    </label>
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="color"
-                        value={oliveColor}
-                        onChange={(e) => setOliveColor(e.target.value)}
-                        className="w-10 h-10 rounded border border-linen-300 dark:border-onyx-700 cursor-pointer"
-                      />
-                      <input
-                        type="text"
-                        value={oliveColor}
-                        onChange={(e) => setOliveColor(e.target.value)}
-                        className="flex-1 bg-linen-50 dark:bg-onyx-800 border border-linen-300 dark:border-onyx-700 rounded p-2 text-xs font-mono"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Secondary Accent (Camel) */}
-                  <div>
-                    <label className="block font-bold text-onyx-800 dark:text-linen-200 mb-1.5">
-                      Secondary Accent Color
-                    </label>
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="color"
-                        value={camelColor}
-                        onChange={(e) => setCamelColor(e.target.value)}
-                        className="w-10 h-10 rounded border border-linen-300 dark:border-onyx-700 cursor-pointer"
-                      />
-                      <input
-                        type="text"
-                        value={camelColor}
-                        onChange={(e) => setCamelColor(e.target.value)}
-                        className="flex-1 bg-linen-50 dark:bg-onyx-800 border border-linen-300 dark:border-onyx-700 rounded p-2 text-xs font-mono"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Light Canvas Background (Linen) */}
-                  <div>
-                    <label className="block font-bold text-onyx-800 dark:text-linen-200 mb-1.5">
-                      Light Canvas Background
-                    </label>
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="color"
-                        value={linenColor}
-                        onChange={(e) => setLinenColor(e.target.value)}
-                        className="w-10 h-10 rounded border border-linen-300 dark:border-onyx-700 cursor-pointer"
-                      />
-                      <input
-                        type="text"
-                        value={linenColor}
-                        onChange={(e) => setLinenColor(e.target.value)}
-                        className="flex-1 bg-linen-50 dark:bg-onyx-800 border border-linen-300 dark:border-onyx-700 rounded p-2 text-xs font-mono"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Dark Mode Background (Onyx) */}
-                  <div>
-                    <label className="block font-bold text-onyx-800 dark:text-linen-200 mb-1.5">
-                      Dark Mode Canvas
-                    </label>
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="color"
-                        value={onyxColor}
-                        onChange={(e) => setOnyxColor(e.target.value)}
-                        className="w-10 h-10 rounded border border-linen-300 dark:border-onyx-700 cursor-pointer"
-                      />
-                      <input
-                        type="text"
-                        value={onyxColor}
-                        onChange={(e) => setOnyxColor(e.target.value)}
-                        className="flex-1 bg-linen-50 dark:bg-onyx-800 border border-linen-300 dark:border-onyx-700 rounded p-2 text-xs font-mono"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="pt-4 flex items-center space-x-4 border-t border-linen-300 dark:border-onyx-800">
-                  <button
-                    type="submit"
-                    className="bg-olive-800 hover:bg-olive-900 text-white font-bold text-xs uppercase tracking-widest px-7 py-3.5 rounded-full shadow-md transition active:scale-95"
-                    style={{ backgroundColor: oliveColor }}
-                  >
-                    Save & Apply Colors ✓
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleResetAppearance}
-                    className="text-xs font-semibold text-onyx-600 dark:text-linen-400 hover:underline"
-                  >
-                    Restore Default Palette
-                  </button>
-                </div>
-              </form>
-            </div>
-
-            {/* Right Column: Live Storefront Preview Card (5 cols) */}
-            <div className="lg:col-span-5 bg-linen-200/50 dark:bg-onyx-900/60 rounded-2xl border border-linen-300 dark:border-onyx-800 p-6 shadow-sm space-y-5">
-              <span className="text-[10px] uppercase font-bold tracking-widest text-camel-600 dark:text-camel-400 font-mono">
-                Live Storefront Preview
-              </span>
-
-              {/* Sample Header & Card in Light Mode */}
-              <div
-                className="p-5 rounded-2xl border border-black/10 shadow-md space-y-4"
-                style={{ backgroundColor: linenColor, color: onyxColor }}
-              >
-                <div className="flex items-center justify-between pb-3 border-b border-black/10">
-                  <span className="font-editorial text-lg font-bold uppercase tracking-widest">
-                    {brandName}
-                  </span>
-                  <span
-                    className="text-[9px] font-mono px-2 py-0.5 rounded-full text-white font-bold"
-                    style={{ backgroundColor: oliveColor }}
-                  >
-                    Atelier
-                  </span>
-                </div>
-
-                <div className="space-y-1">
-                  <span className="text-[10px] uppercase tracking-wider font-mono opacity-60">Sample Product</span>
-                  <p className="font-editorial text-base font-bold">Cashmere Knitwear</p>
-                  <p className="font-editorial text-lg font-bold" style={{ color: camelColor }}>
-                    Rs. 14,200
+                  <h3 className="font-editorial text-lg font-bold text-onyx-950 dark:text-white">
+                    Recent Customer Orders
+                  </h3>
+                  <p className="text-xs text-onyx-500 dark:text-linen-400">
+                    Direct from MongoDB Atlas `orders` collection
                   </p>
                 </div>
-
                 <button
-                  type="button"
-                  className="w-full py-2.5 rounded-full text-white font-bold text-xs uppercase tracking-wider shadow"
-                  style={{ backgroundColor: oliveColor }}
+                  onClick={() => setActiveTab('orders')}
+                  className="text-xs font-bold text-olive-800 dark:text-camel-400 hover:underline"
                 >
-                  Add to Bag
+                  View All Orders ({liveOrders.length}) →
                 </button>
               </div>
 
-              {/* Sample Card in Dark Mode */}
-              <div
-                className="p-5 rounded-2xl border border-white/10 shadow-md space-y-4 text-white"
-                style={{ backgroundColor: onyxColor }}
-              >
-                <div className="flex items-center justify-between pb-3 border-b border-white/10">
-                  <span className="font-editorial text-lg font-bold uppercase tracking-widest">
-                    {brandName}
-                  </span>
-                  <span
-                    className="text-[9px] font-mono px-2 py-0.5 rounded-full text-black font-bold"
-                    style={{ backgroundColor: camelColor }}
-                  >
-                    Night Mode
-                  </span>
+              {liveOrders.length === 0 ? (
+                <div className="p-8 text-center text-xs text-onyx-500">
+                  No customer orders in MongoDB yet. Place a test order from the storefront!
                 </div>
-
-                <button
-                  type="button"
-                  className="w-full py-2.5 rounded-full text-black font-bold text-xs uppercase tracking-wider shadow"
-                  style={{ backgroundColor: camelColor }}
-                >
-                  Explore Capsule
-                </button>
-              </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs">
+                    <thead className="bg-linen-100 dark:bg-onyx-950 text-onyx-600 dark:text-linen-400 text-[10px] font-bold uppercase tracking-wider border-b border-linen-200 dark:border-onyx-800">
+                      <tr>
+                        <th className="py-3 px-4">Order #</th>
+                        <th className="py-3 px-4">Customer</th>
+                        <th className="py-3 px-4">City</th>
+                        <th className="py-3 px-4">Payment</th>
+                        <th className="py-3 px-4">Total Amount</th>
+                        <th className="py-3 px-4">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-linen-200 dark:divide-onyx-800">
+                      {liveOrders.slice(0, 5).map((ord) => (
+                        <tr key={ord.id || ord.orderNumber} className="hover:bg-linen-50 dark:hover:bg-onyx-800/40 transition">
+                          <td className="py-3 px-4 font-mono font-bold text-olive-800 dark:text-camel-400">
+                            {ord.orderNumber || ord.id}
+                          </td>
+                          <td className="py-3 px-4">
+                            <span className="font-bold text-onyx-900 dark:text-white">
+                              {ord.customer?.firstName} {ord.customer?.lastName}
+                            </span>
+                            <span className="block text-[11px] text-onyx-500">{ord.customer?.phone}</span>
+                          </td>
+                          <td className="py-3 px-4 text-onyx-700 dark:text-linen-300 font-medium">
+                            {ord.customer?.city || 'Lahore'}
+                          </td>
+                          <td className="py-3 px-4 font-mono uppercase text-[10px]">
+                            {ord.paymentMethod === 'cod' ? '💵 COD' : ord.paymentMethod?.toUpperCase()}
+                          </td>
+                          <td className="py-3 px-4 font-bold text-onyx-950 dark:text-white">
+                            Rs. {Number(ord.total || 0).toLocaleString()}
+                          </td>
+                          <td className="py-3 px-4">
+                            <select
+                              value={ord.status || 'processing'}
+                              onChange={(e) => handleStatusChange(ord.id || ord.orderNumber, e.target.value)}
+                              className="px-2.5 py-1 rounded-lg text-xs font-bold border border-linen-300 dark:border-onyx-700 bg-linen-50 dark:bg-onyx-800 cursor-pointer"
+                            >
+                              <option value="pending">Pending</option>
+                              <option value="processing">Processing</option>
+                              <option value="dispatched">Dispatched</option>
+                              <option value="delivered">Delivered</option>
+                              <option value="cancelled">Cancelled</option>
+                            </select>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
-
           </div>
         )}
 
         {/* =========================================================================
-            TAB 3: CUSTOMER ORDERS & PAKISTANI GATEWAYS
+            TAB 2: PRODUCTS CATALOG (MEN, WOMEN & KIDS FIELDS)
         ========================================================================= */}
-        {activeTab === 'orders' && (
-          <div className="space-y-6">
-            
-            {/* Quick Metrics */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              <div className="bg-white dark:bg-onyx-900 p-5 rounded-xl border border-linen-300 dark:border-onyx-800">
-                <span className="text-[10px] uppercase font-bold text-onyx-400 dark:text-linen-500">Gross Revenue</span>
-                <div className="font-editorial text-2xl font-bold text-olive-800 dark:text-camel-300 mt-1">
-                  Rs. {totalRevenue.toLocaleString()}
-                </div>
+        {activeTab === 'products' && (
+          <div className="space-y-6 animate-fadeIn">
+            {/* Filter Toolbar & Department Selectors */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              {/* Department Pills */}
+              <div className="flex items-center space-x-2 overflow-x-auto pb-1">
+                {[
+                  { id: 'all', label: 'All Garments', count: liveProducts.length },
+                  { id: 'women', label: "Women's Collection", count: liveProducts.filter(p => (p.person || p.gender) === 'women').length },
+                  { id: 'men', label: "Men's Collection", count: liveProducts.filter(p => (p.person || p.gender) === 'men').length },
+                  { id: 'kids', label: "Kids Pret", count: liveProducts.filter(p => (p.person || p.gender) === 'kids').length }
+                ].map((dept) => (
+                  <button
+                    key={dept.id}
+                    onClick={() => setProductDepartmentFilter(dept.id)}
+                    className={`px-3.5 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap flex items-center space-x-1.5 ${
+                      productDepartmentFilter === dept.id
+                        ? 'bg-olive-800 text-white shadow-sm'
+                        : 'bg-white dark:bg-onyx-900 border border-linen-300 dark:border-onyx-700 text-onyx-700 dark:text-linen-300 hover:border-camel-500'
+                    }`}
+                  >
+                    <span>{dept.label}</span>
+                    <span className={`px-1.5 py-0.5 rounded-full text-[10px] ${
+                      productDepartmentFilter === dept.id ? 'bg-olive-900 text-white' : 'bg-linen-200 dark:bg-onyx-800'
+                    }`}>
+                      {dept.count}
+                    </span>
+                  </button>
+                ))}
               </div>
-              <div className="bg-white dark:bg-onyx-900 p-5 rounded-xl border border-linen-300 dark:border-onyx-800">
-                <span className="text-[10px] uppercase font-bold text-onyx-400 dark:text-linen-500">Total Registered Orders</span>
-                <div className="font-editorial text-2xl font-bold text-onyx-950 dark:text-linen-50 mt-1">
-                  {orders.length}
-                </div>
-              </div>
-              <div className="bg-white dark:bg-onyx-900 p-5 rounded-xl border border-linen-300 dark:border-onyx-800">
-                <span className="text-[10px] uppercase font-bold text-onyx-400 dark:text-linen-500">Avg Order Value</span>
-                <div className="font-editorial text-2xl font-bold text-onyx-950 dark:text-linen-50 mt-1">
-                  Rs. {orders.length > 0 ? Math.round(totalRevenue / orders.length).toLocaleString() : 0}
-                </div>
-              </div>
-              <div className="bg-white dark:bg-onyx-900 p-5 rounded-xl border border-linen-300 dark:border-onyx-800">
-                <span className="text-[10px] uppercase font-bold text-onyx-400 dark:text-linen-500">Fulfillment Success</span>
-                <div className="font-editorial text-2xl font-bold text-emerald-700 dark:text-emerald-400 mt-1">
-                  99.2%
-                </div>
+
+              {/* Search Bar */}
+              <div className="relative w-full md:w-72">
+                <input
+                  type="text"
+                  placeholder="Search products by title, category..."
+                  value={productSearchQuery}
+                  onChange={(e) => setProductSearchQuery(e.target.value)}
+                  className="w-full px-3.5 py-2 rounded-xl text-xs bg-white dark:bg-onyx-900 border border-linen-300 dark:border-onyx-700 text-onyx-950 dark:text-white outline-none focus:border-camel-500"
+                />
               </div>
             </div>
 
-            {/* Filters Row */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-              <div className="flex items-center space-x-2">
+            {/* Products Table */}
+            <div className="bg-white dark:bg-onyx-900 rounded-2xl border border-linen-300 dark:border-onyx-800 overflow-hidden shadow-sm">
+              <div className="overflow-x-auto max-h-[70vh] overflow-y-auto">
+                <table className="w-full text-left text-xs">
+                  <thead className="sticky top-0 z-10 bg-linen-100 dark:bg-onyx-950 text-onyx-600 dark:text-linen-400 text-[10px] font-bold uppercase tracking-wider border-b border-linen-200 dark:border-onyx-800 shadow-sm">
+                    <tr>
+                      <th className="py-3 px-4">Photo</th>
+                      <th className="py-3 px-4">Garment Title</th>
+                      <th className="py-3 px-4">Department</th>
+                      <th className="py-3 px-4">Category</th>
+                      <th className="py-3 px-4">Price (PKR)</th>
+                      <th className="py-3 px-4">Stock Breakdown</th>
+                      <th className="py-3 px-4 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-linen-200 dark:divide-onyx-800">
+                    {filteredProducts.map((p) => {
+                      const totalStock = p.stock !== undefined
+                        ? Number(p.stock)
+                        : p.stockPerSize
+                          ? Object.values(p.stockPerSize).reduce((acc, v) => acc + Number(v), 0)
+                          : 0;
+
+                      const dept = (p.person || p.gender || 'women').toLowerCase();
+
+                      return (
+                        <tr key={p.id} className="hover:bg-linen-50 dark:hover:bg-onyx-850 transition">
+                          {/* Photo */}
+                          <td className="py-3 px-4">
+                            <div className="w-12 h-14 rounded-lg overflow-hidden bg-linen-200 dark:bg-onyx-800 border border-linen-300 dark:border-onyx-700 flex-shrink-0">
+                              <img
+                                src={p.images?.[0] || p.image || "https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=200&q=80"}
+                                alt={p.name}
+                                className="w-full h-full object-cover object-top"
+                              />
+                            </div>
+                          </td>
+
+                          {/* Title & SKU */}
+                          <td className="py-3 px-4 font-bold text-onyx-950 dark:text-white">
+                            <div>{p.name}</div>
+                            <span className="text-[10px] font-mono font-normal text-onyx-400">
+                              SKU: {p.id}
+                            </span>
+                          </td>
+
+                          {/* Department (Men / Women / Kids) */}
+                          <td className="py-3 px-4">
+                            <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                              dept === 'men'
+                                ? 'bg-camel-100 dark:bg-camel-950 text-camel-800 dark:text-camel-300 border border-camel-300'
+                                : dept === 'women'
+                                  ? 'bg-olive-100 dark:bg-olive-950 text-olive-900 dark:text-olive-300 border border-olive-300'
+                                  : 'bg-amber-100 text-amber-900 border border-amber-300'
+                            }`}>
+                              {dept === 'men' ? '👨 Men' : dept === 'women' ? '👩 Women' : '👶 Kids'}
+                            </span>
+                          </td>
+
+                          {/* Category */}
+                          <td className="py-3 px-4 font-medium text-onyx-700 dark:text-linen-300">
+                            {p.category || p.slot || 'Apparel'}
+                          </td>
+
+                          {/* Price */}
+                          <td className="py-3 px-4 font-bold text-olive-800 dark:text-camel-400">
+                            Rs. {Number(p.price || 0).toLocaleString()}
+                          </td>
+
+                          {/* Stock Breakdown */}
+                          <td className="py-3 px-4">
+                            <div className="flex items-center space-x-2">
+                              <span className={`font-bold ${totalStock <= 4 ? 'text-amber-600' : 'text-emerald-700 dark:text-emerald-400'}`}>
+                                {totalStock} total
+                              </span>
+                              {p.stockPerSize && (
+                                <span className="text-[10px] text-onyx-400 font-mono">
+                                  ({Object.entries(p.stockPerSize).map(([sz, count]) => `${sz}:${count}`).join(' ')})
+                                </span>
+                              )}
+                            </div>
+                          </td>
+
+                          {/* Actions */}
+                          <td className="py-3 px-4 text-right space-x-2">
+                            <button
+                              onClick={() => handleOpenEditProduct(p)}
+                              className="px-2.5 py-1 rounded-lg bg-linen-200 dark:bg-onyx-800 text-onyx-800 dark:text-linen-200 font-bold hover:bg-linen-300 text-[11px]"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDeleteProductClick(p.id, p.name)}
+                              className="px-2.5 py-1 rounded-lg bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 font-bold hover:bg-red-100 text-[11px]"
+                            >
+                              Delete
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* =========================================================================
+            TAB 3: CUSTOMER ORDERS (FULL MONGODB LIST & SEARCH)
+        ========================================================================= */}
+        {activeTab === 'orders' && (
+          <div className="space-y-6 animate-fadeIn">
+            {/* Order Controls Bar */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div className="flex flex-wrap items-center gap-2">
+                {/* Status Selector */}
                 <select
                   value={orderFilterStatus}
                   onChange={(e) => setOrderFilterStatus(e.target.value)}
-                  className="bg-white dark:bg-onyx-900 border border-linen-300 dark:border-onyx-800 rounded px-3 py-2 text-xs font-semibold"
+                  className="px-3 py-2 rounded-xl text-xs bg-white dark:bg-onyx-900 border border-linen-300 dark:border-onyx-700 font-bold text-onyx-800 dark:text-white"
                 >
-                  <option value="all">All Statuses</option>
+                  <option value="all">All Statuses ({liveOrders.length})</option>
                   <option value="pending">Pending</option>
                   <option value="processing">Processing</option>
                   <option value="dispatched">Dispatched</option>
@@ -966,185 +825,201 @@ export default function AdminDashboard({
                   <option value="cancelled">Cancelled</option>
                 </select>
 
+                {/* Payment Selector */}
                 <select
                   value={orderFilterPayment}
                   onChange={(e) => setOrderFilterPayment(e.target.value)}
-                  className="bg-white dark:bg-onyx-900 border border-linen-300 dark:border-onyx-800 rounded px-3 py-2 text-xs font-semibold"
+                  className="px-3 py-2 rounded-xl text-xs bg-white dark:bg-onyx-900 border border-linen-300 dark:border-onyx-700 font-bold text-onyx-800 dark:text-white"
                 >
-                  <option value="all">All Gateways</option>
+                  <option value="all">All Payment Gateways</option>
                   <option value="cod">Cash on Delivery (COD)</option>
-                  <option value="card">Credit Card (3DS)</option>
+                  <option value="card">Credit / Debit Card</option>
                   <option value="jazzcash">JazzCash Wallet</option>
-                  <option value="easypaisa">EasyPaisa USSD</option>
+                  <option value="easypaisa">EasyPaisa</option>
                 </select>
               </div>
 
-              <input
-                type="search"
-                placeholder="Search orders, phone, city..."
-                value={orderSearchQuery}
-                onChange={(e) => setOrderSearchQuery(e.target.value)}
-                className="bg-white dark:bg-onyx-900 border border-linen-300 dark:border-onyx-800 rounded px-3 py-2 text-xs w-full sm:w-64"
-              />
+              {/* Order Search */}
+              <div className="w-full md:w-80">
+                <input
+                  type="text"
+                  placeholder="Search by order #, phone, city, client..."
+                  value={orderSearchQuery}
+                  onChange={(e) => setOrderSearchQuery(e.target.value)}
+                  className="w-full px-3.5 py-2 rounded-xl text-xs bg-white dark:bg-onyx-900 border border-linen-300 dark:border-onyx-700 text-onyx-950 dark:text-white outline-none focus:border-camel-500"
+                />
+              </div>
             </div>
 
-            {/* Orders Table (Scrollable with Sticky Header) */}
-            <div className="overflow-x-auto max-h-[70vh] overflow-y-auto rounded-xl border border-linen-300 dark:border-onyx-800 bg-white dark:bg-onyx-900 shadow-sm scrollbar-thin">
-              <table className="w-full text-left text-xs border-collapse">
-                <thead className="sticky top-0 z-10 bg-linen-100 dark:bg-onyx-950 text-onyx-500 dark:text-linen-400 border-b border-linen-200 dark:border-onyx-800 font-bold uppercase tracking-wider text-[10px] shadow-sm">
-                  <tr>
-                    <th className="py-3.5 px-5">Order #</th>
-                    <th className="py-3.5 px-4">Customer</th>
-                    <th className="py-3.5 px-4">City</th>
-                    <th className="py-3.5 px-4">Gateway</th>
-                    <th className="py-3.5 px-4">Total</th>
-                    <th className="py-3.5 px-4">Status</th>
-                    <th className="py-3.5 px-5 text-right">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-linen-200 dark:divide-onyx-800">
-                  {filteredOrders.length === 0 ? (
-                    <tr>
-                      <td colSpan={7} className="py-8 text-center text-onyx-500 dark:text-linen-400">
-                        No orders found matching filters.
-                      </td>
-                    </tr>
-                  ) : (
-                    filteredOrders.map((o) => {
-                      const amount = o.pricing?.finalTotal || o.amount || 0;
-                      return (
-                        <tr key={o.orderNumber} className="hover:bg-linen-50 dark:hover:bg-onyx-800/40 transition">
-                          <td className="py-3.5 px-5 font-mono font-bold text-olive-800 dark:text-camel-300">
-                            {o.orderNumber}
+            {/* Orders Table */}
+            <div className="bg-white dark:bg-onyx-900 rounded-2xl border border-linen-300 dark:border-onyx-800 overflow-hidden shadow-sm">
+              {filteredOrders.length === 0 ? (
+                <div className="p-12 text-center text-xs text-onyx-500">
+                  No orders matching the active search or filters in MongoDB Atlas.
+                </div>
+              ) : (
+                <div className="overflow-x-auto max-h-[70vh] overflow-y-auto">
+                  <table className="w-full text-left text-xs">
+                    <thead className="sticky top-0 z-10 bg-linen-100 dark:bg-onyx-950 text-onyx-600 dark:text-linen-400 text-[10px] font-bold uppercase tracking-wider border-b border-linen-200 dark:border-onyx-800 shadow-sm">
+                      <tr>
+                        <th className="py-3 px-4">Order #</th>
+                        <th className="py-3 px-4">Date</th>
+                        <th className="py-3 px-4">Client Name</th>
+                        <th className="py-3 px-4">Contact Phone</th>
+                        <th className="py-3 px-4">Delivery City</th>
+                        <th className="py-3 px-4">Payment</th>
+                        <th className="py-3 px-4">Items</th>
+                        <th className="py-3 px-4">Total Amount</th>
+                        <th className="py-3 px-4">Status</th>
+                        <th className="py-3 px-4 text-right">Details</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-linen-200 dark:divide-onyx-800">
+                      {filteredOrders.map((ord) => (
+                        <tr key={ord.id || ord.orderNumber} className="hover:bg-linen-50 dark:hover:bg-onyx-850 transition">
+                          <td className="py-3 px-4 font-mono font-bold text-olive-800 dark:text-camel-400">
+                            {ord.orderNumber || ord.id}
                           </td>
-                          <td className="py-3.5 px-4 font-medium text-onyx-950 dark:text-linen-50">
-                            {o.customer?.firstName} {o.customer?.lastName}
+                          <td className="py-3 px-4 text-onyx-500 text-[11px]">
+                            {ord.createdAt ? new Date(ord.createdAt).toLocaleDateString('en-PK', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Recent'}
                           </td>
-                          <td className="py-3.5 px-4 text-onyx-700 dark:text-linen-300">
-                            {o.customer?.city || "Pakistan"}
+                          <td className="py-3 px-4 font-bold text-onyx-900 dark:text-white">
+                            {ord.customer?.firstName} {ord.customer?.lastName}
                           </td>
-                          <td className="py-3.5 px-4">
-                            <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold ${getPaymentBadge(o.paymentMethod)}`}>
-                              {o.paymentMethod?.toUpperCase()}
-                            </span>
+                          <td className="py-3 px-4 font-mono text-[11px] text-onyx-700 dark:text-linen-300">
+                            {ord.customer?.phone}
                           </td>
-                          <td className="py-3.5 px-4 font-bold text-onyx-950 dark:text-linen-50">
-                            Rs. {amount.toLocaleString()}
+                          <td className="py-3 px-4 font-medium text-onyx-700 dark:text-linen-300">
+                            {ord.customer?.city || 'Lahore'}
                           </td>
-                          <td className="py-3.5 px-4">
+                          <td className="py-3 px-4 font-mono uppercase text-[10px]">
+                            {ord.paymentMethod === 'cod' ? '💵 COD' : ord.paymentMethod?.toUpperCase()}
+                          </td>
+                          <td className="py-3 px-4 text-onyx-600 font-mono">
+                            {ord.items?.length || 1} pcs
+                          </td>
+                          <td className="py-3 px-4 font-bold text-onyx-950 dark:text-white">
+                            Rs. {Number(ord.total || 0).toLocaleString()}
+                          </td>
+                          <td className="py-3 px-4">
                             <select
-                              value={o.status || 'Processing'}
-                              onChange={(e) => onUpdateOrderStatus(o.orderNumber, e.target.value)}
-                              className={`text-[10px] font-bold px-2 py-1 rounded-full cursor-pointer ${getStatusBadge(o.status || 'Processing')}`}
+                              value={ord.status || 'processing'}
+                              onChange={(e) => handleStatusChange(ord.id || ord.orderNumber, e.target.value)}
+                              className="px-2.5 py-1 rounded-lg text-xs font-bold border border-linen-300 dark:border-onyx-700 bg-linen-50 dark:bg-onyx-800 cursor-pointer"
                             >
-                              <option value="Pending">Pending</option>
-                              <option value="Processing">Processing</option>
-                              <option value="Dispatched">Dispatched</option>
-                              <option value="Delivered">Delivered</option>
-                              <option value="Cancelled">Cancelled</option>
+                              <option value="pending">Pending</option>
+                              <option value="processing">Processing</option>
+                              <option value="dispatched">Dispatched</option>
+                              <option value="delivered">Delivered</option>
+                              <option value="cancelled">Cancelled</option>
                             </select>
                           </td>
-                          <td className="py-3.5 px-5 text-right">
+                          <td className="py-3 px-4 text-right">
                             <button
-                              onClick={() => setSelectedOrderDetails(o)}
-                              className="font-bold text-camel-700 dark:text-camel-400 hover:underline"
+                              onClick={() => setSelectedOrderDetails(ord)}
+                              className="font-bold text-camel-600 hover:text-camel-800 underline text-xs"
                             >
                               Inspect
                             </button>
                           </td>
                         </tr>
-                      );
-                    })
-                  )}
-                </tbody>
-              </table>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
-
           </div>
         )}
 
         {/* =========================================================================
-            TAB 4: LOGISTICS & COURIERS
+            TAB 4: CUSTOMERS DIRECTORY (STORED IN MONGODB)
         ========================================================================= */}
-        {activeTab === 'logistics' && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
-            <div className="bg-white dark:bg-onyx-900 p-6 rounded-2xl border border-linen-300 dark:border-onyx-800 space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="font-bold text-sm">Leopards Express Courier</span>
-                <span className="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">Active</span>
-              </div>
-              <p className="text-onyx-600 dark:text-linen-400">Primary nationwide courier for COD cash collection and 24h major city air cargo.</p>
-              <div className="pt-2 text-[11px] text-onyx-500 space-y-1">
-                <div>API Endpoint: <code>api.leopardscourier.com/v2</code></div>
-                <div>Tariff: Flat Rs. 250 (Free over Rs. 15,000)</div>
-              </div>
-            </div>
-
-            <div className="bg-white dark:bg-onyx-900 p-6 rounded-2xl border border-linen-300 dark:border-onyx-800 space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="font-bold text-sm">TCS Express Logistics</span>
-                <span className="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">Active</span>
-              </div>
-              <p className="text-onyx-600 dark:text-linen-400">Same-day delivery in Lahore, Karachi, and Islamabad/Rawalpindi.</p>
-              <div className="pt-2 text-[11px] text-onyx-500 space-y-1">
-                <div>API Endpoint: <code>api.tcsexpress.com/shipping</code></div>
-                <div>COD Return Cycle: 48 Hours</div>
+        {activeTab === 'customers' && (
+          <div className="space-y-6 animate-fadeIn">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-editorial text-2xl font-bold text-onyx-950 dark:text-white">
+                  Customer Directory ({customers.length})
+                </h3>
+                <p className="text-xs text-onyx-500 dark:text-linen-400">
+                  Registered shopper accounts and customer profiles in MongoDB Atlas `customers` collection
+                </p>
               </div>
             </div>
 
-            <div className="bg-white dark:bg-onyx-900 p-6 rounded-2xl border border-linen-300 dark:border-onyx-800 space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="font-bold text-sm">Trax Logistics & CallCourier</span>
-                <span className="text-[10px] font-bold bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">Backup</span>
-              </div>
-              <p className="text-onyx-600 dark:text-linen-400">Automated fallback courier for rural and remote area delivery routes.</p>
-              <div className="pt-2 text-[11px] text-onyx-500 space-y-1">
-                <div>Route Coverage: 850+ Pakistani cities</div>
-                <div>Automated SMS Tracking: Enabled</div>
-              </div>
+            <div className="bg-white dark:bg-onyx-900 rounded-2xl border border-linen-300 dark:border-onyx-800 overflow-hidden shadow-sm">
+              {customers.length === 0 ? (
+                <div className="p-12 text-center text-xs text-onyx-500">
+                  No customers registered yet. Customer profiles are automatically created when shoppers place an order or sign in with Google.
+                </div>
+              ) : (
+                <div className="overflow-x-auto max-h-[70vh] overflow-y-auto">
+                  <table className="w-full text-left text-xs">
+                    <thead className="sticky top-0 z-10 bg-linen-100 dark:bg-onyx-950 text-onyx-600 dark:text-linen-400 text-[10px] font-bold uppercase tracking-wider border-b border-linen-200 dark:border-onyx-800 shadow-sm">
+                      <tr>
+                        <th className="py-3 px-4">Client Name</th>
+                        <th className="py-3 px-4">Email</th>
+                        <th className="py-3 px-4">Phone</th>
+                        <th className="py-3 px-4">City & Province</th>
+                        <th className="py-3 px-4">Delivery Address</th>
+                        <th className="py-3 px-4">Orders Count</th>
+                        <th className="py-3 px-4">Total Spent</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-linen-200 dark:divide-onyx-800">
+                      {customers.map((c) => (
+                        <tr key={c._id || c.email} className="hover:bg-linen-50 dark:hover:bg-onyx-850 transition">
+                          <td className="py-3 px-4 font-bold text-onyx-950 dark:text-white">
+                            {c.name || `${c.firstName || ''} ${c.lastName || ''}`.trim() || 'Client'}
+                          </td>
+                          <td className="py-3 px-4 font-mono text-[11px] text-onyx-700 dark:text-linen-300">
+                            {c.email}
+                          </td>
+                          <td className="py-3 px-4 font-mono text-[11px] text-onyx-700 dark:text-linen-300">
+                            {c.phone || '—'}
+                          </td>
+                          <td className="py-3 px-4 text-onyx-800 dark:text-linen-200">
+                            {c.city || '—'}, {c.province || ''}
+                          </td>
+                          <td className="py-3 px-4 text-onyx-600 dark:text-linen-400 max-w-xs truncate">
+                            {c.address || '—'}
+                          </td>
+                          <td className="py-3 px-4 font-bold text-olive-800 dark:text-camel-400">
+                            {c.ordersCount || 0}
+                          </td>
+                          <td className="py-3 px-4 font-bold text-onyx-950 dark:text-white">
+                            Rs. {Number(c.totalSpent || 0).toLocaleString()}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           </div>
         )}
 
         {/* =========================================================================
-            TAB 5: AUDIENCE, SUBSCRIBERS & CUSTOMERS (Stored in MongoDB)
+            TAB 5: SUBSCRIBERS & CONCIERGE INQUIRIES (STORED IN MONGODB)
         ========================================================================= */}
         {activeTab === 'subscribers' && (
-          <div className="space-y-8 fade-in">
-            
-            {/* Top Stat Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="bg-white dark:bg-onyx-900 p-5 rounded-2xl border border-linen-300 dark:border-onyx-800">
-                <span className="text-xs text-onyx-500 dark:text-linen-400 font-medium">Newsletter Subscribers</span>
-                <p className="text-2xl font-editorial font-bold text-olive-800 dark:text-camel-400 mt-1">{subscribers.length}</p>
-                <span className="text-[11px] text-green-600 font-medium">● Stored in MongoDB</span>
-              </div>
-              <div className="bg-white dark:bg-onyx-900 p-5 rounded-2xl border border-linen-300 dark:border-onyx-800">
-                <span className="text-xs text-onyx-500 dark:text-linen-400 font-medium">Customer Profiles</span>
-                <p className="text-2xl font-editorial font-bold text-onyx-950 dark:text-linen-50 mt-1">{customers.length}</p>
-                <span className="text-[11px] text-onyx-500">From verified checkouts</span>
-              </div>
-              <div className="bg-white dark:bg-onyx-900 p-5 rounded-2xl border border-linen-300 dark:border-onyx-800">
-                <span className="text-xs text-onyx-500 dark:text-linen-400 font-medium">Concierge Inquiries</span>
-                <p className="text-2xl font-editorial font-bold text-onyx-950 dark:text-linen-50 mt-1">{inquiries.length}</p>
-                <span className="text-[11px] text-onyx-500">Bespoke styling requests</span>
-              </div>
-            </div>
-
-            {/* Newsletter Subscribers Section */}
-            <div className="bg-white dark:bg-onyx-900 rounded-2xl border border-linen-300 dark:border-onyx-800 overflow-hidden shadow-sm">
+          <div className="space-y-8 animate-fadeIn">
+            {/* Newsletter Subscribers Box */}
+            <div className="bg-white dark:bg-onyx-900 rounded-2xl border border-linen-300 dark:border-onyx-800 shadow-sm overflow-hidden">
               <div className="p-5 border-b border-linen-200 dark:border-onyx-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
-                  <h3 className="font-editorial text-lg font-bold text-onyx-950 dark:text-linen-50">
-                    Newsletter Subscribers (MongoDB Collection: `subscribers`)
+                  <h3 className="font-editorial text-xl font-bold text-onyx-950 dark:text-white">
+                    Newsletter Subscribers ({subscribers.length})
                   </h3>
                   <p className="text-xs text-onyx-500 dark:text-linen-400">
-                    Collected directly from footer subscription, homepage CTA, and order checkouts.
+                    Direct from MongoDB Atlas `subscribers` collection
                   </p>
                 </div>
                 <button
                   onClick={handleCopySubscriberEmails}
-                  className="px-4 py-2 bg-olive-800 hover:bg-olive-900 text-white text-xs font-bold rounded-lg transition active:scale-95 whitespace-nowrap"
+                  className="px-4 py-2 bg-olive-800 hover:bg-olive-900 text-white text-xs font-bold rounded-xl transition active:scale-95 whitespace-nowrap shadow-sm"
                 >
                   {copiedEmails ? '✓ Copied All Emails!' : 'Copy All Emails (CSV)'}
                 </button>
@@ -1155,21 +1030,21 @@ export default function AdminDashboard({
                   No subscribers recorded in MongoDB yet. Try subscribing from the homepage footer!
                 </div>
               ) : (
-                <div className="overflow-x-auto max-h-[60vh] overflow-y-auto scrollbar-thin">
+                <div className="overflow-x-auto max-h-[50vh] overflow-y-auto">
                   <table className="w-full text-left text-xs">
-                    <thead className="sticky top-0 z-10 bg-linen-100 dark:bg-onyx-850 text-onyx-700 dark:text-linen-300 border-b border-linen-200 dark:border-onyx-800 shadow-sm">
+                    <thead className="sticky top-0 z-10 bg-linen-100 dark:bg-onyx-950 text-onyx-600 dark:text-linen-400 text-[10px] font-bold uppercase tracking-wider border-b border-linen-200 dark:border-onyx-800 shadow-sm">
                       <tr>
-                        <th className="py-3 px-4 font-bold">Email Address</th>
-                        <th className="py-3 px-4 font-bold">Source</th>
-                        <th className="py-3 px-4 font-bold">Status</th>
-                        <th className="py-3 px-4 font-bold">Date Subscribed</th>
-                        <th className="py-3 px-4 text-right font-bold">Actions</th>
+                        <th className="py-3 px-4">Email Address</th>
+                        <th className="py-3 px-4">Source</th>
+                        <th className="py-3 px-4">Status</th>
+                        <th className="py-3 px-4">Subscribed At</th>
+                        <th className="py-3 px-4 text-right">Actions</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-linen-200 dark:divide-onyx-800">
                       {subscribers.map((sub) => (
                         <tr key={sub._id || sub.email} className="hover:bg-linen-50 dark:hover:bg-onyx-850 transition">
-                          <td className="py-3 px-4 font-mono font-medium text-onyx-950 dark:text-linen-100">
+                          <td className="py-3 px-4 font-mono font-bold text-onyx-950 dark:text-white">
                             {sub.email}
                           </td>
                           <td className="py-3 px-4">
@@ -1178,16 +1053,16 @@ export default function AdminDashboard({
                             </span>
                           </td>
                           <td className="py-3 px-4">
-                            <span className="px-2 py-0.5 rounded-full text-[10px] bg-green-100 dark:bg-green-950 text-green-700 dark:text-green-300 font-semibold uppercase">
+                            <span className="px-2 py-0.5 rounded-full text-[10px] bg-emerald-100 text-emerald-800 font-semibold uppercase">
                               {sub.status || 'active'}
                             </span>
                           </td>
-                          <td className="py-3 px-4 text-onyx-500 dark:text-linen-400">
-                            {sub.createdAt ? new Date(sub.createdAt).toLocaleDateString('en-PK', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Recent'}
+                          <td className="py-3 px-4 text-onyx-500">
+                            {sub.createdAt ? new Date(sub.createdAt).toLocaleDateString('en-PK', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Recent'}
                           </td>
                           <td className="py-3 px-4 text-right">
                             <button
-                              onClick={() => handleDeleteSubscriber(sub._id)}
+                              onClick={() => handleDeleteSub(sub._id)}
                               className="text-red-500 hover:text-red-700 text-xs font-semibold"
                             >
                               Delete
@@ -1201,54 +1076,50 @@ export default function AdminDashboard({
               )}
             </div>
 
-            {/* Customers Profiles Section */}
-            <div className="bg-white dark:bg-onyx-900 rounded-2xl border border-linen-300 dark:border-onyx-800 overflow-hidden shadow-sm">
+            {/* Concierge Desk Inquiries Box */}
+            <div className="bg-white dark:bg-onyx-900 rounded-2xl border border-linen-300 dark:border-onyx-800 shadow-sm overflow-hidden">
               <div className="p-5 border-b border-linen-200 dark:border-onyx-800">
-                <h3 className="font-editorial text-lg font-bold text-onyx-950 dark:text-linen-50">
-                  Customer Directory (MongoDB Collection: `customers`)
+                <h3 className="font-editorial text-xl font-bold text-onyx-950 dark:text-white">
+                  Concierge & Client Inquiries ({inquiries.length})
                 </h3>
                 <p className="text-xs text-onyx-500 dark:text-linen-400">
-                  Verified customer profiles automatically synchronized with checkout orders.
+                  Messages submitted through the Concierge / Contact page stored in MongoDB Atlas `inquiries`
                 </p>
               </div>
 
-              {customers.length === 0 ? (
+              {inquiries.length === 0 ? (
                 <div className="p-8 text-center text-xs text-onyx-500">
-                  No customer profiles registered in MongoDB yet. Complete a checkout to see profiles automatically populate here!
+                  No inquiries in MongoDB yet.
                 </div>
               ) : (
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto max-h-[50vh] overflow-y-auto">
                   <table className="w-full text-left text-xs">
-                    <thead className="bg-linen-100 dark:bg-onyx-850 text-onyx-700 dark:text-linen-300 border-b border-linen-200 dark:border-onyx-800">
+                    <thead className="sticky top-0 z-10 bg-linen-100 dark:bg-onyx-950 text-onyx-600 dark:text-linen-400 text-[10px] font-bold uppercase tracking-wider border-b border-linen-200 dark:border-onyx-800 shadow-sm">
                       <tr>
-                        <th className="py-3 px-4 font-bold">Customer Name</th>
-                        <th className="py-3 px-4 font-bold">Email</th>
-                        <th className="py-3 px-4 font-bold">Phone</th>
-                        <th className="py-3 px-4 font-bold">Location</th>
-                        <th className="py-3 px-4 font-bold">Orders</th>
-                        <th className="py-3 px-4 text-right font-bold">Total Spent</th>
+                        <th className="py-3 px-4">Name</th>
+                        <th className="py-3 px-4">Email</th>
+                        <th className="py-3 px-4">Order Ref</th>
+                        <th className="py-3 px-4">Message</th>
+                        <th className="py-3 px-4">Received At</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-linen-200 dark:divide-onyx-800">
-                      {customers.map((cust) => (
-                        <tr key={cust._id || cust.email} className="hover:bg-linen-50 dark:hover:bg-onyx-850 transition">
-                          <td className="py-3 px-4 font-bold text-onyx-950 dark:text-linen-100">
-                            {cust.name || `${cust.firstName || ''} ${cust.lastName || ''}`.trim() || 'Client'}
+                      {inquiries.map((inq) => (
+                        <tr key={inq._id || inq.createdAt} className="hover:bg-linen-50 dark:hover:bg-onyx-850 transition">
+                          <td className="py-3 px-4 font-bold text-onyx-950 dark:text-white">
+                            {inq.name}
                           </td>
-                          <td className="py-3 px-4 font-mono text-onyx-700 dark:text-linen-300">
-                            {cust.email}
+                          <td className="py-3 px-4 font-mono text-[11px] text-onyx-700 dark:text-linen-300">
+                            {inq.email}
                           </td>
-                          <td className="py-3 px-4 font-mono text-onyx-600 dark:text-linen-400">
-                            {cust.phone || '—'}
+                          <td className="py-3 px-4 font-mono text-[11px] text-camel-600">
+                            {inq.orderNumber || '—'}
                           </td>
-                          <td className="py-3 px-4 text-onyx-600 dark:text-linen-400">
-                            {cust.city ? `${cust.city}, ${cust.province || 'Pakistan'}` : 'Pakistan'}
+                          <td className="py-3 px-4 text-onyx-700 dark:text-linen-300 max-w-md">
+                            {inq.message}
                           </td>
-                          <td className="py-3 px-4 font-bold">
-                            {cust.ordersCount || cust.orderHistory?.length || 1}
-                          </td>
-                          <td className="py-3 px-4 text-right font-mono font-bold text-olive-800 dark:text-camel-400">
-                            Rs. {(cust.totalSpent || 0).toLocaleString()}
+                          <td className="py-3 px-4 text-onyx-500 text-[11px]">
+                            {inq.createdAt ? new Date(inq.createdAt).toLocaleDateString('en-PK', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Recent'}
                           </td>
                         </tr>
                       ))}
@@ -1257,353 +1128,397 @@ export default function AdminDashboard({
                 </div>
               )}
             </div>
+          </div>
+        )}
 
-            {/* Inquiries Section */}
-            {inquiries.length > 0 && (
-              <div className="bg-white dark:bg-onyx-900 rounded-2xl border border-linen-300 dark:border-onyx-800 overflow-hidden shadow-sm">
-                <div className="p-5 border-b border-linen-200 dark:border-onyx-800">
-                  <h3 className="font-editorial text-lg font-bold text-onyx-950 dark:text-linen-50">
-                    Concierge Inquiries (MongoDB Collection: `inquiries`)
-                  </h3>
+        {/* =========================================================================
+            TAB 6: PALETTE & BRAND APPEARANCE
+        ========================================================================= */}
+        {activeTab === 'appearance' && (
+          <div className="max-w-2xl bg-white dark:bg-onyx-900 p-8 rounded-3xl border border-linen-300 dark:border-onyx-800 shadow-sm space-y-6 animate-fadeIn">
+            <div>
+              <h3 className="font-editorial text-2xl font-bold text-onyx-950 dark:text-white">
+                Store Branding & Palette Settings
+              </h3>
+              <p className="text-xs text-onyx-500 dark:text-linen-400 mt-0.5">
+                Customize brand headline and the four heritage colors
+              </p>
+            </div>
+
+            <form onSubmit={handleSaveAppearance} className="space-y-4 text-xs">
+              <div>
+                <label className="block font-bold text-onyx-800 dark:text-linen-200 mb-1">
+                  Brand Name
+                </label>
+                <input
+                  type="text"
+                  value={brandName}
+                  onChange={(e) => setBrandName(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-xl border border-linen-300 dark:border-onyx-700 bg-linen-50 dark:bg-onyx-800 text-xs font-bold text-onyx-950 dark:text-white"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block font-bold text-onyx-800 dark:text-linen-200 mb-1">
+                    Olive Tone (Primary)
+                  </label>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="color"
+                      value={oliveColor}
+                      onChange={(e) => setOliveColor(e.target.value)}
+                      className="w-9 h-8 rounded border border-linen-300 cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      value={oliveColor}
+                      onChange={(e) => setOliveColor(e.target.value)}
+                      className="flex-1 px-3 py-2 rounded-lg border border-linen-300 dark:border-onyx-700 font-mono text-xs"
+                    />
+                  </div>
                 </div>
-                <div className="p-5 space-y-4">
-                  {inquiries.map((inq) => (
-                    <div key={inq._id} className="p-4 rounded-xl bg-linen-50 dark:bg-onyx-850 border border-linen-200 dark:border-onyx-800 space-y-1.5 text-xs">
-                      <div className="flex justify-between items-center">
-                        <span className="font-bold text-sm text-onyx-950 dark:text-linen-100">{inq.name} ({inq.email})</span>
-                        <span className="text-[10px] text-onyx-400">{inq.createdAt ? new Date(inq.createdAt).toLocaleDateString() : 'Recent'}</span>
-                      </div>
-                      {inq.orderNumber && <p className="font-mono text-[11px] text-olive-700">Order Ref: {inq.orderNumber}</p>}
-                      <p className="text-onyx-700 dark:text-linen-300">{inq.message}</p>
-                    </div>
-                  ))}
+
+                <div>
+                  <label className="block font-bold text-onyx-800 dark:text-linen-200 mb-1">
+                    Camel Tone (Secondary Accent)
+                  </label>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="color"
+                      value={camelColor}
+                      onChange={(e) => setCamelColor(e.target.value)}
+                      className="w-9 h-8 rounded border border-linen-300 cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      value={camelColor}
+                      onChange={(e) => setCamelColor(e.target.value)}
+                      className="flex-1 px-3 py-2 rounded-lg border border-linen-300 dark:border-onyx-700 font-mono text-xs"
+                    />
+                  </div>
                 </div>
               </div>
-            )}
 
+              <button
+                type="submit"
+                className="w-full py-3 rounded-xl bg-olive-800 hover:bg-olive-900 text-white font-bold text-xs uppercase tracking-wider transition shadow-md"
+              >
+                Save Brand Palette
+              </button>
+            </form>
           </div>
         )}
 
       </main>
 
       {/* =========================================================================
-          FORME 2-COLUMN PRODUCT EDITOR MODAL
-          Left: Fields & Sliders
-          Right: Sticky Live Mannequin Preview
+          ADD / EDIT GARMENT MODAL (SAVES TO MONGODB ATLAS)
       ========================================================================= */}
-      {isEditorOpen && (
+      {isProductModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white dark:bg-onyx-900 rounded-2xl border border-linen-300 dark:border-onyx-800 max-w-4xl w-full max-h-[92vh] overflow-y-auto shadow-2xl p-6 sm:p-8">
-            
-            {/* Modal Heading */}
-            <div className="flex items-center justify-between pb-4 border-b border-linen-200 dark:border-onyx-800 mb-6">
+          <div className="bg-white dark:bg-onyx-900 rounded-3xl border border-linen-300 dark:border-onyx-800 max-w-xl w-full max-h-[92vh] overflow-y-auto shadow-2xl p-6 sm:p-8 animate-fadeIn">
+            <div className="flex items-center justify-between pb-4 border-b border-linen-200 dark:border-onyx-800 mb-5">
               <div>
-                <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-camel-700 dark:text-camel-400">
-                  THE STUDIO
+                <span className="text-[10px] uppercase font-bold tracking-widest text-camel-600 dark:text-camel-400">
+                  ATELIER CATALOG
                 </span>
-                <h2 className="font-editorial text-2xl sm:text-3xl font-bold text-onyx-950 dark:text-linen-50 mt-0.5">
-                  {editorMode === 'create' ? "Add a piece" : "Edit piece"}
-                </h2>
+                <h3 className="font-editorial text-2xl font-bold text-onyx-950 dark:text-white">
+                  {editingProductId ? "Edit Garment" : "Add New Garment to MongoDB"}
+                </h3>
               </div>
               <button
-                onClick={() => setIsEditorOpen(false)}
-                className="text-onyx-400 hover:text-onyx-900 dark:hover:text-white p-2 text-xl"
+                onClick={() => setIsProductModalOpen(false)}
+                className="text-onyx-400 hover:text-onyx-900 dark:hover:text-white text-xl p-1"
               >
                 ✕
               </button>
             </div>
 
-            {/* 2-Column Editor Layout */}
-            <form onSubmit={handleSubmitPiece}>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-                
-                {/* Left Column: Form Fields */}
-                <div className="space-y-4 text-xs">
-                  <div>
-                    <label className="block font-bold text-onyx-800 dark:text-linen-200 mb-1">
-                      Product Name
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      maxLength={70}
-                      value={formState.name}
-                      onChange={(e) => setFormState({ ...formState, name: e.target.value })}
-                      placeholder="e.g. The Weekend Linen Shirt"
-                      className="w-full bg-linen-50 dark:bg-onyx-800 border border-linen-300 dark:border-onyx-700 rounded p-2.5 text-xs text-onyx-950 dark:text-linen-50"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block font-bold text-onyx-800 dark:text-linen-200 mb-1">Collection</label>
-                      <select
-                        value={formState.person}
-                        onChange={(e) => setFormState({ ...formState, person: e.target.value })}
-                        className="w-full bg-linen-50 dark:bg-onyx-800 border border-linen-300 dark:border-onyx-700 rounded p-2 text-xs"
-                      >
-                        <option value="women">Women</option>
-                        <option value="men">Men</option>
-                        <option value="kids">Kids</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block font-bold text-onyx-800 dark:text-linen-200 mb-1">Category (Slot)</label>
-                      <select
-                        value={formState.slot}
-                        onChange={(e) => {
-                          const newSlot = e.target.value;
-                          const defaultStyle = FormeEngine.STYLES[newSlot]?.[0] || 'knit';
-                          setFormState({ ...formState, slot: newSlot, style: defaultStyle });
-                        }}
-                        className="w-full bg-linen-50 dark:bg-onyx-800 border border-linen-300 dark:border-onyx-700 rounded p-2 text-xs"
-                      >
-                        <option value="top">Top</option>
-                        <option value="bottom">Bottom</option>
-                        <option value="outer">Layer / Outerwear</option>
-                        <option value="dress">Dress</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block font-bold text-onyx-800 dark:text-linen-200 mb-1">Price in PKR (₨)</label>
-                      <input
-                        type="number"
-                        required
-                        min="0"
-                        max="200000"
-                        value={formState.price}
-                        onChange={(e) => setFormState({ ...formState, price: e.target.value })}
-                        className="w-full bg-linen-50 dark:bg-onyx-800 border border-linen-300 dark:border-onyx-700 rounded p-2 text-xs font-bold"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block font-bold text-onyx-800 dark:text-linen-200 mb-1">Colour Name</label>
-                      <input
-                        type="text"
-                        required
-                        value={formState.colorName}
-                        onChange={(e) => setFormState({ ...formState, colorName: e.target.value })}
-                        className="w-full bg-linen-50 dark:bg-onyx-800 border border-linen-300 dark:border-onyx-700 rounded p-2 text-xs"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block font-bold text-onyx-800 dark:text-linen-200 mb-1">Colour Hex</label>
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="color"
-                        value={formState.colorHex}
-                        onChange={(e) => setFormState({ ...formState, colorHex: e.target.value })}
-                        className="w-9 h-8 rounded border border-linen-300 cursor-pointer"
-                      />
-                      <input
-                        type="text"
-                        value={formState.colorHex}
-                        onChange={(e) => setFormState({ ...formState, colorHex: e.target.value })}
-                        className="flex-1 bg-linen-50 dark:bg-onyx-800 border border-linen-300 dark:border-onyx-700 rounded p-2 text-xs font-mono"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block font-bold text-onyx-800 dark:text-linen-200 mb-1">Short Description</label>
-                    <input
-                      type="text"
-                      maxLength={120}
-                      value={formState.description}
-                      onChange={(e) => setFormState({ ...formState, description: e.target.value })}
-                      placeholder="A relaxed layer for everyday dressing."
-                      className="w-full bg-linen-50 dark:bg-onyx-800 border border-linen-300 dark:border-onyx-700 rounded p-2 text-xs"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block font-bold text-onyx-800 dark:text-linen-200 mb-1">Preview Vector Style</label>
-                    <select
-                      value={formState.style}
-                      onChange={(e) => setFormState({ ...formState, style: e.target.value })}
-                      className="w-full bg-linen-50 dark:bg-onyx-800 border border-linen-300 dark:border-onyx-700 rounded p-2 text-xs"
-                    >
-                      {(FormeEngine.STYLES[formState.slot] || []).map((s) => (
-                        <option key={s} value={s}>{s.toUpperCase()}</option>
-                      ))}
-                      <option value="custom">★ Uploaded Garment Cutout Image</option>
-                    </select>
-                  </div>
-
-                  {/* Cutout Upload and Coordinate Sliders */}
-                  <div className="border border-dashed border-linen-300 dark:border-onyx-700 p-4 rounded-xl space-y-3 bg-linen-50/50 dark:bg-onyx-950">
-                    <strong className="block text-onyx-900 dark:text-linen-100">Upload Transparent Garment Image</strong>
-                    <span className="block text-[11px] text-onyx-500">Transparent PNG or WebP · Front facing cutout</span>
-                    <input
-                      type="file"
-                      accept="image/png,image/webp"
-                      onChange={handleImageCutoutUpload}
-                      className="text-xs"
-                    />
-
-                    {formState.style === 'custom' && (
-                      <div className="grid grid-cols-2 gap-3 pt-2">
-                        <div>
-                          <div className="flex justify-between text-[10px] mb-0.5">
-                            <span>Horizontal (X):</span>
-                            <strong>{formState.assetX}px</strong>
-                          </div>
-                          <input
-                            type="range"
-                            min="-100"
-                            max="300"
-                            value={formState.assetX}
-                            onChange={(e) => setFormState({ ...formState, assetX: Number(e.target.value) })}
-                            className="w-full"
-                          />
-                        </div>
-                        <div>
-                          <div className="flex justify-between text-[10px] mb-0.5">
-                            <span>Vertical (Y):</span>
-                            <strong>{formState.assetY}px</strong>
-                          </div>
-                          <input
-                            type="range"
-                            min="-50"
-                            max="600"
-                            value={formState.assetY}
-                            onChange={(e) => setFormState({ ...formState, assetY: Number(e.target.value) })}
-                            className="w-full"
-                          />
-                        </div>
-                        <div>
-                          <div className="flex justify-between text-[10px] mb-0.5">
-                            <span>Width:</span>
-                            <strong>{formState.assetWidth}px</strong>
-                          </div>
-                          <input
-                            type="range"
-                            min="50"
-                            max="500"
-                            value={formState.assetWidth}
-                            onChange={(e) => setFormState({ ...formState, assetWidth: Number(e.target.value) })}
-                            className="w-full"
-                          />
-                        </div>
-                        <div>
-                          <div className="flex justify-between text-[10px] mb-0.5">
-                            <span>Height:</span>
-                            <strong>{formState.assetHeight}px</strong>
-                          </div>
-                          <input
-                            type="range"
-                            min="50"
-                            max="600"
-                            value={formState.assetHeight}
-                            onChange={(e) => setFormState({ ...formState, assetHeight: Number(e.target.value) })}
-                            className="w-full"
-                          />
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                </div>
-
-                {/* Right Column: Sticky Live Mannequin Preview */}
-                <div className="sticky top-4 bg-gradient-to-b from-[#E7E8DC] to-[#D5D9C8] dark:from-[#2B3224] dark:to-[#1F2519] p-6 rounded-2xl border border-linen-300 dark:border-onyx-800 text-center flex flex-col items-center">
-                  <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-olive-800 dark:text-camel-300 mb-2">
-                    LIVE ALIGNMENT PREVIEW
-                  </span>
-
-                  <div
-                    className="w-full max-w-[280px] h-[400px] flex items-center justify-center filter drop-shadow-lg"
-                    dangerouslySetInnerHTML={{ __html: editorMannequinSvg }}
-                  />
-
-                  <p className="text-[11px] text-onyx-600 dark:text-linen-300 mt-3">
-                    Shown live on the <strong>{formState.person}</strong> mannequin form.
-                  </p>
-                </div>
-
+            <form onSubmit={handleSaveProduct} className="space-y-4 text-xs">
+              <div>
+                <label className="block font-bold text-onyx-800 dark:text-linen-200 mb-1">
+                  Garment Title *
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. The Heritage Double-Breasted Overcoat"
+                  value={productForm.name}
+                  onChange={(e) => setProductForm({ ...productForm, name: e.target.value })}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-linen-300 dark:border-onyx-700 bg-linen-50 dark:bg-onyx-800 text-xs font-bold text-onyx-950 dark:text-white"
+                />
               </div>
 
-              {/* Modal Footer */}
-              <div className="pt-6 mt-6 border-t border-linen-200 dark:border-onyx-800 flex items-center justify-end space-x-3">
+              {/* Department & Category */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-onyx-800 dark:text-linen-200 mb-1">
+                    Department (Gender) *
+                  </label>
+                  <select
+                    value={productForm.person}
+                    onChange={(e) => setProductForm({ ...productForm, person: e.target.value })}
+                    className="w-full px-3 py-2 rounded-xl border border-linen-300 dark:border-onyx-700 bg-linen-50 dark:bg-onyx-800 font-bold text-xs"
+                  >
+                    <option value="women">👩 Women's Collection</option>
+                    <option value="men">👨 Men's Collection</option>
+                    <option value="kids">👶 Kids Pret</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block font-bold text-onyx-800 dark:text-linen-200 mb-1">
+                    Category *
+                  </label>
+                  <select
+                    value={productForm.category}
+                    onChange={(e) => setProductForm({ ...productForm, category: e.target.value })}
+                    className="w-full px-3 py-2 rounded-xl border border-linen-300 dark:border-onyx-700 bg-linen-50 dark:bg-onyx-800 font-bold text-xs"
+                  >
+                    <option value="Outerwear">Outerwear</option>
+                    <option value="Knitwear">Knitwear</option>
+                    <option value="Women's Pret">Women's Pret</option>
+                    <option value="Men's Pret">Men's Pret</option>
+                    <option value="Kids Pret">Kids Pret</option>
+                    <option value="Dresses">Dresses</option>
+                    <option value="Accessories">Accessories</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Pricing in PKR */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-onyx-800 dark:text-linen-200 mb-1">
+                    Price in PKR (₨) *
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    min="100"
+                    value={productForm.price}
+                    onChange={(e) => setProductForm({ ...productForm, price: e.target.value })}
+                    className="w-full px-3 py-2 rounded-xl border border-linen-300 dark:border-onyx-700 bg-linen-50 dark:bg-onyx-800 font-bold text-xs"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-onyx-800 dark:text-linen-200 mb-1">
+                    Original / Strikethrough Price (₨)
+                  </label>
+                  <input
+                    type="number"
+                    value={productForm.originalPrice}
+                    onChange={(e) => setProductForm({ ...productForm, originalPrice: e.target.value })}
+                    className="w-full px-3 py-2 rounded-xl border border-linen-300 dark:border-onyx-700 bg-linen-50 dark:bg-onyx-800 font-bold text-xs"
+                  />
+                </div>
+              </div>
+
+              {/* Color Details */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-onyx-800 dark:text-linen-200 mb-1">
+                    Color Name
+                  </label>
+                  <input
+                    type="text"
+                    value={productForm.primaryColor}
+                    onChange={(e) => setProductForm({ ...productForm, primaryColor: e.target.value })}
+                    placeholder="e.g. Olive Green"
+                    className="w-full px-3 py-2 rounded-xl border border-linen-300 dark:border-onyx-700 bg-linen-50 dark:bg-onyx-800 text-xs"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-onyx-800 dark:text-linen-200 mb-1">
+                    Color Hex Code
+                  </label>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="color"
+                      value={productForm.colorHex}
+                      onChange={(e) => setProductForm({ ...productForm, colorHex: e.target.value })}
+                      className="w-8 h-8 rounded border border-linen-300 cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      value={productForm.colorHex}
+                      onChange={(e) => setProductForm({ ...productForm, colorHex: e.target.value })}
+                      className="flex-1 px-3 py-2 rounded-lg border border-linen-300 dark:border-onyx-700 font-mono text-xs"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Image URL */}
+              <div>
+                <label className="block font-bold text-onyx-800 dark:text-linen-200 mb-1">
+                  Product Image URL *
+                </label>
+                <input
+                  type="url"
+                  required
+                  placeholder="https://images.unsplash.com/photo-..."
+                  value={productForm.imageUrl}
+                  onChange={(e) => setProductForm({ ...productForm, imageUrl: e.target.value })}
+                  className="w-full px-3 py-2 rounded-xl border border-linen-300 dark:border-onyx-700 bg-linen-50 dark:bg-onyx-800 text-xs font-mono"
+                />
+                {productForm.imageUrl && (
+                  <div className="mt-2 w-16 h-20 rounded-lg overflow-hidden border border-linen-300 dark:border-onyx-700">
+                    <img src={productForm.imageUrl} alt="Preview" className="w-full h-full object-cover" />
+                  </div>
+                )}
+              </div>
+
+              {/* Stock Quantity Per Size */}
+              <div>
+                <label className="block font-bold text-onyx-800 dark:text-linen-200 mb-1">
+                  Available Stock per Size:
+                </label>
+                <div className="grid grid-cols-5 gap-2 text-center">
+                  {['XS', 'S', 'M', 'L', 'XL'].map((size) => (
+                    <div key={size}>
+                      <span className="block font-mono text-[10px] text-onyx-500 mb-1">{size}</span>
+                      <input
+                        type="number"
+                        min="0"
+                        value={productForm[`stock${size}`]}
+                        onChange={(e) => setProductForm({ ...productForm, [`stock${size}`]: e.target.value })}
+                        className="w-full text-center px-1 py-1.5 rounded-lg border border-linen-300 dark:border-onyx-700 bg-linen-50 dark:bg-onyx-800 font-bold text-xs"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Short Description */}
+              <div>
+                <label className="block font-bold text-onyx-800 dark:text-linen-200 mb-1">
+                  Description
+                </label>
+                <textarea
+                  rows={2}
+                  value={productForm.description}
+                  onChange={(e) => setProductForm({ ...productForm, description: e.target.value })}
+                  className="w-full px-3 py-2 rounded-xl border border-linen-300 dark:border-onyx-700 bg-linen-50 dark:bg-onyx-800 text-xs"
+                />
+              </div>
+
+              <div className="pt-2 flex justify-end space-x-3">
                 <button
                   type="button"
-                  onClick={() => setIsEditorOpen(false)}
-                  className="px-5 py-2.5 rounded text-xs font-semibold text-onyx-700 dark:text-linen-300 hover:bg-linen-100 dark:hover:bg-onyx-800"
+                  onClick={() => setIsProductModalOpen(false)}
+                  className="px-4 py-2.5 rounded-xl border border-linen-300 dark:border-onyx-700 text-xs font-bold text-onyx-700 dark:text-linen-300"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="bg-olive-800 hover:bg-olive-900 text-white font-bold text-xs uppercase tracking-wider px-6 py-2.5 rounded shadow transition active:scale-95"
+                  className="px-6 py-2.5 rounded-xl bg-olive-800 hover:bg-olive-900 text-white text-xs font-bold uppercase tracking-wider shadow-md"
                 >
-                  Save piece ✓
+                  Save Garment to Database
                 </button>
               </div>
-
             </form>
-
           </div>
         </div>
       )}
 
-      {/* Guide Dialog (Fully Scrollable) */}
-      {isGuideOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white dark:bg-onyx-900 rounded-2xl border border-linen-300 dark:border-onyx-800 max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 space-y-4 scrollbar-thin">
-            <h2 className="font-editorial text-2xl font-bold">A home for your wardrobe.</h2>
-            <ol className="text-xs space-y-3 text-onyx-600 dark:text-linen-300 list-decimal pl-4">
-              <li><strong>Add your pieces:</strong> Use the Studio to add products. Pick built-in shapes or upload transparent cutouts with coordinate alignment.</li>
-              <li><strong>Export your catalog:</strong> Download products.json. It contains all garments, placements, and color palettes.</li>
-              <li><strong>Try on the model:</strong> Click "Try on Model" from any row to instantly see it draped on the storefront 2D mannequin!</li>
-              <li><strong>Pakistani Gateways:</strong> Seamlessly process Cash on Delivery (COD), Credit Cards (3D Secure), JazzCash, and EasyPaisa.</li>
-            </ol>
-            <button
-              onClick={() => setIsGuideOpen(false)}
-              className="w-full bg-olive-800 hover:bg-olive-900 text-white font-bold text-xs uppercase py-3 rounded transition"
-            >
-              Got it ✓
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Order Detail Modal (Fully Scrollable) */}
+      {/* =========================================================================
+          ORDER DETAILS INSPECTION MODAL
+      ========================================================================= */}
       {selectedOrderDetails && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white dark:bg-onyx-900 rounded-2xl border border-linen-300 dark:border-onyx-800 max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 space-y-4 text-xs scrollbar-thin">
-            <div className="flex justify-between items-center border-b pb-3">
-              <h3 className="font-editorial text-lg font-bold">Order Details: {selectedOrderDetails.orderNumber}</h3>
-              <button onClick={() => setSelectedOrderDetails(null)} className="text-lg p-1 hover:text-camel-500">✕</button>
+          <div className="bg-white dark:bg-onyx-900 rounded-3xl border border-linen-300 dark:border-onyx-800 max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl p-6 sm:p-8 animate-fadeIn">
+            <div className="flex items-center justify-between pb-4 border-b border-linen-200 dark:border-onyx-800 mb-4">
+              <div>
+                <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-camel-600">
+                  ORDER SPECIFICATION
+                </span>
+                <h3 className="font-editorial text-2xl font-bold text-onyx-950 dark:text-white">
+                  {selectedOrderDetails.orderNumber || selectedOrderDetails.id}
+                </h3>
+              </div>
+              <button
+                onClick={() => setSelectedOrderDetails(null)}
+                className="text-onyx-400 hover:text-onyx-900 dark:hover:text-white text-xl p-1"
+              >
+                ✕
+              </button>
             </div>
-            <div>
-              <strong>Customer:</strong> {selectedOrderDetails.customer?.firstName} {selectedOrderDetails.customer?.lastName}<br />
-              <strong>Phone:</strong> {selectedOrderDetails.customer?.phone}<br />
-              <strong>Address:</strong> {selectedOrderDetails.customer?.address}, {selectedOrderDetails.customer?.city}<br />
-              <strong>Payment Gateway:</strong> {selectedOrderDetails.paymentMethod?.toUpperCase()}<br />
-              <strong>Total:</strong> Rs. {(selectedOrderDetails.pricing?.finalTotal || selectedOrderDetails.amount || 0).toLocaleString()}
-            </div>
-            <div className="border-t pt-3 space-y-1">
-              <strong>Items:</strong>
-              {selectedOrderDetails.items?.map((it, idx) => (
-                <div key={idx} className="flex justify-between">
-                  <span>{it.product?.name || "Garment"} ({it.size || "M"} / {it.color || "Standard"}) × {it.quantity || 1}</span>
-                  <span className="font-bold">Rs. {((it.product?.price || 0) * (it.quantity || 1)).toLocaleString()}</span>
+
+            <div className="space-y-4 text-xs">
+              {/* Customer Info Card */}
+              <div className="p-3.5 rounded-2xl bg-linen-100 dark:bg-onyx-850 space-y-1">
+                <div className="font-bold text-onyx-900 dark:text-white">
+                  👤 Client: {selectedOrderDetails.customer?.firstName} {selectedOrderDetails.customer?.lastName}
                 </div>
-              ))}
+                <div>Email: <span className="font-mono">{selectedOrderDetails.customer?.email}</span></div>
+                <div>Phone: <span className="font-mono font-bold text-olive-800 dark:text-camel-400">{selectedOrderDetails.customer?.phone}</span></div>
+                <div>Address: {selectedOrderDetails.customer?.address}, {selectedOrderDetails.customer?.city}</div>
+                {selectedOrderDetails.customer?.orderNotes && (
+                  <div className="pt-1 text-onyx-500 italic">Notes: "{selectedOrderDetails.customer?.orderNotes}"</div>
+                )}
+              </div>
+
+              {/* Items List */}
+              <div>
+                <span className="font-bold uppercase tracking-wider text-[10px] text-onyx-500">
+                  Ordered Items:
+                </span>
+                <div className="mt-2 divide-y divide-linen-200 dark:divide-onyx-800 border border-linen-200 dark:border-onyx-800 rounded-xl overflow-hidden">
+                  {(selectedOrderDetails.items || []).map((item, idx) => (
+                    <div key={idx} className="p-3 flex items-center justify-between">
+                      <div>
+                        <strong className="block text-onyx-900 dark:text-white">{item.name}</strong>
+                        <span className="text-[11px] text-onyx-500">
+                          Size: {item.size || item.selectedSize} • Color: {item.color || item.selectedColor} • Qty: {item.quantity || 1}
+                        </span>
+                      </div>
+                      <span className="font-bold text-olive-800 dark:text-camel-400">
+                        Rs. {(item.price * (item.quantity || 1)).toLocaleString()}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Order Pricing Summary */}
+              <div className="p-3.5 rounded-2xl bg-linen-50 dark:bg-onyx-800 border border-linen-200 dark:border-onyx-700 flex items-center justify-between">
+                <div>
+                  <span className="text-[10px] uppercase font-bold text-onyx-500">Payment Gateway</span>
+                  <div className="font-bold uppercase font-mono">{selectedOrderDetails.paymentMethod}</div>
+                </div>
+                <div className="text-right">
+                  <span className="text-[10px] uppercase font-bold text-onyx-500">Payable Total</span>
+                  <div className="text-base font-black text-olive-800 dark:text-camel-400">
+                    Rs. {Number(selectedOrderDetails.total || selectedOrderDetails.pricing?.finalTotal || 0).toLocaleString()}
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-2">
+                <label className="block font-bold text-onyx-700 dark:text-linen-300 mb-1">
+                  Change Fulfillment Status:
+                </label>
+                <select
+                  value={selectedOrderDetails.status || 'processing'}
+                  onChange={(e) => {
+                    handleStatusChange(selectedOrderDetails.id || selectedOrderDetails.orderNumber, e.target.value);
+                    setSelectedOrderDetails({ ...selectedOrderDetails, status: e.target.value });
+                  }}
+                  className="w-full px-3 py-2.5 rounded-xl border border-linen-300 dark:border-onyx-700 bg-linen-50 dark:bg-onyx-800 font-bold"
+                >
+                  <option value="pending">Pending</option>
+                  <option value="processing">Processing</option>
+                  <option value="dispatched">Dispatched</option>
+                  <option value="delivered">Delivered</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
+              </div>
             </div>
-            <button
-              onClick={() => setSelectedOrderDetails(null)}
-              className="w-full bg-olive-800 hover:bg-olive-900 text-white font-bold py-2 rounded uppercase text-xs transition"
-            >
-              Close
-            </button>
           </div>
         </div>
       )}

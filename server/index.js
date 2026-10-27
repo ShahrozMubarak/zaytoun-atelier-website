@@ -39,14 +39,21 @@ app.use(async (req, res, next) => {
   next();
 });
 
-// Helper: Seed initial products if MongoDB collection is empty
+// Helper: Seed or sync initial products if MongoDB collection is empty or incomplete
 const seedProductsIfEmpty = async () => {
   try {
     const count = await Product.countDocuments();
-    if (count === 0) {
-      console.log('🌱 [MongoDB] Seeding initial luxury products into database...');
-      await Product.insertMany(SEED_PRODUCTS);
-      console.log(`✅ [MongoDB] Successfully seeded ${SEED_PRODUCTS.length} products!`);
+    if (count < 20) {
+      console.log(`🌱 [MongoDB] Syncing full luxury catalog into database (${count} currently in DB)...`);
+      for (const prod of SEED_PRODUCTS) {
+        await Product.findOneAndUpdate(
+          { id: prod.id },
+          { $set: prod },
+          { upsert: true, returnDocument: 'after' }
+        );
+      }
+      const updatedCount = await Product.countDocuments();
+      console.log(`✅ [MongoDB] Successfully synced full catalog! Total products in MongoDB Atlas: ${updatedCount}`);
     }
   } catch (err) {
     console.warn('⚠️ [MongoDB] Auto-seed note:', err.message);
@@ -194,6 +201,9 @@ app.get('/api/health', (req, res) => {
 app.get('/api/products', async (req, res) => {
   try {
     if (!isDBConnected()) {
+      await connectDB();
+    }
+    if (!isDBConnected()) {
       return res.status(503).json({
         error: 'MongoDB not connected yet.',
         fallback: true
@@ -209,6 +219,9 @@ app.get('/api/products', async (req, res) => {
 // Protected: Add/Update Product in Studio (Requires JWT + Joi Validation)
 app.post('/api/products', requireAdminAuth, validateProduct, async (req, res) => {
   try {
+    if (!isDBConnected()) {
+      await connectDB();
+    }
     if (!isDBConnected()) {
       return res.status(503).json({ error: 'MongoDB not connected' });
     }
@@ -232,6 +245,9 @@ app.post('/api/products', requireAdminAuth, validateProduct, async (req, res) =>
 app.put('/api/products/:id', requireAdminAuth, validateProduct, async (req, res) => {
   try {
     if (!isDBConnected()) {
+      await connectDB();
+    }
+    if (!isDBConnected()) {
       return res.status(503).json({ error: 'MongoDB not connected' });
     }
     const updated = await Product.findOneAndUpdate(
@@ -250,6 +266,9 @@ app.put('/api/products/:id', requireAdminAuth, validateProduct, async (req, res)
 app.delete('/api/products/:id', requireAdminAuth, async (req, res) => {
   try {
     if (!isDBConnected()) {
+      await connectDB();
+    }
+    if (!isDBConnected()) {
       return res.status(503).json({ error: 'MongoDB not connected' });
     }
     const result = await Product.findOneAndDelete({ id: req.params.id });
@@ -267,6 +286,9 @@ app.delete('/api/products/:id', requireAdminAuth, async (req, res) => {
 app.get('/api/orders', requireAdminAuth, async (req, res) => {
   try {
     if (!isDBConnected()) {
+      await connectDB();
+    }
+    if (!isDBConnected()) {
       return res.status(503).json({ error: 'MongoDB not connected' });
     }
     const orders = await Order.find().sort({ createdAt: -1 });
@@ -279,6 +301,9 @@ app.get('/api/orders', requireAdminAuth, async (req, res) => {
 // Public: Customer tracking by Order Number
 app.get('/api/orders/:orderNumber', async (req, res) => {
   try {
+    if (!isDBConnected()) {
+      await connectDB();
+    }
     if (!isDBConnected()) {
       return res.status(503).json({ error: 'MongoDB not connected' });
     }
@@ -372,6 +397,9 @@ app.post('/api/orders', validateOrder, async (req, res) => {
 app.patch('/api/orders/:id/status', requireAdminAuth, async (req, res) => {
   try {
     if (!isDBConnected()) {
+      await connectDB();
+    }
+    if (!isDBConnected()) {
       return res.status(503).json({ error: 'MongoDB not connected' });
     }
     const { status } = req.body;
@@ -401,6 +429,9 @@ app.patch('/api/orders/:id/status', requireAdminAuth, async (req, res) => {
 app.get('/api/customers', requireAdminAuth, async (req, res) => {
   try {
     if (!isDBConnected()) {
+      await connectDB();
+    }
+    if (!isDBConnected()) {
       return res.status(503).json({ error: 'MongoDB not connected' });
     }
     const customers = await Customer.find().sort({ updatedAt: -1 });
@@ -414,7 +445,10 @@ app.get('/api/customers', requireAdminAuth, async (req, res) => {
 app.post('/api/subscribers', validateSubscriber, async (req, res) => {
   try {
     if (!isDBConnected()) {
-      return res.status(503).json({ error: 'MongoDB not connected' });
+      await connectDB();
+    }
+    if (!isDBConnected()) {
+      return res.status(503).json({ error: 'MongoDB database is connecting. Please retry.' });
     }
     const { email, source } = req.body;
     const cleanEmail = email.toLowerCase().trim();
@@ -447,6 +481,9 @@ app.post('/api/subscribers', validateSubscriber, async (req, res) => {
 app.get('/api/subscribers', requireAdminAuth, async (req, res) => {
   try {
     if (!isDBConnected()) {
+      await connectDB();
+    }
+    if (!isDBConnected()) {
       return res.status(503).json({ error: 'MongoDB not connected' });
     }
     const subscribers = await Subscriber.find().sort({ createdAt: -1 });
@@ -459,6 +496,9 @@ app.get('/api/subscribers', requireAdminAuth, async (req, res) => {
 // Protected: Remove a subscriber (Requires JWT)
 app.delete('/api/subscribers/:id', requireAdminAuth, async (req, res) => {
   try {
+    if (!isDBConnected()) {
+      await connectDB();
+    }
     if (!isDBConnected()) {
       return res.status(503).json({ error: 'MongoDB not connected' });
     }
@@ -476,6 +516,9 @@ app.delete('/api/subscribers/:id', requireAdminAuth, async (req, res) => {
 // Public: Contact form submission (Protected by Joi Schema validation)
 app.post('/api/inquiries', validateInquiry, async (req, res) => {
   try {
+    if (!isDBConnected()) {
+      await connectDB();
+    }
     if (!isDBConnected()) {
       return res.status(503).json({ error: 'MongoDB not connected' });
     }
@@ -503,6 +546,9 @@ app.post('/api/inquiries', validateInquiry, async (req, res) => {
 app.get('/api/inquiries', requireAdminAuth, async (req, res) => {
   try {
     if (!isDBConnected()) {
+      await connectDB();
+    }
+    if (!isDBConnected()) {
       return res.status(503).json({ error: 'MongoDB not connected' });
     }
     const inquiries = await Inquiry.find().sort({ createdAt: -1 });
@@ -520,6 +566,9 @@ app.get('/api/inquiries', requireAdminAuth, async (req, res) => {
 app.get('/api/theme', async (req, res) => {
   try {
     if (!isDBConnected()) {
+      await connectDB();
+    }
+    if (!isDBConnected()) {
       return res.status(503).json({ error: 'MongoDB not connected' });
     }
     const config = await ThemeConfig.findOne().sort({ updatedAt: -1 });
@@ -536,6 +585,9 @@ app.get('/api/theme', async (req, res) => {
 // Protected: Update brand appearance (Requires JWT)
 app.post('/api/theme', requireAdminAuth, async (req, res) => {
   try {
+    if (!isDBConnected()) {
+      await connectDB();
+    }
     if (!isDBConnected()) {
       return res.status(503).json({ error: 'MongoDB not connected' });
     }

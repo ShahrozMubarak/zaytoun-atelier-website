@@ -165,16 +165,16 @@ export default function ProductCard({
         </p>
       </div>
 
-      {/* Product Action Div: Desert Camel Price + Strikethrough + [ 🛒 Buy Now ] in Olive Green */}
-      <div className="mt-auto pt-2.5 flex items-center justify-between gap-1.5 border-t border-linen-200 dark:border-onyx-800">
+      {/* Product Action Div: Responsive for Mobile 2-column & Desktop */}
+      <div className="mt-auto pt-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-t border-linen-200 dark:border-onyx-800">
         
         {/* Price Column */}
-        <div className="flex items-baseline space-x-1.5">
-          <span className="font-sans text-sm sm:text-base font-black text-camel-600 dark:text-camel-300 tracking-tight">
+        <div className="flex items-baseline space-x-1.5 min-w-0">
+          <span className="font-sans text-xs sm:text-base font-black text-camel-600 dark:text-camel-300 tracking-tight truncate">
             {formatPrice(product.price)}
           </span>
           {product.originalPrice && product.originalPrice > product.price && (
-            <span className="font-sans text-[11px] text-neutral-400 dark:text-neutral-500 line-through font-normal">
+            <span className="font-sans text-[10px] sm:text-[11px] text-neutral-400 dark:text-neutral-500 line-through font-normal truncate">
               {formatPrice(product.originalPrice)}
             </span>
           )}
@@ -183,10 +183,10 @@ export default function ProductCard({
         {/* [ 🛒 Buy Now ] Pill Button in Brand Olive Green with Camel Border Accent */}
         <button
           onClick={handleBuyNow}
-          className={`px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-full text-[11px] sm:text-xs font-bold uppercase tracking-wider transition-all duration-300 shadow-sm flex items-center space-x-1.5 active:scale-95 whitespace-nowrap border ${
+          className={`w-full sm:w-auto justify-center px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all duration-300 shadow-sm flex items-center space-x-1 active:scale-95 whitespace-nowrap border ${
             justAdded
-              ? 'bg-camel-500 text-onyx-950 border-camel-400 shadow-camel-500/30 scale-105'
-              : 'bg-olive-700 hover:bg-olive-800 text-white border-camel-400/40 hover:border-camel-400 shadow-olive-900/20 hover:scale-105 hover:shadow-md'
+              ? 'bg-camel-500 text-onyx-950 border-camel-400 shadow-camel-500/30 scale-[1.02]'
+              : 'bg-olive-700 hover:bg-olive-800 text-white border-camel-400/40 hover:border-camel-400 shadow-olive-900/20 hover:scale-[1.02] hover:shadow-md'
           }`}
           title={`Buy ${product.name}`}
         >

@@ -89,7 +89,7 @@ export async function syncGoogleClientToDB(userData) {
  */
 export async function checkServerStatus() {
   try {
-    const res = await fetch(`${API_BASE}/health`, { signal: AbortSignal.timeout(2000) });
+    const res = await fetch(`${API_BASE}/health`, { signal: AbortSignal.timeout(6000) });
     if (!res.ok) throw new Error('Server not responding');
     return await res.json();
   } catch {
@@ -102,7 +102,7 @@ export async function checkServerStatus() {
  */
 export async function fetchProductsFromDB() {
   try {
-    const res = await fetch(`${API_BASE}/products`, { signal: AbortSignal.timeout(3000) });
+    const res = await fetch(`${API_BASE}/products`, { signal: AbortSignal.timeout(8000) });
     if (!res.ok) throw new Error('API unavailable');
     const data = await res.json();
     if (Array.isArray(data) && data.length > 0) {
@@ -157,7 +157,7 @@ export async function fetchOrdersFromDB() {
   try {
     const res = await fetch(`${API_BASE}/orders`, {
       headers: getAuthHeaders(),
-      signal: AbortSignal.timeout(3000)
+      signal: AbortSignal.timeout(8000)
     });
     if (!res.ok) throw new Error('API unavailable');
     const data = await res.json();
@@ -177,7 +177,7 @@ export async function fetchOrdersFromDB() {
 export async function fetchOrderByNumber(orderNumber) {
   try {
     const res = await fetch(`${API_BASE}/orders/${encodeURIComponent(orderNumber)}`, {
-      signal: AbortSignal.timeout(3000)
+      signal: AbortSignal.timeout(8000)
     });
     if (res.ok) return await res.json();
   } catch {
@@ -235,7 +235,7 @@ export async function updateOrderStatusInDB(orderId, status) {
  */
 export async function fetchThemeFromDB() {
   try {
-    const res = await fetch(`${API_BASE}/theme`, { signal: AbortSignal.timeout(2000) });
+    const res = await fetch(`${API_BASE}/theme`, { signal: AbortSignal.timeout(6000) });
     if (res.ok) {
       const data = await res.json();
       if (data && data.brand) return data;
@@ -292,7 +292,7 @@ export async function fetchSubscribersFromDB() {
   try {
     const res = await fetch(`${API_BASE}/subscribers`, {
       headers: getAuthHeaders(),
-      signal: AbortSignal.timeout(3000)
+      signal: AbortSignal.timeout(8000)
     });
     if (res.ok) return await res.json();
   } catch {
@@ -320,7 +320,7 @@ export async function fetchCustomersFromDB() {
   try {
     const res = await fetch(`${API_BASE}/customers`, {
       headers: getAuthHeaders(),
-      signal: AbortSignal.timeout(3000)
+      signal: AbortSignal.timeout(8000)
     });
     if (res.ok) return await res.json();
   } catch {
@@ -356,7 +356,7 @@ export async function fetchInquiriesFromDB() {
   try {
     const res = await fetch(`${API_BASE}/inquiries`, {
       headers: getAuthHeaders(),
-      signal: AbortSignal.timeout(3000)
+      signal: AbortSignal.timeout(8000)
     });
     if (res.ok) return await res.json();
   } catch {
