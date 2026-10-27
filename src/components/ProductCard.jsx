@@ -26,10 +26,12 @@ export default function ProductCard({
   const handleBuyNow = (e) => {
     e.stopPropagation();
     if (onAddToCart) {
-      onAddToCart(product, selectedSize, selectedColor);
+      const added = onAddToCart(product, selectedSize, selectedColor);
+      if (added !== false) {
+        setJustAdded(true);
+        setTimeout(() => setJustAdded(false), 1600);
+      }
     }
-    setJustAdded(true);
-    setTimeout(() => setJustAdded(false), 1600);
   };
 
   const primaryImage =

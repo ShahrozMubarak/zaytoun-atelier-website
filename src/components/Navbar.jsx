@@ -11,14 +11,19 @@ export default function Navbar({
   onOpenCart,
   theme,
   onToggleTheme,
-  brandName = "ZAYTOUN"
+  brandName = "ZAYTOUN",
+  user = null,
+  onOpenAuthModal,
+  onLogout
 }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const location = useLocation();
   const { currency, setCurrency } = useCurrency();
 
   useEffect(() => {
     setMobileMenuOpen(false);
+    setUserMenuOpen(false);
   }, [location.pathname]);
 
   // Bold navigation link style with Desert Camel active indicator
@@ -62,7 +67,7 @@ export default function Navbar({
         </nav>
 
         {/* Right Header Utilities */}
-        <div className="flex items-center space-x-3 sm:space-x-5 text-sm text-black dark:text-white">
+        <div className="flex items-center space-x-2 sm:space-x-4 text-sm text-black dark:text-white">
           
           {/* Currency Switcher */}
           <button
@@ -96,7 +101,81 @@ export default function Navbar({
             )}
           </button>
 
-          {/* Shopping Bag Pill Button (Clean & Bold with Cart Icon) */}
+          {/* Google Sign In / User Profile */}
+          {!user ? (
+            <button
+              onClick={() => onOpenAuthModal && onOpenAuthModal({ title: "Sign in with Google", subtitle: "Access your saved bag, couture orders, and concierge." })}
+              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-full border border-neutral-300 dark:border-onyx-700 hover:border-camel-500 dark:hover:border-camel-500 bg-white dark:bg-onyx-900 text-xs font-bold transition-all shadow-sm hover:shadow active:scale-95 text-neutral-800 dark:text-white"
+              title="Sign in with Google"
+            >
+              <svg className="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
+              </svg>
+              <span className="hidden sm:inline">Sign In</span>
+            </button>
+          ) : (
+            <div className="relative">
+              <button
+                onClick={() => setUserMenuOpen(!userMenuOpen)}
+                className="flex items-center space-x-1.5 p-1 pl-1.5 pr-2.5 rounded-full border border-camel-400/50 dark:border-camel-500/40 hover:border-camel-500 bg-linen-50 dark:bg-onyx-900 transition-all text-xs font-bold text-neutral-900 dark:text-white"
+                title={`Signed in as ${user.name}`}
+              >
+                <img
+                  src={user.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(user.name)}`}
+                  alt={user.name}
+                  className="w-6 h-6 rounded-full object-cover border border-camel-400/60"
+                />
+                <span className="max-w-[70px] sm:max-w-[110px] truncate text-left">{user.firstName || user.name}</span>
+                <svg className="w-3 h-3 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              {/* User Dropdown Menu */}
+              {userMenuOpen && (
+                <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-white dark:bg-onyx-950 border border-neutral-200 dark:border-onyx-800 shadow-2xl py-2 z-50 animate-fadeIn">
+                  <div className="px-4 py-2.5 border-b border-neutral-100 dark:border-onyx-800">
+                    <p className="font-bold text-neutral-900 dark:text-white truncate">{user.name}</p>
+                    <p className="text-[11px] text-neutral-500 dark:text-neutral-400 truncate">{user.email}</p>
+                    <span className="inline-flex items-center space-x-1.5 mt-1 px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/40 text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                      <span>Google Verified</span>
+                    </span>
+                  </div>
+
+                  <Link
+                    to="/track"
+                    onClick={() => setUserMenuOpen(false)}
+                    className="block px-4 py-2.5 text-xs text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-onyx-900 transition flex items-center justify-between"
+                  >
+                    <span>Track My Orders</span>
+                    <svg className="w-3.5 h-3.5 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </Link>
+
+                  <div className="border-t border-neutral-100 dark:border-onyx-800 my-1"></div>
+
+                  <button
+                    onClick={() => {
+                      setUserMenuOpen(false);
+                      if (onLogout) onLogout();
+                    }}
+                    className="w-full text-left px-4 py-2 text-xs text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition flex items-center justify-between"
+                  >
+                    <span>Sign Out</span>
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Shopping Bag Pill Button (Signature Olive & Camel) */}
           <button
             onClick={onOpenCart}
@@ -135,6 +214,47 @@ export default function Navbar({
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
         <div className="md:hidden bg-white dark:bg-onyx-950 border-t border-neutral-200 dark:border-onyx-800 px-6 py-6 space-y-4 font-bold uppercase text-sm">
+          {user ? (
+            <div className="p-3.5 rounded-2xl bg-linen-100 dark:bg-onyx-900 border border-neutral-200 dark:border-onyx-800 mb-2">
+              <div className="flex items-center space-x-3 mb-2">
+                <img
+                  src={user.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(user.name)}`}
+                  alt={user.name}
+                  className="w-10 h-10 rounded-full object-cover border border-camel-400"
+                />
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-bold text-neutral-900 dark:text-white truncate">{user.name}</p>
+                  <p className="text-[11px] text-neutral-500 truncate normal-case">{user.email}</p>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  if (onLogout) onLogout();
+                }}
+                className="w-full py-2 rounded-xl text-center text-xs font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 hover:bg-red-100"
+              >
+                Sign Out
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => {
+                setMobileMenuOpen(false);
+                if (onOpenAuthModal) onOpenAuthModal({ title: "Sign in with Google" });
+              }}
+              className="w-full py-3 px-4 rounded-xl bg-white dark:bg-onyx-900 border-2 border-neutral-300 dark:border-onyx-700 text-xs font-bold flex items-center justify-center space-x-2 shadow-sm"
+            >
+              <svg className="w-4 h-4" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
+              </svg>
+              <span>Sign in with Google</span>
+            </button>
+          )}
+
           <NavLink to="/shop?cat=women" className="block text-black dark:text-white py-1">
             Women
           </NavLink>

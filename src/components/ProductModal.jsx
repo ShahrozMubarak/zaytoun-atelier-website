@@ -31,11 +31,13 @@ export default function ProductModal({
   const currentStock = product.stockPerSize?.[selectedSize] || 6;
 
   const handleAddToCart = () => {
-    onAddToCart(product, selectedSize, selectedColor, quantity);
-    setIsAdded(true);
-    setTimeout(() => {
-      setIsAdded(false);
-    }, 1800);
+    const result = onAddToCart(product, selectedSize, selectedColor, quantity);
+    if (result !== false) {
+      setIsAdded(true);
+      setTimeout(() => {
+        setIsAdded(false);
+      }, 1800);
+    }
   };
 
   return (

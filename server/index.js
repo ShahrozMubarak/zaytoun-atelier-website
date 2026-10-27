@@ -1,6 +1,11 @@
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 import { connectDB, isDBConnected, getMongoURI } from './db.js';
 import Product from './models/Product.js';
 import Order from './models/Order.js';
@@ -84,6 +89,63 @@ app.get('/api/auth/verify', requireAdminAuth, (req, res) => {
     valid: true,
     admin: req.admin
   });
+});
+
+/**
+ * Client Google Authentication & MongoDB Sync
+ * Upserts customer record when a shopper signs in with Google
+ */
+app.post('/api/auth/google-client', async (req, res) => {
+  try {
+    const { name, email, avatar, googleId } = req.body;
+    if (!email) {
+      return res.status(400).json({ error: 'Email is required.' });
+    }
+
+    const cleanEmail = email.toLowerCase().trim();
+    const parts = (name || '').trim().split(' ');
+    const firstName = parts[0] || 'Client';
+    const lastName = parts.slice(1).join(' ') || '';
+
+    let customer = null;
+    if (isDBConnected()) {
+      customer = await Customer.findOneAndUpdate(
+        { email: cleanEmail },
+        {
+          $setOnInsert: {
+            email: cleanEmail,
+            ordersCount: 0,
+            totalSpent: 0,
+            orderHistory: []
+          },
+          $set: {
+            name: name || cleanEmail.split('@')[0],
+            firstName,
+            lastName
+          }
+        },
+        { upsert: true, returnDocument: 'after' }
+      );
+      console.log(`👤 [MongoDB] Google shopper synced: ${cleanEmail}`);
+    }
+
+    res.json({
+      success: true,
+      user: {
+        email: cleanEmail,
+        name: name || cleanEmail.split('@')[0],
+        firstName,
+        lastName,
+        avatar: avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name || cleanEmail)}`,
+        googleId: googleId || '',
+        authProvider: 'google',
+        syncedToDB: Boolean(customer)
+      }
+    });
+  } catch (err) {
+    console.warn('⚠️ [MongoDB] Error syncing Google client:', err.message);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 /**
@@ -462,6 +524,20 @@ app.post('/api/theme', requireAdminAuth, async (req, res) => {
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
+});
+
+// Serve static client assets in production
+const distPath = path.join(__dirname, '../dist');
+app.use(express.static(distPath));
+
+// For non-API routes, fallback to index.html for client-side routing
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api')) {
+    return next();
+  }
+  res.sendFile(path.join(distPath, 'index.html'), (err) => {
+    if (err) next();
+  });
 });
 
 // Start Server

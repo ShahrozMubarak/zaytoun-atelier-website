@@ -20,6 +20,7 @@ import SizeGuideModal from './components/SizeGuideModal';
 import FabricTextureModal from './components/FabricTextureModal';
 import SearchOverlay from './components/SearchOverlay';
 import BackToTop from './components/BackToTop';
+import GoogleAuthModal from './components/GoogleAuthModal';
 
 // Pages
 import HomePage from './pages/HomePage';
@@ -28,6 +29,7 @@ import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
 import StudioPage from './pages/StudioPage';
 import OrderTrackingPage from './pages/OrderTrackingPage';
+import GoogleAuthCallbackPage from './pages/GoogleAuthCallbackPage';
 
 export default function App() {
   // Theme Mode: 'light' | 'dark'
@@ -259,6 +261,103 @@ export default function App() {
     }
   }, [orders]);
 
+  // Client Google User State
+  const [currentUser, setCurrentUser] = useState(() => {
+    try {
+      const saved = localStorage.getItem('zaytoun_client_user');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      if (currentUser) {
+        localStorage.setItem('zaytoun_client_user', JSON.stringify(currentUser));
+      } else {
+        localStorage.removeItem('zaytoun_client_user');
+      }
+    } catch (e) {
+      console.warn("Client user storage error:", e);
+    }
+  }, [currentUser]);
+
+  // Google Auth Modal State
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authModalConfig, setAuthModalConfig] = useState({
+    title: "Sign in with Google to Add to Bag",
+    subtitle: "To curate your luxury wardrobe and place orders, please sign in with your Google account.",
+    pendingItem: null
+  });
+
+  // Toast Notification state
+  const [toastNotification, setToastNotification] = useState(null);
+
+  useEffect(() => {
+    if (toastNotification) {
+      const timer = setTimeout(() => {
+        setToastNotification(null);
+      }, 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [toastNotification]);
+
+  // Open Google Auth Modal
+  const handleOpenAuthModal = (config = {}) => {
+    setAuthModalConfig({
+      title: config.title || "Sign in with Google",
+      subtitle: config.subtitle || "Welcome to Zaytoun Atelier. Please sign in with your Google account.",
+      pendingItem: config.pendingItem || null
+    });
+    setIsAuthModalOpen(true);
+  };
+
+  // On Google Sign In Success
+  const handleAuthSuccess = (googleUser) => {
+    setCurrentUser(googleUser);
+    setIsAuthModalOpen(false);
+
+    // Sync client profile to MongoDB Atlas backend
+    API.syncGoogleClientToDB(googleUser);
+
+    // If an item was queued when clicking "Add to Cart":
+    if (authModalConfig.pendingItem) {
+      const item = authModalConfig.pendingItem;
+      addToCartDirect(
+        item.product || item,
+        item.selectedSize || item.size || 'M',
+        item.selectedColor || item.color,
+        item.quantity || 1
+      );
+      setToastNotification({
+        title: "Added to Your Bag",
+        message: `Welcome, ${googleUser.firstName || googleUser.name}! "${item.name || 'Garment'}" has been added to your bag.`
+      });
+      setIsCartOpen(true);
+    } else {
+      setToastNotification({
+        title: "Signed In with Google",
+        message: `Welcome back to Zaytoun Atelier, ${googleUser.firstName || googleUser.name}!`
+      });
+    }
+
+    setAuthModalConfig({
+      title: "Sign in with Google to Add to Bag",
+      subtitle: "To curate your luxury wardrobe and place orders, please sign in with your Google account.",
+      pendingItem: null
+    });
+  };
+
+  // Sign out handler
+  const handleLogout = () => {
+    setCurrentUser(null);
+    setToastNotification({
+      title: "Signed Out",
+      message: "You have signed out of your Google client account."
+    });
+  };
+
   // Modal States
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
@@ -268,14 +367,17 @@ export default function App() {
   const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
   const [isFabricModalOpen, setIsFabricModalOpen] = useState(false);
 
-  // Cart Handlers
-  const handleAddToCart = (product, size = 'M') => {
+  // Direct Cart Addition (Internal)
+  const addToCartDirect = (product, size = 'M', color = null, quantity = 1) => {
+    const garmentColor = color || product.colors?.[0]?.name || product.primaryColor || 'Olive';
     setCart(prev => {
-      const existing = prev.find(item => item.id === product.id && item.selectedSize === size);
+      const existing = prev.find(
+        item => item.id === product.id && item.selectedSize === size && (item.selectedColor === garmentColor || !item.selectedColor)
+      );
       if (existing) {
         return prev.map(item =>
-          item.id === product.id && item.selectedSize === size
-            ? { ...item, quantity: item.quantity + 1 }
+          item.id === product.id && item.selectedSize === size && (item.selectedColor === garmentColor || !item.selectedColor)
+            ? { ...item, quantity: item.quantity + (quantity || 1) }
             : item
         );
       }
@@ -284,11 +386,35 @@ export default function App() {
         {
           ...product,
           selectedSize: size,
-          quantity: 1
+          selectedColor: garmentColor,
+          quantity: quantity || 1
         }
       ];
     });
+  };
+
+  // Gated Cart Handler: Requires Google Sign-In before anyone can add to cart or buy
+  const handleAddToCart = (product, size = 'M', color = null, quantity = 1) => {
+    if (!currentUser) {
+      const garmentColor = color || product.colors?.[0]?.name || product.primaryColor || 'Olive';
+      setAuthModalConfig({
+        title: "Sign in with Google to Add to Bag",
+        subtitle: `Please sign in with your Google account to add "${product.name || 'this piece'}" to your shopping bag.`,
+        pendingItem: {
+          product,
+          ...product,
+          selectedSize: size,
+          selectedColor: garmentColor,
+          quantity: quantity || 1
+        }
+      });
+      setIsAuthModalOpen(true);
+      return false; // Indicates auth required
+    }
+
+    addToCartDirect(product, size, color, quantity);
     setIsCartOpen(true);
+    return true;
   };
 
   const handleUpdateQuantity = (itemId, size, delta) => {
@@ -509,6 +635,9 @@ export default function App() {
           theme={theme}
           onToggleTheme={handleToggleTheme}
           brandName={themeConfig.brand}
+          user={currentUser}
+          onOpenAuthModal={handleOpenAuthModal}
+          onLogout={handleLogout}
         />
 
         {/* Multi-Page Routes */}
@@ -579,6 +708,12 @@ export default function App() {
             <Route path="/track" element={<OrderTrackingPage />} />
             <Route path="/track/:orderId" element={<OrderTrackingPage />} />
 
+            {/* Google OAuth 2.0 Direct Callback */}
+            <Route
+              path="/auth/google/callback"
+              element={<GoogleAuthCallbackPage onAuthSuccess={handleAuthSuccess} />}
+            />
+
             {/* Catch-all route redirects to Home */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
@@ -598,7 +733,16 @@ export default function App() {
           cart={cart}
           onUpdateQuantity={handleUpdateQuantity}
           onRemoveItem={handleRemoveFromCart}
+          user={currentUser}
+          onOpenAuthModal={handleOpenAuthModal}
           onCheckout={() => {
+            if (!currentUser) {
+              handleOpenAuthModal({
+                title: "Sign in with Google to Checkout",
+                subtitle: "Please sign in with your Google account to proceed to checkout and secure your order."
+              });
+              return;
+            }
             setIsCartOpen(false);
             setIsCheckoutOpen(true);
           }}
@@ -608,6 +752,7 @@ export default function App() {
           isOpen={isCheckoutOpen}
           onClose={() => setIsCheckoutOpen(false)}
           cart={cart}
+          user={currentUser}
           onConfirmOrder={handleConfirmOrder}
         />
 
@@ -639,6 +784,31 @@ export default function App() {
           isOpen={isFabricModalOpen}
           onClose={() => setIsFabricModalOpen(false)}
         />
+
+        {/* Google Authentication Modal (Required before purchase or adding to bag) */}
+        <GoogleAuthModal
+          isOpen={isAuthModalOpen}
+          onClose={() => setIsAuthModalOpen(false)}
+          onSuccess={handleAuthSuccess}
+          pendingItem={authModalConfig.pendingItem}
+          title={authModalConfig.title}
+          subtitle={authModalConfig.subtitle}
+        />
+
+        {/* Luxury Floating Toast Notification */}
+        {toastNotification && (
+          <div className="fixed bottom-6 right-6 z-50 animate-fadeIn pointer-events-none">
+            <div className="flex items-center space-x-3 bg-neutral-900 text-white dark:bg-white dark:text-neutral-900 px-4 py-3 rounded-2xl shadow-2xl border border-camel-400/50 max-w-sm pointer-events-auto">
+              <div className="w-7 h-7 rounded-full bg-camel-500 text-onyx-950 flex items-center justify-center font-bold text-xs flex-shrink-0">
+                ✓
+              </div>
+              <div className="text-xs">
+                <p className="font-bold tracking-tight">{toastNotification.title || "Notification"}</p>
+                <p className="text-neutral-300 dark:text-neutral-600 mt-0.5 leading-snug">{toastNotification.message}</p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Global Catalog Search & Back To Top */}
         <SearchOverlay

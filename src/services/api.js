@@ -63,6 +63,27 @@ export function logoutAdmin() {
 }
 
 /**
+ * 👤 CLIENT GOOGLE AUTHENTICATION & SYNC
+ * Syncs authenticated Google user profile to MongoDB Atlas Customer database
+ */
+export async function syncGoogleClientToDB(userData) {
+  try {
+    const res = await fetch(`${API_BASE}/auth/google-client`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(userData)
+    });
+    if (res.ok) {
+      const data = await res.json();
+      return data.user || userData;
+    }
+  } catch (err) {
+    console.warn('Could not sync Google client to MongoDB Atlas:', err.message);
+  }
+  return userData;
+}
+
+/**
  * Check if backend server and MongoDB are connected
  */
 export async function checkServerStatus() {
