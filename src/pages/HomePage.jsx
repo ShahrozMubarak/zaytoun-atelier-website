@@ -643,15 +643,20 @@ export default function HomePage({
             <form
               onSubmit={async (e) => {
                 e.preventDefault();
-                if (homeEmail && homeEmail.includes('@')) {
+                const clean = (homeEmail || '').trim();
+                if (clean && clean.includes('@')) {
                   setHomeLoading(true);
-                  await subscribeNewsletter(homeEmail, 'homepage_cta');
+                  const result = await subscribeNewsletter(clean, 'homepage_cta');
                   setHomeLoading(false);
-                  setHomeSubscribed(true);
-                  setTimeout(() => {
-                    setHomeEmail('');
-                    setHomeSubscribed(false);
-                  }, 4000);
+                  if (result && result.error) {
+                    alert(result.error);
+                  } else {
+                    setHomeSubscribed(true);
+                    setTimeout(() => {
+                      setHomeEmail('');
+                      setHomeSubscribed(false);
+                    }, 4000);
+                  }
                 }
               }}
               className="flex flex-col sm:flex-row items-center justify-center gap-2 pt-3 max-w-md mx-auto"

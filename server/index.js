@@ -382,9 +382,11 @@ app.post('/api/orders', validateOrder, async (req, res) => {
     }
 
     // Trigger Automated Email Delivery (to Customer + Owner Alert)
-    sendOrderEmails(newOrder).catch((err) => {
+    try {
+      await sendOrderEmails(newOrder);
+    } catch (err) {
       console.warn('⚠️ [Email Service] Background order email note:', err.message);
-    });
+    }
 
     res.status(201).json(newOrder);
   } catch (err) {
@@ -467,9 +469,11 @@ app.post('/api/subscribers', validateSubscriber, async (req, res) => {
     console.log(`📬 [MongoDB] Newsletter subscriber stored: ${cleanEmail}`);
 
     // Trigger Automated Subscription Email Delivery (to Subscriber + Owner Alert)
-    sendSubscriptionEmails(cleanEmail, source || 'website_footer').catch((err) => {
+    try {
+      await sendSubscriptionEmails(cleanEmail, source || 'website_footer');
+    } catch (err) {
       console.warn('⚠️ [Email Service] Background subscriber email note:', err.message);
-    });
+    }
 
     res.status(201).json({ success: true, message: 'Subscribed to Zaytoun Gazette.', subscriber });
   } catch (err) {

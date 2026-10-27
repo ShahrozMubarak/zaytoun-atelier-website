@@ -4,11 +4,11 @@ import Joi from 'joi';
  * 1. Newsletter Subscriber Schema Validation
  */
 const subscriberSchema = Joi.object({
-  email: Joi.string().email().required().messages({
+  email: Joi.string().trim().lowercase().email().required().messages({
     'string.email': 'Please provide a valid email address.',
     'any.required': 'Email is required to subscribe.'
   }),
-  source: Joi.string().max(60).default('website_footer')
+  source: Joi.string().trim().max(60).default('website_footer')
 });
 
 export const validateSubscriber = (req, res, next) => {
@@ -25,15 +25,15 @@ export const validateSubscriber = (req, res, next) => {
  * 2. Concierge Inquiry Schema Validation
  */
 const inquirySchema = Joi.object({
-  name: Joi.string().min(2).max(100).required().messages({
+  name: Joi.string().trim().min(2).max(100).required().messages({
     'string.min': 'Name must be at least 2 characters.',
     'any.required': 'Name is required.'
   }),
-  email: Joi.string().email().required().messages({
+  email: Joi.string().trim().lowercase().email().required().messages({
     'string.email': 'Valid email is required.'
   }),
-  orderNumber: Joi.string().max(50).allow('', null).optional(),
-  message: Joi.string().min(5).max(3000).required().messages({
+  orderNumber: Joi.string().trim().max(50).allow('', null).optional(),
+  message: Joi.string().trim().min(5).max(3000).required().messages({
     'string.min': 'Message must be at least 5 characters.',
     'any.required': 'Message is required.'
   })
@@ -53,18 +53,18 @@ export const validateInquiry = (req, res, next) => {
  * 3. Order Checkout Schema Validation
  */
 const orderSchema = Joi.object({
-  orderNumber: Joi.string().max(60).optional(),
+  orderNumber: Joi.string().trim().max(60).optional(),
   customer: Joi.object({
-    firstName: Joi.string().min(1).max(70).required(),
-    lastName: Joi.string().max(70).allow('', null),
-    name: Joi.string().max(140).allow('', null),
-    email: Joi.string().email().required(),
-    phone: Joi.string().min(8).max(20).required(),
-    address: Joi.string().min(5).max(300).required(),
-    city: Joi.string().min(2).max(100).required(),
-    province: Joi.string().allow('', null),
-    postalCode: Joi.string().allow('', null),
-    orderNotes: Joi.string().max(1000).allow('', null)
+    firstName: Joi.string().trim().min(1).max(70).required(),
+    lastName: Joi.string().trim().max(70).allow('', null),
+    name: Joi.string().trim().max(140).allow('', null),
+    email: Joi.string().trim().lowercase().email().required(),
+    phone: Joi.string().trim().min(8).max(25).required(),
+    address: Joi.string().trim().min(5).max(300).required(),
+    city: Joi.string().trim().min(2).max(100).required(),
+    province: Joi.string().trim().allow('', null),
+    postalCode: Joi.string().trim().allow('', null),
+    orderNotes: Joi.string().trim().max(1000).allow('', null)
   }).unknown(true).required(),
   items: Joi.array().min(1).required(),
   total: Joi.number().min(0).required(),

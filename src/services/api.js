@@ -270,22 +270,23 @@ export async function saveThemeToDB(themeConfig) {
  */
 export async function subscribeNewsletter(email, source = 'website') {
   try {
+    const cleanEmail = (email || '').trim().toLowerCase();
     const res = await fetch(`${API_BASE}/subscribers`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, source })
+      body: JSON.stringify({ email: cleanEmail, source })
     });
     if (res.ok) {
       const data = await res.json();
-      console.log('✅ Newsletter subscriber saved to MongoDB Atlas:', email);
+      console.log('✅ Newsletter subscriber saved to MongoDB Atlas:', cleanEmail);
       return data;
     }
     const errData = await res.json();
-    return { success: false, error: errData.error };
+    return { success: false, error: errData.error || 'Subscription was rejected' };
   } catch (err) {
     console.warn('Could not save subscriber to MongoDB:', err.message);
+    return { success: false, error: err.message };
   }
-  return { success: true, email, fallback: true };
 }
 
 export async function fetchSubscribersFromDB() {
