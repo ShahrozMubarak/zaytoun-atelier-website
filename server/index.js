@@ -27,6 +27,18 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
+// Ensure MongoDB connection on API requests (supports serverless & Vercel cold starts)
+app.use(async (req, res, next) => {
+  if (req.path.startsWith('/api') && !isDBConnected()) {
+    try {
+      await connectDB();
+    } catch (e) {
+      console.warn("DB connect middleware note:", e.message);
+    }
+  }
+  next();
+});
+
 // Helper: Seed initial products if MongoDB collection is empty
 const seedProductsIfEmpty = async () => {
   try {
@@ -540,12 +552,16 @@ app.get('*', (req, res, next) => {
   });
 });
 
-// Start Server
-app.listen(PORT, () => {
-  console.log(`====================================================`);
-  console.log(`🛡️  ZAYTOUN ATELIER API (JWT Protected & Joi Validated)`);
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`🔐 Admin: "shahroz" | Auth: POST /api/auth/login`);
-  console.log(`📡 Health Check: http://localhost:${PORT}/api/health`);
-  console.log(`====================================================`);
-});
+// Start Server (when not running in Vercel serverless environment)
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`====================================================`);
+    console.log(`🛡️  ZAYTOUN ATELIER API (JWT Protected & Joi Validated)`);
+    console.log(`🚀 Server running on port ${PORT}`);
+    console.log(`🔐 Admin: "shahroz" | Auth: POST /api/auth/login`);
+    console.log(`📡 Health Check: http://localhost:${PORT}/api/health`);
+    console.log(`====================================================`);
+  });
+}
+
+export default app;

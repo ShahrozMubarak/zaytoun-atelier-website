@@ -31,6 +31,9 @@ export const getMongoURI = () => {
 };
 
 export const connectDB = async () => {
+  if (mongoose.connection.readyState >= 1) {
+    return true;
+  }
   const uri = getMongoURI();
 
   if (!uri || uri === "PASTE_YOUR_MONGODB_URI_HERE" || uri.includes("<password>")) {
