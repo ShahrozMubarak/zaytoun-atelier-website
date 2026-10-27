@@ -32,12 +32,12 @@ export function getAuthHeaders() {
   return headers;
 }
 
-export async function loginAdmin(password) {
+export async function loginAdmin(password, username = 'shahroz') {
   try {
     const res = await fetch(`${API_BASE}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password })
+      body: JSON.stringify({ password, username })
     });
     const data = await res.json();
     if (res.ok && data.token) {
@@ -45,15 +45,16 @@ export async function loginAdmin(password) {
       sessionStorage.setItem('zaytoun_admin_session', 'authenticated');
       return { success: true, token: data.token, admin: data.admin };
     }
-    return { success: false, error: data.error || 'Incorrect passcode.' };
+    return { success: false, error: data.error || 'Incorrect username or passcode.' };
   } catch {
     // Fallback if backend server is temporarily uncontactable
     const localPasscode = import.meta.env.VITE_ADMIN_PASSCODE || 'shahroz';
-    if (password === localPasscode) {
+    const localUser = 'shahroz';
+    if (password === localPasscode && (!username || username.toLowerCase().trim() === localUser)) {
       sessionStorage.setItem('zaytoun_admin_session', 'authenticated');
       return { success: true, fallback: true };
     }
-    return { success: false, error: 'Incorrect admin passcode.' };
+    return { success: false, error: 'Incorrect admin username or passcode.' };
   }
 }
 
@@ -205,6 +206,9 @@ export async function saveOrderToDB(order) {
       const savedDoc = await res.json();
       console.log('✅ Order saved directly to MongoDB Atlas:', savedDoc.orderNumber);
       return savedDoc;
+    } else {
+      const errText = await res.text();
+      console.warn('⚠️ MongoDB order save rejected:', res.status, errText);
     }
   } catch (err) {
     console.warn('Order saved locally (MongoDB offline):', err.message);

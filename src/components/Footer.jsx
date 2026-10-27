@@ -80,10 +80,14 @@ export default function Footer({ onOpenSizeGuide }) {
         <div className="pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-linen-400 gap-3">
           <p>© {new Date().getFullYear()} ZAYTOUN & CO. All rights reserved. Crafted in Lahore, Pakistan.</p>
           
-          <div className="flex items-center space-x-4 text-[11px] font-mono text-linen-400">
+          <div className="flex items-center space-x-3 text-[11px] font-mono text-linen-400">
             <span>256-Bit SSL Atelier Checkout</span>
             <span>•</span>
             <span>Insured Nationwide Delivery</span>
+            <span>•</span>
+            <Link to="/admin" className="hover:text-camel-400 transition underline underline-offset-4 opacity-70 hover:opacity-100">
+              Staff Portal
+            </Link>
           </div>
         </div>
 

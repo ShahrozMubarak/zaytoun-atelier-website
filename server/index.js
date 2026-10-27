@@ -68,7 +68,14 @@ connectDB().then((connected) => {
  * Admin Login: issues a signed JWT token that expires in 8 hours
  */
 app.post('/api/auth/login', (req, res) => {
-  const { password } = req.body;
+  const { password, username } = req.body;
+
+  if (username && username.trim().toLowerCase() !== 'shahroz') {
+    return res.status(401).json({
+      error: 'Invalid administrator username or credentials.',
+      code: 'AUTH_FAILED'
+    });
+  }
 
   if (!password) {
     return res.status(400).json({ error: 'Passcode is required.' });
@@ -82,14 +89,15 @@ app.post('/api/auth/login', (req, res) => {
   }
 
   // Issue expiring JWT token
-  const token = generateAdminToken('shahroz');
-  console.log(`🔑 [Security] Admin login successful for user "shahroz". Token generated.`);
+  const adminUser = (username || 'shahroz').trim().toLowerCase();
+  const token = generateAdminToken(adminUser);
+  console.log(`🔑 [Security] Admin login successful for user "${adminUser}". Token generated.`);
 
   res.json({
     success: true,
     token,
     expiresIn: process.env.JWT_EXPIRES_IN || '8h',
-    admin: 'shahroz'
+    admin: adminUser
   });
 });
 
@@ -292,14 +300,17 @@ app.get('/api/orders/:orderNumber', async (req, res) => {
 app.post('/api/orders', validateOrder, async (req, res) => {
   try {
     if (!isDBConnected()) {
-      return res.status(503).json({ error: 'MongoDB not connected' });
+      await connectDB();
+    }
+    if (!isDBConnected()) {
+      return res.status(503).json({ error: 'MongoDB database is connecting or unavailable. Please retry in a few moments.' });
     }
     const orderData = req.body;
     if (!orderData.orderNumber) {
       orderData.orderNumber = `ZYT-2026-${Math.floor(1000 + Math.random() * 9000)}`;
     }
     const newOrder = await Order.create(orderData);
-    console.log(`📦 [MongoDB] Order created: ${newOrder.orderNumber}`);
+    console.log(`📦 [MongoDB] Order created successfully: ${newOrder.orderNumber}`);
 
     // Update Customer Profile
     if (orderData.customer?.email) {
@@ -352,7 +363,8 @@ app.post('/api/orders', validateOrder, async (req, res) => {
 
     res.status(201).json(newOrder);
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    console.error('❌ [MongoDB] Order creation failed:', err.message);
+    res.status(500).json({ error: err.message || 'Failed to save order to database' });
   }
 });
 

@@ -190,6 +190,37 @@ export default function ProductModal({
                   ))}
                 </div>
 
+                {/* Stock Remaining Indicator for Selected Size */}
+                {(() => {
+                  const sizeStock = product.stockPerSize?.[selectedSize] !== undefined
+                    ? Number(product.stockPerSize[selectedSize])
+                    : product.stock !== undefined
+                      ? Number(product.stock)
+                      : 6;
+
+                  return (
+                    <div className="mt-2.5 flex items-center space-x-2 text-xs">
+                      <span className="relative flex h-2 w-2">
+                        <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
+                          sizeStock <= 0 ? 'bg-red-400' : sizeStock <= 3 ? 'bg-amber-400' : 'bg-emerald-400'
+                        }`}></span>
+                        <span className={`relative inline-flex rounded-full h-2 w-2 ${
+                          sizeStock <= 0 ? 'bg-red-500' : sizeStock <= 3 ? 'bg-amber-500' : 'bg-emerald-500'
+                        }`}></span>
+                      </span>
+                      <span className="font-mono text-[11px] text-onyx-700 dark:text-linen-300">
+                        {sizeStock <= 0 ? (
+                          <strong className="text-red-600 dark:text-red-400">Out of Stock in Size {selectedSize}</strong>
+                        ) : sizeStock <= 3 ? (
+                          <strong className="text-amber-700 dark:text-amber-400 font-bold">Only {sizeStock} pieces remaining in Size {selectedSize}!</strong>
+                        ) : (
+                          <span className="text-emerald-700 dark:text-emerald-400 font-semibold">{sizeStock} pieces available in Size {selectedSize}</span>
+                        )}
+                      </span>
+                    </div>
+                  );
+                })()}
+
                 {/* Fit Helper Modal Box */}
                 {showFitHelper && (
                   <div className="mt-3 p-3.5 rounded-2xl bg-linen-200 dark:bg-onyx-800 border border-linen-300 dark:border-onyx-700 text-xs space-y-2 animate-fadeIn">

@@ -69,23 +69,23 @@ export default function Navbar({
         {/* Right Header Utilities */}
         <div className="flex items-center space-x-2 sm:space-x-4 text-sm text-black dark:text-white">
           
-          {/* Currency Switcher */}
+          {/* Currency Switcher (Desktop/Tablet) */}
           <button
             onClick={() => {
               const order = ['PKR', 'USD', 'EUR'];
               const nextIdx = (order.indexOf(currency) + 1) % order.length;
               setCurrency(order[nextIdx]);
             }}
-            className="text-xs font-bold px-2 py-1 rounded border border-neutral-300 dark:border-neutral-700 hover:border-black dark:hover:border-white transition uppercase"
+            className="hidden sm:inline-block text-xs font-bold px-2 py-1 rounded border border-neutral-300 dark:border-neutral-700 hover:border-black dark:hover:border-white transition uppercase"
             title="Switch Currency"
           >
             {currency}
           </button>
 
-          {/* Theme Toggle Button */}
+          {/* Theme Toggle Button (Desktop/Tablet) */}
           <button
             onClick={onToggleTheme}
-            className="p-1.5 rounded-full text-neutral-700 dark:text-neutral-300 hover:text-black dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-900 transition"
+            className="hidden sm:inline-flex p-1.5 rounded-full text-neutral-700 dark:text-neutral-300 hover:text-black dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-900 transition items-center justify-center"
             title={theme === 'dark' ? "Light Mode" : "Dark Mode"}
             aria-label="Toggle Theme"
           >
@@ -255,24 +255,67 @@ export default function Navbar({
             </button>
           )}
 
-          <NavLink to="/shop?cat=women" className="block text-black dark:text-white py-1">
+          <NavLink
+            to="/shop?cat=women"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block text-black dark:text-white py-1"
+          >
             Women
           </NavLink>
-          <NavLink to="/shop?cat=men" className="block text-black dark:text-white py-1">
+          <NavLink
+            to="/shop?cat=men"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block text-black dark:text-white py-1"
+          >
             Men
           </NavLink>
-          <NavLink to="/shop" className="block text-black dark:text-white py-1">
+          <NavLink
+            to="/shop"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block text-black dark:text-white py-1"
+          >
             Collection
           </NavLink>
-          <NavLink to="/track" className="block text-black dark:text-white py-1">
+          <NavLink
+            to="/track"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block text-black dark:text-white py-1"
+          >
             Track Order
           </NavLink>
-          <NavLink to="/story" className="block text-black dark:text-white py-1">
+          <NavLink
+            to="/story"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block text-black dark:text-white py-1"
+          >
             Story
           </NavLink>
-          <NavLink to="/studio" className="block text-neutral-400 py-1">
-            Studio
-          </NavLink>
+
+          {/* Mobile Currency & Theme Settings Row */}
+          <div className="pt-4 border-t border-neutral-200 dark:border-onyx-800 flex items-center justify-between text-xs font-semibold normal-case">
+            <div className="flex items-center space-x-2">
+              <span className="text-neutral-500">Currency:</span>
+              <button
+                type="button"
+                onClick={() => {
+                  const order = ['PKR', 'USD', 'EUR'];
+                  const nextIdx = (order.indexOf(currency) + 1) % order.length;
+                  setCurrency(order[nextIdx]);
+                }}
+                className="px-2.5 py-1 rounded-lg border border-neutral-300 dark:border-onyx-700 font-bold uppercase text-onyx-950 dark:text-white bg-linen-100 dark:bg-onyx-900"
+              >
+                {currency}
+              </button>
+            </div>
+
+            <button
+              type="button"
+              onClick={onToggleTheme}
+              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg border border-neutral-300 dark:border-onyx-700 bg-linen-100 dark:bg-onyx-900 text-onyx-950 dark:text-white text-xs font-bold"
+            >
+              <span>{theme === 'dark' ? '☀️ Light' : '🌙 Dark'}</span>
+            </button>
+          </div>
         </div>
       )}
     </header>

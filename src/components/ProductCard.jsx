@@ -39,6 +39,12 @@ export default function ProductCard({
     "https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=1000&q=80";
   const hoverImage = product.images?.[1] || primaryImage;
 
+  const totalStock = product.stock !== undefined
+    ? Number(product.stock)
+    : product.stockPerSize
+      ? Object.values(product.stockPerSize).reduce((acc, v) => acc + Number(v), 0)
+      : 8;
+
   return (
     <div
       className="group relative flex flex-col bg-white dark:bg-onyx-950 rounded-2xl p-3 border border-[#E7DFD5] dark:border-onyx-800 hover:border-camel-400 dark:hover:border-camel-400/70 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.04)] hover:shadow-[0_16px_36px_-6px_rgba(198,159,111,0.22)] hover:-translate-y-1 transition-all duration-500 ease-out cursor-pointer"
@@ -64,6 +70,23 @@ export default function ProductCard({
           }`}
           loading="lazy"
         />
+
+        {/* Stock Remaining Badge (Top Left) */}
+        <div className="absolute top-2.5 left-2.5 z-10 pointer-events-none">
+          {totalStock <= 0 ? (
+            <span className="text-[10px] bg-red-600/90 text-white font-bold px-2 py-0.5 rounded-full shadow-sm backdrop-blur-sm">
+              Out of Stock
+            </span>
+          ) : totalStock <= 4 ? (
+            <span className="text-[10px] bg-amber-600 text-white font-bold px-2 py-0.5 rounded-full shadow-sm backdrop-blur-sm animate-pulse">
+              Only {totalStock} left!
+            </span>
+          ) : (
+            <span className="text-[10px] bg-black/60 dark:bg-onyx-900/80 text-linen-100 font-medium px-2 py-0.5 rounded-full shadow-sm backdrop-blur-sm">
+              {totalStock} in stock
+            </span>
+          )}
+        </div>
 
         {/* Subtle Luxury Gradient Overlay on Hover */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />

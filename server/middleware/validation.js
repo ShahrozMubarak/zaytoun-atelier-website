@@ -65,7 +65,7 @@ const orderSchema = Joi.object({
     province: Joi.string().allow('', null),
     postalCode: Joi.string().allow('', null),
     orderNotes: Joi.string().max(1000).allow('', null)
-  }).required(),
+  }).unknown(true).required(),
   items: Joi.array().min(1).required(),
   total: Joi.number().min(0).required(),
   pricing: Joi.object().optional(),

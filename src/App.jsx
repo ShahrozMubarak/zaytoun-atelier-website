@@ -562,6 +562,35 @@ export default function App() {
 
     // Save directly to MongoDB Atlas
     API.saveOrderToDB(newOrder);
+
+    // Deduct purchased quantities from product inventory
+    const purchasedItems = orderData.items && orderData.items.length > 0 ? orderData.items : cart;
+    setProducts(prevProducts => {
+      return prevProducts.map(p => {
+        const matchingPurchased = purchasedItems.filter(item => (item.id === p.id || item.product?.id === p.id));
+        if (matchingPurchased.length === 0) return p;
+
+        let newStock = Number(p.stock !== undefined ? p.stock : 12);
+        let newStockPerSize = p.stockPerSize ? { ...p.stockPerSize } : null;
+
+        matchingPurchased.forEach(item => {
+          const qty = Number(item.quantity || 1);
+          newStock = Math.max(0, newStock - qty);
+          const sz = item.selectedSize || item.size;
+          if (newStockPerSize && sz && newStockPerSize[sz] !== undefined) {
+            newStockPerSize[sz] = Math.max(0, Number(newStockPerSize[sz]) - qty);
+          }
+        });
+
+        const updatedProduct = {
+          ...p,
+          stock: newStock,
+          ...(newStockPerSize ? { stockPerSize: newStockPerSize } : {})
+        };
+        API.saveProductToDB(updatedProduct);
+        return updatedProduct;
+      });
+    });
   };
 
   const handleUpdateOrderStatus = (orderId, newStatus) => {
@@ -703,6 +732,9 @@ export default function App() {
                 />
               }
             />
+
+            {/* Dedicated Admin Portal Route */}
+            <Route path="/admin" element={<Navigate to="/studio" replace />} />
 
             {/* Order Consignment Tracking Pages */}
             <Route path="/track" element={<OrderTrackingPage />} />
