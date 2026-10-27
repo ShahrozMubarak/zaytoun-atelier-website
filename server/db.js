@@ -30,26 +30,40 @@ export const getMongoURI = () => {
   );
 };
 
+let cachedPromise = null;
+
 export const connectDB = async () => {
-  if (mongoose.connection.readyState >= 1) {
+  if (mongoose.connection.readyState === 1) {
     return true;
   }
+
+  if (cachedPromise) {
+    try {
+      await cachedPromise;
+      return mongoose.connection.readyState === 1;
+    } catch {
+      cachedPromise = null;
+    }
+  }
+
   const uri = getMongoURI();
 
   if (!uri || uri === "PASTE_YOUR_MONGODB_URI_HERE" || uri.includes("<password>")) {
     console.warn("⚠️  [MongoDB] No connection link found yet.");
-    console.warn("👉  Please paste your MongoDB connection URI in `server/db.js` or in `.env` as MONGODB_URI=...");
+    console.warn("👉  Please configure MONGODB_URI in your Vercel Environment Variables or `.env`.");
     return false;
   }
 
   try {
     console.log("🔄  [MongoDB] Connecting to cluster...");
-    await mongoose.connect(uri, {
+    cachedPromise = mongoose.connect(uri, {
       dbName: 'zaytoun_atelier'
     });
+    await cachedPromise;
     console.log("✅  [MongoDB] Connected successfully to MongoDB Atlas database: zaytoun_atelier");
     return true;
   } catch (error) {
+    cachedPromise = null;
     console.error("❌  [MongoDB] Connection error:", error.message);
     return false;
   }
