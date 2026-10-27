@@ -1,0 +1,475 @@
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import { connectDB, isDBConnected, getMongoURI } from './db.js';
+import Product from './models/Product.js';
+import Order from './models/Order.js';
+import Customer from './models/Customer.js';
+import Subscriber from './models/Subscriber.js';
+import Inquiry from './models/Inquiry.js';
+import ThemeConfig from './models/ThemeConfig.js';
+import { SEED_PRODUCTS } from './seedData.js';
+import { generateAdminToken, requireAdminAuth, verifyAdminPassword } from './middleware/auth.js';
+import { validateSubscriber, validateInquiry, validateOrder, validateProduct } from './middleware/validation.js';
+import { sendOrderEmails, sendOrderStatusEmail, sendSubscriptionEmails, sendInquiryAlert, sendInquiryEmails } from './services/emailService.js';
+
+dotenv.config();
+
+const app = express();
+const PORT = process.env.PORT || 5000;
+
+// Security & Parsing Middleware
+app.use(cors());
+app.use(express.json({ limit: '10mb' }));
+
+// Helper: Seed initial products if MongoDB collection is empty
+const seedProductsIfEmpty = async () => {
+  try {
+    const count = await Product.countDocuments();
+    if (count === 0) {
+      console.log('🌱 [MongoDB] Seeding initial luxury products into database...');
+      await Product.insertMany(SEED_PRODUCTS);
+      console.log(`✅ [MongoDB] Successfully seeded ${SEED_PRODUCTS.length} products!`);
+    }
+  } catch (err) {
+    console.warn('⚠️ [MongoDB] Auto-seed note:', err.message);
+  }
+};
+
+// Initialize Database
+connectDB().then((connected) => {
+  if (connected) {
+    seedProductsIfEmpty();
+  }
+});
+
+// ============================================================================
+// 1. AUTHENTICATION & SECURITY (JWT Token with Expiry)
+// ============================================================================
+
+/**
+ * Admin Login: issues a signed JWT token that expires in 8 hours
+ */
+app.post('/api/auth/login', (req, res) => {
+  const { password } = req.body;
+
+  if (!password) {
+    return res.status(400).json({ error: 'Passcode is required.' });
+  }
+
+  if (!verifyAdminPassword(password)) {
+    return res.status(401).json({
+      error: 'Incorrect admin passcode.',
+      code: 'AUTH_FAILED'
+    });
+  }
+
+  // Issue expiring JWT token
+  const token = generateAdminToken('shahroz');
+  console.log(`🔑 [Security] Admin login successful for user "shahroz". Token generated.`);
+
+  res.json({
+    success: true,
+    token,
+    expiresIn: process.env.JWT_EXPIRES_IN || '8h',
+    admin: 'shahroz'
+  });
+});
+
+/**
+ * Admin Session Verification
+ */
+app.get('/api/auth/verify', requireAdminAuth, (req, res) => {
+  res.json({
+    valid: true,
+    admin: req.admin
+  });
+});
+
+/**
+ * 2. Health & System Status
+ */
+app.get('/api/health', (req, res) => {
+  const connected = isDBConnected();
+  const uri = getMongoURI();
+  res.json({
+    status: 'online',
+    database: connected ? 'connected' : 'waiting_for_connection_link',
+    hasMongoURI: Boolean(uri && uri.trim().length > 0),
+    auth: 'JWT_PROTECTED',
+    security: 'JOI_VALIDATED',
+    message: connected
+      ? 'MongoDB is connected, secured with JWT tokens & Joi schemas!'
+      : 'Server is running.'
+  });
+});
+
+// ============================================================================
+// 3. PRODUCTS API
+// ============================================================================
+
+// Public: View Catalog
+app.get('/api/products', async (req, res) => {
+  try {
+    if (!isDBConnected()) {
+      return res.status(503).json({
+        error: 'MongoDB not connected yet.',
+        fallback: true
+      });
+    }
+    const products = await Product.find().sort({ createdAt: -1 });
+    res.json(products);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Protected: Add/Update Product in Studio (Requires JWT + Joi Validation)
+app.post('/api/products', requireAdminAuth, validateProduct, async (req, res) => {
+  try {
+    if (!isDBConnected()) {
+      return res.status(503).json({ error: 'MongoDB not connected' });
+    }
+    const productData = req.body;
+    if (!productData.id) {
+      productData.id = `forme-${Date.now()}`;
+    }
+
+    const product = await Product.findOneAndUpdate(
+      { id: productData.id },
+      productData,
+      { returnDocument: 'after', upsert: true }
+    );
+    res.json(product);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// Protected: Update existing product (Requires JWT + Joi Validation)
+app.put('/api/products/:id', requireAdminAuth, validateProduct, async (req, res) => {
+  try {
+    if (!isDBConnected()) {
+      return res.status(503).json({ error: 'MongoDB not connected' });
+    }
+    const updated = await Product.findOneAndUpdate(
+      { id: req.params.id },
+      req.body,
+      { returnDocument: 'after' }
+    );
+    if (!updated) return res.status(404).json({ error: 'Product not found' });
+    res.json(updated);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// Protected: Delete product (Requires JWT)
+app.delete('/api/products/:id', requireAdminAuth, async (req, res) => {
+  try {
+    if (!isDBConnected()) {
+      return res.status(503).json({ error: 'MongoDB not connected' });
+    }
+    const result = await Product.findOneAndDelete({ id: req.params.id });
+    res.json({ success: true, deleted: result });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// ============================================================================
+// 4. ORDERS API
+// ============================================================================
+
+// Protected: View All Customer Orders in Studio (Requires JWT)
+app.get('/api/orders', requireAdminAuth, async (req, res) => {
+  try {
+    if (!isDBConnected()) {
+      return res.status(503).json({ error: 'MongoDB not connected' });
+    }
+    const orders = await Order.find().sort({ createdAt: -1 });
+    res.json(orders);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Public: Customer tracking by Order Number
+app.get('/api/orders/:orderNumber', async (req, res) => {
+  try {
+    if (!isDBConnected()) {
+      return res.status(503).json({ error: 'MongoDB not connected' });
+    }
+    const query = req.params.orderNumber.toUpperCase();
+    const order = await Order.findOne({
+      $or: [
+        { orderNumber: query },
+        { id: query }
+      ]
+    });
+    if (!order) return res.status(404).json({ error: 'Order not found' });
+    res.json(order);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Public: Create order from checkout (Protected by Joi Schema validation)
+app.post('/api/orders', validateOrder, async (req, res) => {
+  try {
+    if (!isDBConnected()) {
+      return res.status(503).json({ error: 'MongoDB not connected' });
+    }
+    const orderData = req.body;
+    if (!orderData.orderNumber) {
+      orderData.orderNumber = `ZYT-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+    }
+    const newOrder = await Order.create(orderData);
+    console.log(`📦 [MongoDB] Order created: ${newOrder.orderNumber}`);
+
+    // Update Customer Profile
+    if (orderData.customer?.email) {
+      const email = orderData.customer.email.toLowerCase().trim();
+      const fullName = [orderData.customer.firstName, orderData.customer.lastName]
+        .filter(Boolean)
+        .join(' ') || orderData.customer.name || 'Valued Client';
+
+      try {
+        await Customer.findOneAndUpdate(
+          { email },
+          {
+            $set: {
+              firstName: orderData.customer.firstName,
+              lastName: orderData.customer.lastName,
+              name: fullName,
+              phone: orderData.customer.phone,
+              address: orderData.customer.address,
+              city: orderData.customer.city,
+              province: orderData.customer.province,
+              postalCode: orderData.customer.postalCode,
+              lastOrderDate: new Date()
+            },
+            $inc: {
+              ordersCount: 1,
+              totalSpent: Number(orderData.total || 0)
+            },
+            $addToSet: {
+              orderHistory: newOrder.orderNumber
+            }
+          },
+          { upsert: true, returnDocument: 'after' }
+        );
+
+        // Auto enroll in newsletter
+        await Subscriber.findOneAndUpdate(
+          { email },
+          { $setOnInsert: { email, source: 'checkout_order', status: 'active' } },
+          { upsert: true }
+        );
+      } catch (custErr) {
+        console.warn('⚠️ [MongoDB] Note on customer profile save:', custErr.message);
+      }
+    }
+
+    // Trigger Automated Email Delivery (to Customer + Owner Alert)
+    sendOrderEmails(newOrder).catch((err) => {
+      console.warn('⚠️ [Email Service] Background order email note:', err.message);
+    });
+
+    res.status(201).json(newOrder);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// Protected: Update order status (Requires JWT)
+app.patch('/api/orders/:id/status', requireAdminAuth, async (req, res) => {
+  try {
+    if (!isDBConnected()) {
+      return res.status(503).json({ error: 'MongoDB not connected' });
+    }
+    const { status } = req.body;
+    const updated = await Order.findOneAndUpdate(
+      { $or: [{ id: req.params.id }, { orderNumber: req.params.id }] },
+      { status },
+      { returnDocument: 'after' }
+    );
+    if (!updated) return res.status(404).json({ error: 'Order not found' });
+
+    // Trigger Automated Order Status Email to Customer
+    sendOrderStatusEmail(updated, status).catch((err) => {
+      console.warn('⚠️ [Email Service] Background order status email note:', err.message);
+    });
+
+    res.json(updated);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// ============================================================================
+// 5. CUSTOMERS & SUBSCRIBERS DIRECTORY (Protected by JWT)
+// ============================================================================
+
+// Protected: View Customer Directory (Requires JWT)
+app.get('/api/customers', requireAdminAuth, async (req, res) => {
+  try {
+    if (!isDBConnected()) {
+      return res.status(503).json({ error: 'MongoDB not connected' });
+    }
+    const customers = await Customer.find().sort({ updatedAt: -1 });
+    res.json(customers);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Public: Subscribe to newsletter (Protected by Joi Schema validation)
+app.post('/api/subscribers', validateSubscriber, async (req, res) => {
+  try {
+    if (!isDBConnected()) {
+      return res.status(503).json({ error: 'MongoDB not connected' });
+    }
+    const { email, source } = req.body;
+    const cleanEmail = email.toLowerCase().trim();
+
+    const subscriber = await Subscriber.findOneAndUpdate(
+      { email: cleanEmail },
+      {
+        $set: {
+          source: source || 'website_footer',
+          status: 'active'
+        }
+      },
+      { upsert: true, returnDocument: 'after', setDefaultsOnInsert: true }
+    );
+
+    console.log(`📬 [MongoDB] Newsletter subscriber stored: ${cleanEmail}`);
+
+    // Trigger Automated Subscription Email Delivery (to Subscriber + Owner Alert)
+    sendSubscriptionEmails(cleanEmail, source || 'website_footer').catch((err) => {
+      console.warn('⚠️ [Email Service] Background subscriber email note:', err.message);
+    });
+
+    res.status(201).json({ success: true, message: 'Subscribed to Zaytoun Gazette.', subscriber });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// Protected: View all subscribers (Requires JWT)
+app.get('/api/subscribers', requireAdminAuth, async (req, res) => {
+  try {
+    if (!isDBConnected()) {
+      return res.status(503).json({ error: 'MongoDB not connected' });
+    }
+    const subscribers = await Subscriber.find().sort({ createdAt: -1 });
+    res.json(subscribers);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Protected: Remove a subscriber (Requires JWT)
+app.delete('/api/subscribers/:id', requireAdminAuth, async (req, res) => {
+  try {
+    if (!isDBConnected()) {
+      return res.status(503).json({ error: 'MongoDB not connected' });
+    }
+    await Subscriber.findByIdAndDelete(req.params.id);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// ============================================================================
+// 6. CONCIERGE & INQUIRIES API
+// ============================================================================
+
+// Public: Contact form submission (Protected by Joi Schema validation)
+app.post('/api/inquiries', validateInquiry, async (req, res) => {
+  try {
+    if (!isDBConnected()) {
+      return res.status(503).json({ error: 'MongoDB not connected' });
+    }
+    const { name, email, orderNumber, message } = req.body;
+    const inquiry = await Inquiry.create({
+      name,
+      email: email.toLowerCase().trim(),
+      orderNumber: orderNumber || '',
+      message
+    });
+    console.log(`💌 [MongoDB] Concierge inquiry stored: ${inquiry.email}`);
+
+    // Trigger Automated Inquiry Alert to Store Owner
+    sendInquiryAlert(inquiry).catch((err) => {
+      console.warn('⚠️ [Email Service] Background inquiry email note:', err.message);
+    });
+
+    res.status(201).json({ success: true, inquiry });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// Protected: View inquiries (Requires JWT)
+app.get('/api/inquiries', requireAdminAuth, async (req, res) => {
+  try {
+    if (!isDBConnected()) {
+      return res.status(503).json({ error: 'MongoDB not connected' });
+    }
+    const inquiries = await Inquiry.find().sort({ createdAt: -1 });
+    res.json(inquiries);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ============================================================================
+// 7. THEME & APPEARANCE API
+// ============================================================================
+
+// Public: Get brand appearance
+app.get('/api/theme', async (req, res) => {
+  try {
+    if (!isDBConnected()) {
+      return res.status(503).json({ error: 'MongoDB not connected' });
+    }
+    const config = await ThemeConfig.findOne().sort({ updatedAt: -1 });
+    res.json(config || {
+      brand: "ZAYTOUN",
+      olive: "#364634",
+      camel: "#C69F6F"
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Protected: Update brand appearance (Requires JWT)
+app.post('/api/theme', requireAdminAuth, async (req, res) => {
+  try {
+    if (!isDBConnected()) {
+      return res.status(503).json({ error: 'MongoDB not connected' });
+    }
+    const updated = await ThemeConfig.findOneAndUpdate(
+      {},
+      req.body,
+      { returnDocument: 'after', upsert: true }
+    );
+    res.json(updated);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// Start Server
+app.listen(PORT, () => {
+  console.log(`====================================================`);
+  console.log(`🛡️  ZAYTOUN ATELIER API (JWT Protected & Joi Validated)`);
+  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`🔐 Admin: "shahroz" | Auth: POST /api/auth/login`);
+  console.log(`📡 Health Check: http://localhost:${PORT}/api/health`);
+  console.log(`====================================================`);
+});

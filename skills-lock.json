@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "skills": {
+    "3d-web-experience": {
+      "source": "sickn33/agentic-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/3d-web-experience/SKILL.md",
+      "computedHash": "e242f3d6f2d8a59e65a0c4b61d9a0a34c302e6229d72b8fe8d8df7c905c8287e"
+    },
+    "gravitas": {
+      "source": "udaysharmadev/Gravitas",
+      "sourceType": "github",
+      "skillPath": "skills/gravitas/SKILL.md",
+      "computedHash": "4f80f7322bf62ac3667ee38afdf914b4e79023f166cc75696267a5b2be59432d"
+    },
+    "landing-page-design": {
+      "source": "inference-sh/skills",
+      "sourceType": "github",
+      "skillPath": "guides/design/landing-page-design/SKILL.md",
+      "computedHash": "435af3919183e91ded83197f9238740593cac886f45067dc729d8a7095fbfb5a"
+    },
+    "scroll-experience": {
+      "source": "sickn33/agentic-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/scroll-experience/SKILL.md",
+      "computedHash": "6ae03d74dfb1c24bc6059a05c386ad7c9b8b042f950a4e2968481a0b7faebe9a"
+    }
+  }
+}

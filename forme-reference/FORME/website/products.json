@@ -1,0 +1,424 @@
+{
+  "version": 1,
+  "theme": {
+    "brand": "FORME",
+    "olive": "#596244",
+    "camel": "#b89470"
+  },
+  "products": [
+    {
+      "id": "forme-01",
+      "person": "women",
+      "slot": "top",
+      "style": "knit",
+      "name": "The Everyday Knit",
+      "price": 48,
+      "description": "Soft ribbing, an easy neckline, and room to breathe.",
+      "colors": [
+        {
+          "name": "Ecru",
+          "hex": "#ded8c7"
+        },
+        {
+          "name": "Olive",
+          "hex": "#6b7354"
+        },
+        {
+          "name": "Black",
+          "hex": "#333630"
+        }
+      ]
+    },
+    {
+      "id": "forme-02",
+      "person": "women",
+      "slot": "bottom",
+      "style": "wide",
+      "name": "The Relaxed Trouser",
+      "price": 68,
+      "description": "A softly structured wide leg for unhurried days.",
+      "colors": [
+        {
+          "name": "Olive",
+          "hex": "#6b7354"
+        },
+        {
+          "name": "Camel",
+          "hex": "#b29673"
+        },
+        {
+          "name": "Black",
+          "hex": "#333630"
+        }
+      ]
+    },
+    {
+      "id": "forme-03",
+      "person": "women",
+      "slot": "outer",
+      "style": "blazer",
+      "name": "The Modern Blazer",
+      "price": 115,
+      "description": "A considered finishing layer with an easy silhouette.",
+      "colors": [
+        {
+          "name": "Camel",
+          "hex": "#b29673"
+        },
+        {
+          "name": "Black",
+          "hex": "#333630"
+        },
+        {
+          "name": "Stone",
+          "hex": "#aaa79a"
+        }
+      ]
+    },
+    {
+      "id": "forme-04",
+      "person": "women",
+      "slot": "dress",
+      "style": "dress",
+      "name": "The Sunday Dress",
+      "price": 89,
+      "description": "An effortless midi, ready for wherever the day goes.",
+      "colors": [
+        {
+          "name": "Black",
+          "hex": "#333630"
+        },
+        {
+          "name": "Olive",
+          "hex": "#6b7354"
+        },
+        {
+          "name": "Ecru",
+          "hex": "#ded8c7"
+        }
+      ]
+    },
+    {
+      "id": "forme-05",
+      "person": "women",
+      "slot": "top",
+      "style": "shirt",
+      "name": "The Studio Shirt",
+      "price": 62,
+      "description": "A clean button-up with understated details.",
+      "colors": [
+        {
+          "name": "Chalk",
+          "hex": "#eae7dc"
+        },
+        {
+          "name": "Camel",
+          "hex": "#b29673"
+        },
+        {
+          "name": "Olive",
+          "hex": "#6b7354"
+        }
+      ]
+    },
+    {
+      "id": "forme-06",
+      "person": "women",
+      "slot": "outer",
+      "style": "coat",
+      "name": "The Longline Coat",
+      "price": 148,
+      "description": "A longer layer to bring the whole look together.",
+      "colors": [
+        {
+          "name": "Stone",
+          "hex": "#aaa79a"
+        },
+        {
+          "name": "Camel",
+          "hex": "#b29673"
+        },
+        {
+          "name": "Black",
+          "hex": "#333630"
+        }
+      ]
+    },
+    {
+      "id": "forme-07",
+      "person": "men",
+      "slot": "top",
+      "style": "shirt",
+      "name": "The Essential Shirt",
+      "price": 64,
+      "description": "A clean collar and a relaxed everyday shape.",
+      "colors": [
+        {
+          "name": "Ecru",
+          "hex": "#ded8c7"
+        },
+        {
+          "name": "Olive",
+          "hex": "#6b7354"
+        },
+        {
+          "name": "Black",
+          "hex": "#333630"
+        }
+      ]
+    },
+    {
+      "id": "forme-08",
+      "person": "men",
+      "slot": "bottom",
+      "style": "trouser",
+      "name": "The Daily Trouser",
+      "price": 72,
+      "description": "A straight leg with a considered, easy finish.",
+      "colors": [
+        {
+          "name": "Camel",
+          "hex": "#b29673"
+        },
+        {
+          "name": "Black",
+          "hex": "#333630"
+        },
+        {
+          "name": "Olive",
+          "hex": "#6b7354"
+        }
+      ]
+    },
+    {
+      "id": "forme-09",
+      "person": "men",
+      "slot": "top",
+      "style": "tee",
+      "name": "The Heavyweight Tee",
+      "price": 38,
+      "description": "The foundation of a wardrobe that works.",
+      "colors": [
+        {
+          "name": "Olive",
+          "hex": "#6b7354"
+        },
+        {
+          "name": "Chalk",
+          "hex": "#eae7dc"
+        },
+        {
+          "name": "Black",
+          "hex": "#333630"
+        }
+      ]
+    },
+    {
+      "id": "forme-10",
+      "person": "men",
+      "slot": "outer",
+      "style": "blazer",
+      "name": "The Unstructured Blazer",
+      "price": 128,
+      "description": "An easy layer for smart and simple dressing.",
+      "colors": [
+        {
+          "name": "Espresso",
+          "hex": "#65594b"
+        },
+        {
+          "name": "Stone",
+          "hex": "#aaa79a"
+        },
+        {
+          "name": "Black",
+          "hex": "#333630"
+        }
+      ]
+    },
+    {
+      "id": "forme-11",
+      "person": "men",
+      "slot": "top",
+      "style": "knit",
+      "name": "The Weekend Knit",
+      "price": 58,
+      "description": "Quiet texture for cooler everyday moments.",
+      "colors": [
+        {
+          "name": "Stone",
+          "hex": "#aaa79a"
+        },
+        {
+          "name": "Ecru",
+          "hex": "#ded8c7"
+        },
+        {
+          "name": "Olive",
+          "hex": "#6b7354"
+        }
+      ]
+    },
+    {
+      "id": "forme-12",
+      "person": "men",
+      "slot": "outer",
+      "style": "coat",
+      "name": "The City Coat",
+      "price": 158,
+      "description": "A timeless longline silhouette.",
+      "colors": [
+        {
+          "name": "Camel",
+          "hex": "#b29673"
+        },
+        {
+          "name": "Black",
+          "hex": "#333630"
+        },
+        {
+          "name": "Olive",
+          "hex": "#6b7354"
+        }
+      ]
+    },
+    {
+      "id": "forme-13",
+      "person": "kids",
+      "slot": "top",
+      "style": "tee",
+      "name": "The Little Everyday Tee",
+      "price": 24,
+      "description": "Simple, playful, and ready for little adventures.",
+      "colors": [
+        {
+          "name": "Camel",
+          "hex": "#b29673"
+        },
+        {
+          "name": "Olive",
+          "hex": "#6b7354"
+        },
+        {
+          "name": "Chalk",
+          "hex": "#eae7dc"
+        }
+      ]
+    },
+    {
+      "id": "forme-14",
+      "person": "kids",
+      "slot": "bottom",
+      "style": "shorts",
+      "name": "The Adventure Short",
+      "price": 32,
+      "description": "A relaxed short for everyday exploring.",
+      "colors": [
+        {
+          "name": "Olive",
+          "hex": "#6b7354"
+        },
+        {
+          "name": "Camel",
+          "hex": "#b29673"
+        },
+        {
+          "name": "Black",
+          "hex": "#333630"
+        }
+      ]
+    },
+    {
+      "id": "forme-15",
+      "person": "kids",
+      "slot": "top",
+      "style": "knit",
+      "name": "The Cosy Knit",
+      "price": 38,
+      "description": "A little warmth for their everyday wardrobe.",
+      "colors": [
+        {
+          "name": "Ecru",
+          "hex": "#ded8c7"
+        },
+        {
+          "name": "Olive",
+          "hex": "#6b7354"
+        },
+        {
+          "name": "Camel",
+          "hex": "#b29673"
+        }
+      ]
+    },
+    {
+      "id": "forme-16",
+      "person": "kids",
+      "slot": "bottom",
+      "style": "trouser",
+      "name": "The Playtime Trouser",
+      "price": 36,
+      "description": "An easy shape for a day full of possibilities.",
+      "colors": [
+        {
+          "name": "Camel",
+          "hex": "#b29673"
+        },
+        {
+          "name": "Olive",
+          "hex": "#6b7354"
+        },
+        {
+          "name": "Black",
+          "hex": "#333630"
+        }
+      ]
+    },
+    {
+      "id": "forme-17",
+      "person": "kids",
+      "slot": "dress",
+      "style": "dress",
+      "name": "The Little Sunday Dress",
+      "price": 42,
+      "description": "A simple dress for little occasions.",
+      "colors": [
+        {
+          "name": "Olive",
+          "hex": "#6b7354"
+        },
+        {
+          "name": "Ecru",
+          "hex": "#ded8c7"
+        },
+        {
+          "name": "Camel",
+          "hex": "#b29673"
+        }
+      ]
+    },
+    {
+      "id": "forme-18",
+      "person": "kids",
+      "slot": "outer",
+      "style": "coat",
+      "name": "The Mini Coat",
+      "price": 58,
+      "description": "A cosy-looking layer for their favourite outfit.",
+      "colors": [
+        {
+          "name": "Stone",
+          "hex": "#aaa79a"
+        },
+        {
+          "name": "Camel",
+          "hex": "#b29673"
+        },
+        {
+          "name": "Olive",
+          "hex": "#6b7354"
+        }
+      ]
+    }
+  ]
+}
