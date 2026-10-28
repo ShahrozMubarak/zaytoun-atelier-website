@@ -916,9 +916,20 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                             <div className="flex items-center space-x-1.5">
                               <span>{ord.paymentMethod === 'cod' ? 'COD' : ord.paymentMethod?.toUpperCase()}</span>
                               {ord.paymentReceipt && (
-                                <span className="px-1.5 py-0.5 bg-[#E6D3B3] text-black font-bold text-xs">
-                                  PROOF
-                                </span>
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setEnlargedReceipt({
+                                      src: ord.paymentReceipt,
+                                      fileName: ord.receiptFileName || `Receipt #${ord.orderNumber || ord.id}`
+                                    });
+                                  }}
+                                  className="px-2 py-0.5 bg-[#E6D3B3] hover:bg-[#d9c19b] text-black font-bold text-[10px] uppercase tracking-wider transition cursor-pointer"
+                                  title="Click to view payment receipt screenshot"
+                                >
+                                  Screenshot ↗
+                                </button>
                               )}
                             </div>
                           </td>
@@ -1001,18 +1012,25 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
 
                     {/* Receipt Screenshot Preview */}
                     {order.paymentReceipt ? (
-                      <div
-                        onClick={() => setEnlargedReceipt({ src: order.paymentReceipt, fileName: order.receiptFileName })}
-                        className="p-2 bg-neutral-100 dark:bg-onyx-950 border border-dashed border-neutral-400 cursor-pointer text-center group"
-                      >
-                        <img
-                          src={order.paymentReceipt}
-                          alt="Receipt Preview"
-                          className="max-h-36 mx-auto object-contain transition-transform group-hover:scale-105"
-                        />
-                        <span className="block text-xs font-bold text-neutral-600 dark:text-neutral-300 mt-1">
-                          Click to enlarge receipt
-                        </span>
+                      <div className="space-y-2">
+                        <div
+                          onClick={() => setEnlargedReceipt({ src: order.paymentReceipt, fileName: order.receiptFileName || `Receipt #${order.orderNumber}` })}
+                          className="p-2 bg-neutral-100 dark:bg-onyx-950 border border-neutral-300 dark:border-neutral-700 cursor-pointer text-center group hover:border-black dark:hover:border-white transition"
+                          title="Click to open full screenshot"
+                        >
+                          <img
+                            src={order.paymentReceipt}
+                            alt="Receipt Preview"
+                            className="max-h-36 mx-auto object-contain transition-transform group-hover:scale-105"
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setEnlargedReceipt({ src: order.paymentReceipt, fileName: order.receiptFileName || `Receipt #${order.orderNumber}` })}
+                          className="w-full py-1.5 bg-[#E6D3B3] hover:bg-[#d9c19b] text-black text-xs font-bold uppercase tracking-wider transition cursor-pointer"
+                        >
+                          View Full Screenshot ↗
+                        </button>
                       </div>
                     ) : (
                       <div className="p-3 bg-neutral-100 dark:bg-onyx-950 text-neutral-500 text-xs text-center font-mono">
@@ -1346,9 +1364,20 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                             <div className="flex items-center space-x-1.5">
                               <span>{ord.paymentMethod === 'cod' ? 'COD' : ord.paymentMethod?.toUpperCase()}</span>
                               {ord.paymentReceipt && (
-                                <span className="px-1.5 py-0.5 bg-[#E6D3B3] text-black font-bold text-[9px] rounded-none">
-                                  PROOF
-                                </span>
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setEnlargedReceipt({
+                                      src: ord.paymentReceipt,
+                                      fileName: ord.receiptFileName || `Receipt #${ord.orderNumber || ord.id}`
+                                    });
+                                  }}
+                                  className="px-2 py-0.5 bg-[#E6D3B3] hover:bg-[#d9c19b] text-black font-bold text-[9px] uppercase tracking-wider transition cursor-pointer"
+                                  title="Click to view payment receipt screenshot"
+                                >
+                                  Screenshot ↗
+                                </button>
                               )}
                             </div>
                           </td>
@@ -1968,21 +1997,30 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                       {selectedOrderDetails.receiptFileName || 'payment_proof.jpg'}
                     </span>
                   </div>
-                  <div
-                    onClick={() => setEnlargedReceipt({
-                      src: selectedOrderDetails.paymentReceipt,
-                      fileName: selectedOrderDetails.receiptFileName
-                    })}
-                    className="relative group cursor-pointer border border-neutral-300 dark:border-onyx-700 bg-white dark:bg-black overflow-hidden flex items-center justify-center p-1"
-                  >
-                    <img
-                      src={selectedOrderDetails.paymentReceipt}
-                      alt="Customer Payment Receipt"
-                      className="max-h-48 w-auto object-contain mx-auto transition-transform group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-xs font-bold font-mono">
-                      Click to enlarge receipt
+                  <div className="space-y-2">
+                    <div
+                      onClick={() => setEnlargedReceipt({
+                        src: selectedOrderDetails.paymentReceipt,
+                        fileName: selectedOrderDetails.receiptFileName || `Receipt #${selectedOrderDetails.orderNumber}`
+                      })}
+                      className="relative group cursor-pointer border border-neutral-300 dark:border-onyx-700 bg-white dark:bg-black overflow-hidden flex items-center justify-center p-2"
+                    >
+                      <img
+                        src={selectedOrderDetails.paymentReceipt}
+                        alt="Customer Payment Receipt"
+                        className="max-h-48 w-auto object-contain mx-auto transition-transform group-hover:scale-105"
+                      />
                     </div>
+                    <button
+                      type="button"
+                      onClick={() => setEnlargedReceipt({
+                        src: selectedOrderDetails.paymentReceipt,
+                        fileName: selectedOrderDetails.receiptFileName || `Receipt #${selectedOrderDetails.orderNumber}`
+                      })}
+                      className="w-full py-1.5 bg-[#E6D3B3] hover:bg-[#d9c19b] text-black text-xs font-bold uppercase tracking-wider transition cursor-pointer"
+                    >
+                      Open Full Screenshot ↗
+                    </button>
                   </div>
                 </div>
               ) : ['jazzcash', 'easypaisa', 'bank'].includes((selectedOrderDetails.paymentMethod || '').toLowerCase()) ? (
@@ -2045,33 +2083,60 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
         </div>
       )}
 
-      {/* Enlarged Payment Receipt Modal */}
+      {/* Enlarged Payment Receipt Modal (z-[120] to stay above all modals) */}
       {enlargedReceipt && (
         <div
-          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 cursor-pointer"
+          className="fixed inset-0 z-[120] bg-black/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-6"
           onClick={() => setEnlargedReceipt(null)}
         >
           <div
-            className="relative max-w-3xl max-h-[92vh] bg-white dark:bg-onyx-900 border-2 border-black dark:border-[#E6D3B3] p-3 shadow-2xl rounded-none flex flex-col"
+            className="relative max-w-4xl w-full max-h-[94vh] bg-white dark:bg-onyx-900 border-2 border-black dark:border-[#E6D3B3] p-4 sm:p-6 shadow-2xl rounded-none flex flex-col"
             onClick={e => e.stopPropagation()}
           >
-            <div className="flex justify-between items-center pb-2 mb-2 border-b border-neutral-200 dark:border-neutral-800">
-              <span className="font-mono text-xs font-bold text-onyx-900 dark:text-white">
-                {enlargedReceipt.fileName || 'Payment Proof Attachment'}
-              </span>
-              <button
-                onClick={() => setEnlargedReceipt(null)}
-                className="text-xs font-bold px-3 py-1 bg-neutral-200 dark:bg-neutral-800 hover:bg-neutral-300 text-black dark:text-white rounded-none"
-              >
-                Close
-              </button>
+            <div className="flex flex-wrap justify-between items-center pb-3 mb-3 border-b border-neutral-200 dark:border-neutral-800 gap-2">
+              <div>
+                <span className="text-[10px] uppercase font-bold tracking-widest text-[#A6865A] dark:text-[#E6D3B3] block font-mono">
+                  CUSTOMER PAYMENT PROOF
+                </span>
+                <span className="font-mono text-xs font-bold text-black dark:text-white">
+                  {enlargedReceipt.fileName || 'Payment Proof Screenshot'}
+                </span>
+              </div>
+              <div className="flex items-center space-x-2">
+                {enlargedReceipt.src && (
+                  <a
+                    href={enlargedReceipt.src}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs font-bold px-3 py-1.5 bg-[#E6D3B3] hover:bg-[#d9c19b] text-black uppercase tracking-wider transition"
+                  >
+                    Open in New Tab ↗
+                  </a>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setEnlargedReceipt(null)}
+                  className="text-xs font-bold px-3 py-1.5 bg-black hover:bg-neutral-800 text-white rounded-none uppercase tracking-wider transition"
+                >
+                  Close ✕
+                </button>
+              </div>
             </div>
-            <div className="overflow-auto max-h-[80vh] flex items-center justify-center bg-neutral-50 dark:bg-black/50 p-2">
-              <img
-                src={enlargedReceipt.src}
-                alt="Payment Proof Full"
-                className="max-h-[75vh] w-auto object-contain mx-auto shadow-md"
-              />
+
+            <div className="overflow-auto max-h-[78vh] flex items-center justify-center bg-neutral-100 dark:bg-black/60 p-4 border border-neutral-200 dark:border-neutral-800">
+              {enlargedReceipt.src?.startsWith('data:application/pdf') || enlargedReceipt.fileName?.toLowerCase().endsWith('.pdf') ? (
+                <iframe
+                  src={enlargedReceipt.src}
+                  title="Payment Proof PDF"
+                  className="w-full h-[72vh] border-0"
+                />
+              ) : (
+                <img
+                  src={enlargedReceipt.src}
+                  alt="Payment Proof Full"
+                  className="max-h-[72vh] max-w-full w-auto object-contain mx-auto shadow-lg"
+                />
+              )}
             </div>
           </div>
         </div>
