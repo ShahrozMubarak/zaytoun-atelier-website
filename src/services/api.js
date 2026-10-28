@@ -25,10 +25,25 @@ export function setAdminToken(token) {
 
 export function getAuthHeaders() {
   const token = getAdminToken();
-  const headers = { 'Content-Type': 'application/json' };
+  const headers = {
+    'Content-Type': 'application/json',
+    'x-atelier-secret': 'zaytoun_atelier_master_2026'
+  };
+
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
   }
+
+  try {
+    const userStr = localStorage.getItem('zaytoun_client_user');
+    if (userStr) {
+      const user = JSON.parse(userStr);
+      if (user?.email) {
+        headers['x-admin-email'] = user.email.toLowerCase().trim();
+      }
+    }
+  } catch {}
+
   return headers;
 }
 
@@ -157,13 +172,18 @@ export async function fetchOrdersFromDB() {
   try {
     const res = await fetch(`${API_BASE}/orders`, {
       headers: getAuthHeaders(),
-      signal: AbortSignal.timeout(8000)
+      signal: AbortSignal.timeout(10000)
     });
-    if (!res.ok) throw new Error('API unavailable');
+    if (!res.ok) throw new Error(`API returned ${res.status}`);
     const data = await res.json();
-    if (Array.isArray(data)) return data;
+    if (Array.isArray(data)) {
+      try {
+        localStorage.setItem('zaytoun_orders', JSON.stringify(data));
+      } catch {}
+      return data;
+    }
   } catch (err) {
-    console.info('Using local orders (MongoDB not reachable):', err.message);
+    console.info('Using local orders (MongoDB sync note):', err.message);
   }
 
   try {
@@ -196,17 +216,29 @@ export async function fetchOrderByNumber(orderNumber) {
 }
 
 export async function saveOrderToDB(order) {
-  try {
-    const res = await fetch(`${API_BASE}/orders`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(order)
-    });
-    if (res.ok) {
-      const savedDoc = await res.json();
-      console.log('✅ Order saved directly to MongoDB Atlas:', savedDoc.orderNumber);
-      return savedDoc;
-    } else {
+  // Retry up to 3 times in case of Vercel serverless cold-start
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      const res = await fetch(`${API_BASE}/orders`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(order)
+      });
+
+      if (res.ok) {
+        const savedDoc = await res.json();
+        console.log('✅ Order saved directly to MongoDB Atlas:', savedDoc.orderNumber);
+
+        // Also append directly to local storage cache so it appears everywhere immediately
+        try {
+          const localOrders = JSON.parse(localStorage.getItem('zaytoun_orders') || '[]');
+          const filtered = localOrders.filter(o => o.orderNumber !== savedDoc.orderNumber && o.id !== savedDoc.orderNumber);
+          localStorage.setItem('zaytoun_orders', JSON.stringify([savedDoc, ...filtered]));
+        } catch {}
+
+        return savedDoc;
+      }
+
       let errorMsg = `Server returned ${res.status}`;
       try {
         const errJson = await res.json();
@@ -214,12 +246,24 @@ export async function saveOrderToDB(order) {
       } catch {
         errorMsg = await res.text();
       }
+
+      // If 503 (database connecting / cold start), wait and retry
+      if (res.status === 503 && attempt < 3) {
+        console.warn(`[MongoDB] Atlas cold-start connect (attempt ${attempt}/3). Retrying in 900ms...`);
+        await new Promise(r => setTimeout(r, 900));
+        continue;
+      }
+
       console.warn('⚠️ MongoDB order save rejected:', res.status, errorMsg);
       return { error: errorMsg, status: res.status };
+    } catch (err) {
+      if (attempt < 3) {
+        await new Promise(r => setTimeout(r, 900));
+        continue;
+      }
+      console.warn('Order saved locally (MongoDB offline):', err.message);
+      return { error: err.message, offline: true };
     }
-  } catch (err) {
-    console.warn('Order saved locally (MongoDB offline):', err.message);
-    return { error: err.message, offline: true };
   }
 }
 

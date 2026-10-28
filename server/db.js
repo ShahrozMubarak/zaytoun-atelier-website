@@ -32,18 +32,9 @@ export const getMongoURI = () => {
 
 let cachedPromise = null;
 
-export const connectDB = async () => {
+export const connectDB = async (retries = 2) => {
   if (mongoose.connection.readyState === 1) {
     return true;
-  }
-
-  if (cachedPromise) {
-    try {
-      await cachedPromise;
-      return mongoose.connection.readyState === 1;
-    } catch {
-      cachedPromise = null;
-    }
   }
 
   const uri = getMongoURI();
@@ -54,19 +45,42 @@ export const connectDB = async () => {
     return false;
   }
 
-  try {
-    console.log("🔄  [MongoDB] Connecting to cluster...");
-    cachedPromise = mongoose.connect(uri, {
-      dbName: 'zaytoun_atelier'
-    });
-    await cachedPromise;
-    console.log("✅  [MongoDB] Connected successfully to MongoDB Atlas database: zaytoun_atelier");
-    return true;
-  } catch (error) {
-    cachedPromise = null;
-    console.error("❌  [MongoDB] Connection error:", error.message);
-    return false;
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      if (cachedPromise) {
+        await cachedPromise;
+        if (mongoose.connection.readyState === 1) {
+          return true;
+        }
+      }
+    } catch {
+      cachedPromise = null;
+    }
+
+    try {
+      console.log(`🔄  [MongoDB] Connecting to cluster (attempt ${attempt}/${retries})...`);
+      cachedPromise = mongoose.connect(uri, {
+        dbName: 'zaytoun_atelier',
+        serverSelectionTimeoutMS: 7000,
+        connectTimeoutMS: 10000,
+        maxPoolSize: 10,
+        bufferCommands: true
+      });
+      await cachedPromise;
+      if (mongoose.connection.readyState === 1) {
+        console.log("✅  [MongoDB] Connected successfully to MongoDB Atlas database: zaytoun_atelier");
+        return true;
+      }
+    } catch (error) {
+      cachedPromise = null;
+      console.error(`❌  [MongoDB] Connection error (attempt ${attempt}):`, error.message);
+      if (attempt < retries) {
+        await new Promise(res => setTimeout(res, 500));
+      }
+    }
   }
+
+  return mongoose.connection.readyState === 1;
 };
 
 export const isDBConnected = () => {

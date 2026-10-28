@@ -112,7 +112,17 @@ export default function AdminDashboard({
   }, [propProducts]);
 
   useEffect(() => {
-    if (propOrders && propOrders.length > 0) setLiveOrders(propOrders);
+    if (propOrders && propOrders.length > 0) {
+      setLiveOrders(prev => {
+        const hasAtlas = prev.some(o => o._id);
+        if (hasAtlas) {
+          const existing = new Set(prev.map(o => o.orderNumber || o.id));
+          const additions = propOrders.filter(o => !existing.has(o.orderNumber || o.id));
+          return [...prev, ...additions];
+        }
+        return propOrders;
+      });
+    }
   }, [propOrders]);
 
   // Total Revenue Calculation from Orders
