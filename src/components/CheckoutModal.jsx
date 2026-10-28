@@ -371,7 +371,7 @@ export default function CheckoutModal({
                     }`}
                   />
                   {formErrors.firstName && (
-                    <p className="text-red-600 text-[11px] font-bold mt-1">⚠️ {formErrors.firstName}</p>
+                    <p className="text-red-600 text-xs font-bold mt-1">⚠️ {formErrors.firstName}</p>
                   )}
                 </div>
                 <div>
@@ -388,7 +388,7 @@ export default function CheckoutModal({
                     }`}
                   />
                   {formErrors.lastName && (
-                    <p className="text-red-600 text-[11px] font-bold mt-1">⚠️ {formErrors.lastName}</p>
+                    <p className="text-red-600 text-xs font-bold mt-1">⚠️ {formErrors.lastName}</p>
                   )}
                 </div>
               </div>
@@ -409,15 +409,15 @@ export default function CheckoutModal({
                     }`}
                   />
                   {formErrors.phone ? (
-                    <p className="text-red-600 text-[11px] font-bold mt-1">⚠️ {formErrors.phone}</p>
+                    <p className="text-red-600 text-xs font-bold mt-1">⚠️ {formErrors.phone}</p>
                   ) : (
-                    <span className="text-[10px] text-onyx-500">Digits only (03XXXXXXXXX). Required for courier delivery updates</span>
+                    <span className="text-xs text-onyx-500 block mt-1">Digits only (03XXXXXXXXX). Required for courier delivery updates</span>
                   )}
                 </div>
                 <div>
                   <div className="flex items-center justify-between mb-1">
                     <label className="block text-xs font-semibold text-onyx-800">Email Address (Google Account)</label>
-                    <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-1.5 py-0.5 border border-emerald-200 dark:border-emerald-800">
+                    <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 border border-emerald-200 dark:border-emerald-800">
                       ✓ Google Verified
                     </span>
                   </div>
@@ -430,7 +430,7 @@ export default function CheckoutModal({
                     className="w-full bg-neutral-100 dark:bg-onyx-800 border border-linen-300 dark:border-onyx-700 rounded-none p-2.5 text-xs text-onyx-700 dark:text-neutral-300 font-mono cursor-not-allowed"
                   />
                   {formErrors.email && (
-                    <p className="text-red-600 text-[11px] font-bold mt-1">⚠️ {formErrors.email}</p>
+                    <p className="text-red-600 text-xs font-bold mt-1">⚠️ {formErrors.email}</p>
                   )}
                 </div>
               </div>
@@ -449,7 +449,7 @@ export default function CheckoutModal({
                   }`}
                 />
                 {formErrors.address && (
-                  <p className="text-red-600 text-[11px] font-bold mt-1">⚠️ {formErrors.address}</p>
+                  <p className="text-red-600 text-xs font-bold mt-1">⚠️ {formErrors.address}</p>
                 )}
               </div>
 
@@ -491,7 +491,7 @@ export default function CheckoutModal({
                     }`}
                   />
                   {formErrors.postalCode && (
-                    <p className="text-red-600 text-[11px] font-bold mt-1">⚠️ {formErrors.postalCode}</p>
+                    <p className="text-red-600 text-xs font-bold mt-1">⚠️ {formErrors.postalCode}</p>
                   )}
                 </div>
               </div>
@@ -566,7 +566,7 @@ export default function CheckoutModal({
                       <div className="flex items-center space-x-2">
                         <span className="text-lg">💵</span>
                         <strong className="text-xs sm:text-sm font-bold text-onyx-950">Cash on Delivery (COD)</strong>
-                        <span className="text-[10px] bg-camel-100 text-camel-800 font-bold px-2 py-0.5 rounded">Most Popular</span>
+                        <span className="text-xs bg-camel-100 text-camel-800 font-bold px-2 py-0.5 rounded">Most Popular</span>
                       </div>
                       <span className="text-xs font-semibold text-onyx-700">TCS / Trax / Leopards</span>
                     </div>
@@ -581,7 +581,7 @@ export default function CheckoutModal({
                   onClick={() => setPaymentMethod('card')}
                   className={`p-4 rounded-none border-2 transition cursor-pointer flex items-start space-x-3 ${
                     paymentMethod === 'card'
-                      ? 'border-olive-700 bg-olive-50/40 ring-1 ring-olive-700'
+                      ? 'border-sand-700 bg-sand-50/40 ring-1 ring-sand-700'
                       : 'border-linen-300 hover:border-onyx-400 bg-white'
                   }`}
                 >
@@ -590,19 +590,19 @@ export default function CheckoutModal({
                     name="payment"
                     checked={paymentMethod === 'card'}
                     onChange={() => setPaymentMethod('card')}
-                    className="mt-1 text-olive-700 focus:ring-olive-700"
+                    className="mt-1 text-sand-700 focus:ring-sand-700"
                   />
                   <div className="flex-1">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
                         <span className="text-lg">💳</span>
                         <strong className="text-xs sm:text-sm font-bold text-onyx-950">Credit / Debit Card</strong>
-                        <span className="text-[10px] bg-olive-100 text-olive-800 font-bold px-2 py-0.5 rounded">Instant 5% Off</span>
+                        <span className="text-xs bg-sand-200 text-sand-900 font-bold px-2 py-0.5 rounded">Instant 5% Off</span>
                       </div>
                       <div className="flex items-center space-x-1.5 text-xs font-semibold text-onyx-700">
-                        <span className="bg-blue-900 text-white px-1.5 py-0.5 rounded text-[10px] font-bold">VISA</span>
-                        <span className="bg-red-600 text-white px-1.5 py-0.5 rounded text-[10px] font-bold">Mastercard</span>
-                        <span className="bg-emerald-700 text-white px-1.5 py-0.5 rounded text-[10px] font-bold">PayFast</span>
+                        <span className="bg-blue-900 text-white px-2 py-0.5 rounded text-xs font-bold">VISA</span>
+                        <span className="bg-red-600 text-white px-2 py-0.5 rounded text-xs font-bold">Mastercard</span>
+                        <span className="bg-emerald-700 text-white px-2 py-0.5 rounded text-xs font-bold">PayFast</span>
                       </div>
                     </div>
                     <p className="text-xs text-onyx-600 mt-1">
@@ -630,9 +630,9 @@ export default function CheckoutModal({
                   <div className="flex-1">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
-                        <span className="w-5 h-5 rounded-none bg-red-600 text-white flex items-center justify-center text-[10px] font-black">JC</span>
+                        <span className="w-5 h-5 rounded-none bg-red-600 text-white flex items-center justify-center text-xs font-black">JC</span>
                         <strong className="text-xs sm:text-sm font-bold text-red-700">JazzCash Mobile Wallet</strong>
-                        <span className="text-[10px] bg-red-100 text-red-800 font-bold px-2 py-0.5 rounded">Instant MPIN</span>
+                        <span className="text-xs bg-red-100 text-red-800 font-bold px-2 py-0.5 rounded">Instant MPIN</span>
                       </div>
                       <span className="text-xs font-semibold text-onyx-700">Direct Push</span>
                     </div>
@@ -661,9 +661,9 @@ export default function CheckoutModal({
                   <div className="flex-1">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
-                        <span className="w-5 h-5 rounded-none bg-emerald-600 text-white flex items-center justify-center text-[10px] font-black">EP</span>
+                        <span className="w-5 h-5 rounded-none bg-emerald-600 text-white flex items-center justify-center text-xs font-black">EP</span>
                         <strong className="text-xs sm:text-sm font-bold text-emerald-800">EasyPaisa Mobile Account</strong>
-                        <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded">USSD Prompt</span>
+                        <span className="text-xs bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded">USSD Prompt</span>
                       </div>
                       <span className="text-xs font-semibold text-onyx-700">Telenor / All Nets</span>
                     </div>
@@ -739,7 +739,7 @@ export default function CheckoutModal({
                   <div className="space-y-3 text-xs">
                     <div className="flex items-center justify-between border-b border-red-200 pb-2">
                       <span className="font-bold text-red-800 uppercase tracking-wide">JazzCash Transfer Instructions</span>
-                      <span className="text-[10px] font-mono bg-red-100 text-red-800 px-2 py-0.5 rounded-none font-bold">Manual Verification</span>
+                      <span className="text-xs font-mono bg-red-100 text-red-800 px-2 py-0.5 rounded-none font-bold">Manual Verification</span>
                     </div>
 
                     <div className="p-3 bg-white border border-red-200 rounded-none space-y-1.5 font-mono text-xs">
@@ -759,7 +759,7 @@ export default function CheckoutModal({
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                       <div>
-                        <label className="block text-[11px] font-semibold text-onyx-700 mb-0.5">Your Sender Mobile Number (11 Digits) *</label>
+                        <label className="block text-xs font-semibold text-onyx-700 mb-1">Your Sender Mobile Number (11 Digits) *</label>
                         <input
                           type="tel"
                           value={jazzcashPhone}
@@ -770,7 +770,7 @@ export default function CheckoutModal({
                         />
                       </div>
                       <div>
-                        <label className="block text-[11px] font-semibold text-onyx-700 mb-0.5">Transaction ID / TID (from SMS)</label>
+                        <label className="block text-xs font-semibold text-onyx-700 mb-1">Transaction ID / TID (from SMS)</label>
                         <input
                           type="text"
                           value={jazzcashCnic}
@@ -788,7 +788,7 @@ export default function CheckoutModal({
                   <div className="space-y-3 text-xs">
                     <div className="flex items-center justify-between border-b border-emerald-200 pb-2">
                       <span className="font-bold text-emerald-800 uppercase tracking-wide">EasyPaisa Transfer Instructions</span>
-                      <span className="text-[10px] font-mono bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-none font-bold">Manual Verification</span>
+                      <span className="text-xs font-mono bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-none font-bold">Manual Verification</span>
                     </div>
 
                     <div className="p-3 bg-white border border-emerald-200 rounded-none space-y-1.5 font-mono text-xs">
@@ -807,7 +807,7 @@ export default function CheckoutModal({
                     </div>
 
                     <div className="pt-1">
-                      <label className="block text-[11px] font-semibold text-onyx-700 mb-0.5">Your Sender EasyPaisa Number (11 Digits) *</label>
+                      <label className="block text-xs font-semibold text-onyx-700 mb-1">Your Sender EasyPaisa Number (11 Digits) *</label>
                       <input
                         type="tel"
                         value={easypaisaPhone}
@@ -823,19 +823,19 @@ export default function CheckoutModal({
                 {/* MANDATORY PAYMENT RECEIPT PROOF ATTACHMENT BOX */}
                 {['jazzcash', 'easypaisa', 'bank'].includes(paymentMethod) && (
                   <div className="mt-4 pt-4 border-t border-linen-300">
-                    <div className="p-4 bg-white border-2 border-dashed border-camel-500 dark:border-camel-600 rounded-none space-y-3">
+                    <div className="p-4 bg-white border-2 border-dashed border-sand-500 rounded-none space-y-3">
                       <div className="flex items-center justify-between">
                         <div>
                           <strong className="text-xs uppercase tracking-wide text-onyx-950 flex items-center space-x-1.5">
                             <span>📎</span>
                             <span>Upload Payment Screenshot / Receipt *</span>
                           </strong>
-                          <p className="text-[11px] text-onyx-500 mt-0.5">
+                          <p className="text-xs text-onyx-500 mt-0.5">
                             Screenshot of successful transfer showing TID, date &amp; amount. Required before order confirmation.
                           </p>
                         </div>
                         {receiptPreview && (
-                          <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-none border border-emerald-300">
+                          <span className="text-xs font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-none border border-emerald-300">
                             ✓ Proof Attached
                           </span>
                         )}
@@ -853,7 +853,7 @@ export default function CheckoutModal({
                             onChange={handleReceiptFileChange}
                             className="hidden"
                           />
-                          <svg className="w-8 h-8 text-camel-600 group-hover:scale-110 transition-transform mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <svg className="w-8 h-8 text-sand-700 group-hover:scale-110 transition-transform mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                           </svg>
                           <button
@@ -863,7 +863,7 @@ export default function CheckoutModal({
                           >
                             Choose File / Upload Screenshot
                           </button>
-                          <span className="text-[10px] text-onyx-400 mt-1 font-mono">Accepts PNG, JPG, WEBP, PDF (Max 5MB)</span>
+                          <span className="text-xs text-onyx-500 mt-1 font-mono">Accepts PNG, JPG, WEBP, PDF (Max 5MB)</span>
                         </div>
                       ) : (
                         <div className="p-3 bg-linen-100 border border-linen-300 flex items-center justify-between">
@@ -877,7 +877,7 @@ export default function CheckoutModal({
                               <strong className="block text-xs text-onyx-950 truncate max-w-[220px]">
                                 {receiptFileName}
                               </strong>
-                              <span className="text-[10px] text-emerald-700 font-bold block">
+                              <span className="text-xs text-emerald-700 font-bold block">
                                 Ready to be verified by Atelier Studio
                               </span>
                             </div>
@@ -916,7 +916,7 @@ export default function CheckoutModal({
                   type="button"
                   onClick={handleFinalizeOrder}
                   disabled={isSubmitting}
-                  className="bg-olive-700 hover:bg-olive-800 text-linen-100 font-bold px-8 py-3.5 rounded-none text-xs uppercase tracking-wider transition shadow-lg flex items-center space-x-2"
+                  className="bg-black hover:bg-neutral-800 text-white font-bold px-8 py-3.5 rounded-none text-xs uppercase tracking-wider transition shadow-lg flex items-center space-x-2"
                 >
                   {isSubmitting ? (
                     <>

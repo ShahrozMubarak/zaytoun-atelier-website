@@ -26,25 +26,40 @@ export default function Navbar({
     setUserMenuOpen(false);
   }, [location.pathname]);
 
-  // Bold navigation link style with Desert Camel active indicator
+  // Bold navigation link style with Sand #E6D3B3 active indicator
   const navLinkClass = ({ isActive }) =>
     `text-xs sm:text-sm font-bold uppercase tracking-wider transition-all py-1 ${
       isActive
-        ? 'text-olive-800 dark:text-camel-300 border-b-2 border-camel-500 font-extrabold'
-        : 'text-neutral-600 dark:text-neutral-300 hover:text-camel-700 dark:hover:text-camel-300'
+        ? 'text-black dark:text-[#E6D3B3] border-b-2 border-[#E6D3B3] font-extrabold'
+        : 'text-neutral-600 dark:text-neutral-300 hover:text-black dark:hover:text-[#E6D3B3]'
     }`;
 
   return (
     <header className="sticky top-0 z-40 w-full bg-white dark:bg-onyx-950 border-b border-neutral-200 dark:border-onyx-800 transition-colors shadow-sm">
       <div className="max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12 h-16 sm:h-20 flex items-center justify-between">
         
-        {/* Brand Logo (Bold wordmark with Desert Camel accent dot) */}
+        {/* Brand Logo - Bespoke Luxury Atelier Monogram & Wide-Tracked Wordmark */}
         <Link
           to="/"
-          className="text-2xl sm:text-3xl font-black tracking-tight text-black dark:text-white hover:opacity-90 transition flex items-center space-x-1.5"
+          className="group flex items-center space-x-3 transition-opacity hover:opacity-90 select-none"
         >
-          <span className="tracking-tighter">{brandName || "ZAYTOUN"}</span>
-          <span className="w-2.5 h-2.5 rounded-full bg-camel-500 ring-2 ring-camel-400/40 shadow-sm shadow-camel-500/50"></span>
+          {/* Architectural Monogram Emblem */}
+          <div className="relative w-9 h-9 sm:w-10 sm:h-10 bg-black dark:bg-[#E6D3B3] flex items-center justify-center border border-black dark:border-[#E6D3B3] shadow-sm transition-transform group-hover:scale-105">
+            <span className="font-editorial text-lg sm:text-xl font-black text-[#E6D3B3] dark:text-black tracking-tight">
+              Z
+            </span>
+            <span className="absolute -top-1 -right-1 w-2 h-2 bg-[#E6D3B3] dark:bg-black border border-black dark:border-[#E6D3B3]"></span>
+          </div>
+
+          {/* Luxury Typographic Identity */}
+          <div className="flex flex-col leading-none">
+            <span className="font-editorial text-lg sm:text-2xl font-black tracking-[0.24em] text-black dark:text-white uppercase">
+              ZAYTOUN
+            </span>
+            <span className="text-[11px] sm:text-xs font-bold tracking-[0.38em] text-neutral-500 dark:text-sand-300 uppercase mt-1">
+              ATELIER
+            </span>
+          </div>
         </Link>
 
         {/* Bold Center Navigation */}

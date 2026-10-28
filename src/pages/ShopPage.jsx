@@ -120,7 +120,7 @@ export default function ShopPage({
                 }`}
               >
                 <span>♥ Wishlist</span>
-                <span className="font-mono text-[10px]">({wishlist.length})</span>
+                <span className="font-mono text-xs">({wishlist.length})</span>
               </button>
 
               {/* Sort Dropdown */}
@@ -136,7 +136,7 @@ export default function ShopPage({
               </select>
 
               {/* Total results count */}
-              <span className="text-[11px] font-mono text-neutral-500 hidden md:inline">
+              <span className="text-xs font-mono text-neutral-500 hidden md:inline">
                 {filteredProducts.length} {filteredProducts.length === 1 ? 'piece' : 'pieces'}
               </span>
             </div>

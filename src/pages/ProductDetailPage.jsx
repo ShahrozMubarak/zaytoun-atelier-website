@@ -101,7 +101,7 @@ export default function ProductDetailPage({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Editorial Breadcrumbs */}
-        <nav className="flex items-center space-x-2 text-[11px] font-mono uppercase tracking-widest text-neutral-500 mb-6">
+        <nav className="flex items-center space-x-2 text-xs font-mono uppercase tracking-widest text-neutral-500 mb-6">
           <Link to="/" className="hover:text-black dark:hover:text-white transition">Home</Link>
           <span>/</span>
           <Link to="/shop" className="hover:text-black dark:hover:text-white transition">
@@ -151,13 +151,13 @@ export default function ProductDetailPage({
 
               {product.badge && (
                 <div className="absolute top-4 left-4 z-10 pointer-events-none">
-                  <span className="text-[10px] uppercase tracking-widest font-black bg-black text-white dark:bg-white dark:text-black px-3 py-1 rounded-none shadow-md">
+                  <span className="text-xs uppercase tracking-widest font-black bg-black text-white dark:bg-white dark:text-black px-3 py-1 rounded-none shadow-md">
                     {product.badge}
                   </span>
                 </div>
               )}
 
-              <div className="absolute bottom-3 right-3 bg-black/60 backdrop-blur-sm text-white text-[10px] font-mono px-2 py-1 rounded-none pointer-events-none">
+              <div className="absolute bottom-3 right-3 bg-black/60 backdrop-blur-sm text-white text-xs font-mono px-2.5 py-1 rounded-none pointer-events-none">
                 {isZoomed ? "Click to reset" : "Click to zoom"}
               </div>
             </div>
@@ -175,7 +175,7 @@ export default function ProductDetailPage({
               <h1 className="text-2xl sm:text-3xl font-extrabold uppercase tracking-wide text-neutral-900 dark:text-neutral-100">
                 {product.name}
               </h1>
-              <p className="text-[11px] font-mono text-neutral-400 mt-1 uppercase">
+              <p className="text-xs font-mono text-neutral-400 mt-1 uppercase">
                 SKU: {product.id.toUpperCase()} • EDITION 2026
               </p>
             </div>
@@ -336,12 +336,12 @@ export default function ProductDetailPage({
             {/* Trust Badges */}
             <div className="grid grid-cols-2 gap-3 pt-3 border-t border-neutral-200 dark:border-onyx-800 text-xs font-mono">
               <div className="p-3 bg-neutral-50 dark:bg-onyx-900 border border-neutral-200 dark:border-onyx-800 rounded-none">
-                <p className="font-bold uppercase text-[10px] text-neutral-900 dark:text-neutral-100">🚚 TCS Express Delivery</p>
-                <p className="text-[10px] text-neutral-500 mt-0.5">2-3 business days across Pakistan</p>
+                <p className="font-bold uppercase text-xs text-neutral-900 dark:text-neutral-100">🚚 TCS Express Delivery</p>
+                <p className="text-xs text-neutral-500 mt-1">2-3 business days across Pakistan</p>
               </div>
               <div className="p-3 bg-neutral-50 dark:bg-onyx-900 border border-neutral-200 dark:border-onyx-800 rounded-none">
-                <p className="font-bold uppercase text-[10px] text-neutral-900 dark:text-neutral-100">🔄 14-Day Exchanges</p>
-                <p className="text-[10px] text-neutral-500 mt-0.5">Hassle-free size adjustments</p>
+                <p className="font-bold uppercase text-xs text-neutral-900 dark:text-neutral-100">🔄 14-Day Exchanges</p>
+                <p className="text-xs text-neutral-500 mt-1">Hassle-free size adjustments</p>
               </div>
             </div>
 
@@ -390,7 +390,7 @@ export default function ProductDetailPage({
           <div className="mt-24 pt-12 border-t border-neutral-200 dark:border-onyx-800">
             <div className="flex items-center justify-between mb-8">
               <div>
-                <p className="text-[11px] font-mono uppercase tracking-widest text-neutral-500">Pair With</p>
+                <p className="text-xs font-mono uppercase tracking-widest text-neutral-500 font-semibold">Pair With</p>
                 <h2 className="text-xl sm:text-2xl font-black uppercase tracking-wide text-neutral-900 dark:text-neutral-100">
                   Complete The Collection
                 </h2>

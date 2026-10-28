@@ -212,11 +212,12 @@ export default function HomePage({
     <div className="min-h-screen bg-white dark:bg-onyx-950 text-black dark:text-white transition-colors">
       
       {/* =========================================================================
-          1. CLEAN STUDIO MODEL VIDEO HERO (ROUNDED-NONE, SHARP ARCHITECTURAL BLOCK)
-          Pure White Seamless Cyclorama Model Video
+          1. INTEGRATED SEAMLESS STUDIO MODEL VIDEO HERO
+          Starts immediately below the navbar with 0px gap, borderless edge-to-edge,
+          pure white background seamless cyclorama integration
       ========================================================================= */}
-      <section className="relative w-full max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12 pt-4 sm:pt-6">
-        <div className="relative w-full h-[65vh] sm:h-[80vh] overflow-hidden rounded-none bg-neutral-100 dark:bg-onyx-900 border border-neutral-300 dark:border-onyx-800 shadow-sm">
+      <section className="relative w-full overflow-hidden bg-white dark:bg-onyx-950">
+        <div className="relative w-full h-[75vh] sm:h-[88vh] lg:h-[94vh] overflow-hidden bg-white dark:bg-onyx-950">
           <video
             ref={videoRef}
             autoPlay
@@ -224,13 +225,13 @@ export default function HomePage({
             muted
             playsInline
             poster="/images/catalog/men_model_white_tee_jeans.jpg"
-            className="w-full h-full object-cover object-center"
+            className="w-full h-full object-cover object-top sm:object-center select-none pointer-events-none"
           >
             <source src="/videos/hero_white_model_2.mp4" type="video/mp4" />
             <img
               src="/images/catalog/men_model_white_tee_jeans.jpg"
               alt="Zaytoun Atelier Model"
-              className="w-full h-full object-cover object-center"
+              className="w-full h-full object-cover object-top sm:object-center"
             />
           </video>
         </div>
@@ -319,7 +320,7 @@ export default function HomePage({
                 <span className="text-xs font-bold uppercase tracking-wider text-black dark:text-white mt-2 group-hover:underline">
                   {item.title}
                 </span>
-                <span className="text-[10px] text-neutral-500 font-medium uppercase">
+                <span className="text-xs text-neutral-500 font-medium uppercase mt-0.5">
                   {item.subtitle}
                 </span>
               </button>
@@ -368,7 +369,7 @@ export default function HomePage({
 
           {/* Slide Text Content */}
           <div className="absolute inset-0 p-8 sm:p-14 lg:p-20 flex flex-col justify-end text-white max-w-2xl space-y-3 z-10">
-            <span className="text-[10px] font-black uppercase tracking-[0.25em] bg-white text-black px-2.5 py-1 w-max rounded-none">
+            <span className="text-xs font-black uppercase tracking-[0.2em] bg-white text-black px-3 py-1 w-max rounded-none">
               {bannerSlides[currentSlide].tag}
             </span>
             <h2 className="text-3xl sm:text-5xl md:text-6xl font-black uppercase tracking-tight text-white font-sans drop-shadow-sm">
@@ -419,7 +420,7 @@ export default function HomePage({
             <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tight">
               NEW IN STORE
             </h2>
-            <p className="text-[11px] text-neutral-500 uppercase tracking-widest mt-0.5">
+            <p className="text-xs text-neutral-500 uppercase tracking-widest mt-1">
               Autumn / Winter 2026 Core Collection
             </p>
           </div>
@@ -490,7 +491,7 @@ export default function HomePage({
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent pointer-events-none" />
 
               <div className="absolute bottom-6 left-6 right-6 text-white space-y-2">
-                <span className="text-[9px] font-mono uppercase tracking-widest text-neutral-300">
+                <span className="text-xs font-mono uppercase tracking-widest text-neutral-300 font-semibold">
                   Denim Edit
                 </span>
                 <h3 className="text-2xl sm:text-3xl font-black uppercase tracking-tight">
@@ -518,7 +519,7 @@ export default function HomePage({
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent pointer-events-none" />
 
               <div className="absolute bottom-6 left-6 right-6 text-white space-y-2">
-                <span className="text-[9px] font-mono uppercase tracking-widest text-neutral-300">
+                <span className="text-xs font-mono uppercase tracking-widest text-neutral-300 font-semibold">
                   Workwear Edit
                 </span>
                 <h3 className="text-2xl sm:text-3xl font-black uppercase tracking-tight">
@@ -546,7 +547,7 @@ export default function HomePage({
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent pointer-events-none" />
 
               <div className="absolute bottom-6 left-6 right-6 text-white space-y-2">
-                <span className="text-[9px] font-mono uppercase tracking-widest text-neutral-300">
+                <span className="text-xs font-mono uppercase tracking-widest text-neutral-300 font-semibold">
                   Women's Pret
                 </span>
                 <h3 className="text-2xl sm:text-3xl font-black uppercase tracking-tight">

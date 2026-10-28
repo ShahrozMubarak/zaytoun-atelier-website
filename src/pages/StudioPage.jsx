@@ -14,7 +14,9 @@ export default function StudioPage({
   onImportCatalog,
   themeConfig,
   onUpdateTheme,
-  onTryOnProduct
+  onTryOnProduct,
+  user = null,
+  onOpenAuthModal
 }) {
   const navigate = useNavigate();
 
@@ -30,8 +32,8 @@ export default function StudioPage({
   };
 
   return (
-    <div className="min-h-screen w-full bg-linen-100 dark:bg-onyx-950 text-onyx-950 dark:text-linen-100 transition-colors">
-      <AdminGate>
+    <div className="min-h-screen w-full bg-white dark:bg-onyx-950 text-onyx-950 dark:text-neutral-100 transition-colors">
+      <AdminGate user={user} onOpenAuthModal={onOpenAuthModal}>
         <AdminDashboard
           orders={orders}
           onUpdateOrderStatus={onUpdateOrderStatus}
@@ -45,6 +47,7 @@ export default function StudioPage({
           onUpdateTheme={onUpdateTheme}
           onCloseAdmin={handleCloseAdmin}
           onTryOnProduct={handleTryOn}
+          user={user}
         />
       </AdminGate>
     </div>

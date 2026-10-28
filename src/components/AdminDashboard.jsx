@@ -171,6 +171,122 @@ export default function AdminDashboard({
     });
   }, [liveProducts]);
 
+  // Pending Orders Queue
+  const pendingOrders = useMemo(() => {
+    return liveOrders.filter(o => (o.status || 'pending').toLowerCase() === 'pending');
+  }, [liveOrders]);
+
+  // Order Status Distribution
+  const statusStats = useMemo(() => {
+    const counts = { pending: 0, approved: 0, processing: 0, dispatched: 0, delivered: 0, cancelled: 0 };
+    liveOrders.forEach(o => {
+      const st = (o.status || 'pending').toLowerCase();
+      if (counts[st] !== undefined) counts[st]++;
+      else counts.pending++;
+    });
+    return counts;
+  }, [liveOrders]);
+
+  // Payment Methods Distribution
+  const paymentStats = useMemo(() => {
+    const counts = { cod: 0, jazzcash: 0, easypaisa: 0, card: 0 };
+    liveOrders.forEach(o => {
+      const pm = (o.paymentMethod || 'cod').toLowerCase();
+      if (counts[pm] !== undefined) counts[pm]++;
+      else counts.cod++;
+    });
+    return counts;
+  }, [liveOrders]);
+
+  // 7-Day Revenue Trajectory
+  const revenueChartData = useMemo(() => {
+    const days = 7;
+    const now = new Date();
+    const data = [];
+    for (let i = days - 1; i >= 0; i--) {
+      const d = new Date(now);
+      d.setDate(d.getDate() - i);
+      const dateStr = d.toISOString().split('T')[0];
+      const dayLabel = d.toLocaleDateString('en-PK', { weekday: 'short', month: 'numeric', day: 'numeric' });
+      
+      const dayTotal = liveOrders.reduce((sum, ord) => {
+        const ordDate = (ord.createdAt || ord.date || '').split('T')[0];
+        if (ordDate === dateStr) {
+          return sum + Number(ord.total || ord.pricing?.finalTotal || 0);
+        }
+        return sum;
+      }, 0);
+
+      data.push({ date: dateStr, label: dayLabel, revenue: dayTotal });
+    }
+    return data;
+  }, [liveOrders]);
+
+  const [hoveredChartPoint, setHoveredChartPoint] = useState(null);
+
+  // SVG Chart Dimensions
+  const chartWidth = 680;
+  const chartHeight = 220;
+  const paddingX = 40;
+  const paddingY = 30;
+
+  const maxChartRevenue = useMemo(() => {
+    const maxVal = Math.max(...revenueChartData.map(d => d.revenue), 0);
+    return maxVal === 0 ? 50000 : Math.ceil(maxVal * 1.25);
+  }, [revenueChartData]);
+
+  const chartPoints = useMemo(() => {
+    const usableWidth = chartWidth - paddingX * 2;
+    const usableHeight = chartHeight - paddingY * 2;
+    const step = usableWidth / (revenueChartData.length - 1 || 1);
+
+    return revenueChartData.map((d, idx) => {
+      const x = paddingX + idx * step;
+      const y = chartHeight - paddingY - (d.revenue / maxChartRevenue) * usableHeight;
+      return { ...d, x, y };
+    });
+  }, [revenueChartData, maxChartRevenue]);
+
+  const svgPathD = useMemo(() => {
+    if (chartPoints.length === 0) return '';
+    return chartPoints.reduce((acc, pt, idx, arr) => {
+      if (idx === 0) return `M ${pt.x} ${pt.y}`;
+      const prev = arr[idx - 1];
+      const cx = (prev.x + pt.x) / 2;
+      return `${acc} C ${cx} ${prev.y}, ${cx} ${pt.y}, ${pt.x} ${pt.y}`;
+    }, '');
+  }, [chartPoints]);
+
+  const svgAreaD = useMemo(() => {
+    if (chartPoints.length === 0) return '';
+    const lastX = chartPoints[chartPoints.length - 1].x;
+    const firstX = chartPoints[0].x;
+    const bottomY = chartHeight - paddingY;
+    return `${svgPathD} L ${lastX} ${bottomY} L ${firstX} ${bottomY} Z`;
+  }, [svgPathD, chartPoints, chartHeight, paddingY]);
+
+  // Security Tab Settings
+  const [adminEmailInput, setAdminEmailInput] = useState(() => {
+    try {
+      return localStorage.getItem('zaytoun_admin_email') || 'shaahrozdogar@gmail.com';
+    } catch {
+      return 'shaahrozdogar@gmail.com';
+    }
+  });
+  const [adminEmailSavedMessage, setAdminEmailSavedMessage] = useState('');
+
+  const handleSaveAdminEmail = (e) => {
+    e.preventDefault();
+    const clean = adminEmailInput.trim().toLowerCase();
+    if (!clean || !clean.includes('@')) {
+      alert("Please enter a valid email address.");
+      return;
+    }
+    localStorage.setItem('zaytoun_admin_email', clean);
+    setAdminEmailSavedMessage(`✅ Authorized owner email updated to "${clean}". Studio access is strictly limited to this Google account.`);
+    setTimeout(() => setAdminEmailSavedMessage(''), 5000);
+  };
+
   // Open Create Product Modal
   const handleOpenCreateProduct = () => {
     setEditingProductId(null);
@@ -452,43 +568,59 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
         </div>
 
         {/* Executive Tabs Bar */}
-        <div className="sticky top-20 z-20 bg-[#FAF8F5]/95 dark:bg-[#121411]/95 backdrop-blur-md pt-2 pb-0 -mx-4 sm:-mx-8 px-4 sm:px-8 border-b border-linen-300 dark:border-onyx-800 text-xs font-semibold overflow-x-auto flex items-center space-x-6 scrollbar-none">
+        <div className="sticky top-20 z-20 bg-white/95 dark:bg-onyx-950/95 backdrop-blur-md pt-2 pb-0 -mx-4 sm:-mx-8 px-4 sm:px-8 border-b border-linen-300 dark:border-onyx-800 text-xs font-semibold overflow-x-auto flex items-center space-x-6 scrollbar-none">
           <button
             onClick={() => setActiveTab('overview')}
             className={`pb-3 transition whitespace-nowrap flex items-center space-x-1.5 ${
               activeTab === 'overview'
-                ? 'text-onyx-950 dark:text-linen-50 font-bold border-b-2 border-olive-700 dark:border-camel-400'
-                : 'text-onyx-500 dark:text-linen-400 hover:text-onyx-900'
+                ? 'text-black dark:text-[#E6D3B3] font-bold border-b-2 border-black dark:border-[#E6D3B3]'
+                : 'text-neutral-500 dark:text-neutral-400 hover:text-black dark:hover:text-[#E6D3B3]'
             }`}
           >
-            <span>📊 Overview</span>
+            <span>📈 Analytics & Graphs</span>
           </button>
 
           <button
-            onClick={() => setActiveTab('products')}
+            onClick={() => setActiveTab('approvals')}
             className={`pb-3 transition whitespace-nowrap flex items-center space-x-1.5 ${
-              activeTab === 'products'
-                ? 'text-onyx-950 dark:text-linen-50 font-bold border-b-2 border-olive-700 dark:border-camel-400'
-                : 'text-onyx-500 dark:text-linen-400 hover:text-onyx-900'
+              activeTab === 'approvals'
+                ? 'text-black dark:text-[#E6D3B3] font-bold border-b-2 border-black dark:border-[#E6D3B3]'
+                : 'text-neutral-500 dark:text-neutral-400 hover:text-black dark:hover:text-[#E6D3B3]'
             }`}
           >
-            <span>👗 Products Catalog</span>
-            <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-linen-200 dark:bg-onyx-800">
-              {liveProducts.length}
-            </span>
+            <span>⚡ Approvals Queue</span>
+            {pendingOrders.length > 0 && (
+              <span className="px-2 py-0.5 rounded-none font-bold text-xs bg-amber-500 text-black animate-pulse">
+                {pendingOrders.length}
+              </span>
+            )}
           </button>
 
           <button
             onClick={() => setActiveTab('orders')}
             className={`pb-3 transition whitespace-nowrap flex items-center space-x-1.5 ${
               activeTab === 'orders'
-                ? 'text-onyx-950 dark:text-linen-50 font-bold border-b-2 border-olive-700 dark:border-camel-400'
-                : 'text-onyx-500 dark:text-linen-400 hover:text-onyx-900'
+                ? 'text-black dark:text-[#E6D3B3] font-bold border-b-2 border-black dark:border-[#E6D3B3]'
+                : 'text-neutral-500 dark:text-neutral-400 hover:text-black dark:hover:text-[#E6D3B3]'
             }`}
           >
             <span>📦 Orders & Shipments</span>
-            <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-linen-200 dark:bg-onyx-800">
+            <span className="px-1.5 py-0.5 rounded-none text-xs bg-neutral-100 dark:bg-onyx-800 font-bold">
               {liveOrders.length}
+            </span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('products')}
+            className={`pb-3 transition whitespace-nowrap flex items-center space-x-1.5 ${
+              activeTab === 'products'
+                ? 'text-black dark:text-[#E6D3B3] font-bold border-b-2 border-black dark:border-[#E6D3B3]'
+                : 'text-neutral-500 dark:text-neutral-400 hover:text-black dark:hover:text-[#E6D3B3]'
+            }`}
+          >
+            <span>👗 Products Catalog</span>
+            <span className="px-1.5 py-0.5 rounded-none text-xs bg-neutral-100 dark:bg-onyx-800 font-bold">
+              {liveProducts.length}
             </span>
           </button>
 
@@ -496,12 +628,12 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
             onClick={() => setActiveTab('customers')}
             className={`pb-3 transition whitespace-nowrap flex items-center space-x-1.5 ${
               activeTab === 'customers'
-                ? 'text-onyx-950 dark:text-linen-50 font-bold border-b-2 border-olive-700 dark:border-camel-400'
-                : 'text-onyx-500 dark:text-linen-400 hover:text-onyx-900'
+                ? 'text-black dark:text-[#E6D3B3] font-bold border-b-2 border-black dark:border-[#E6D3B3]'
+                : 'text-neutral-500 dark:text-neutral-400 hover:text-black dark:hover:text-[#E6D3B3]'
             }`}
           >
-            <span>👤 Customers</span>
-            <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-linen-200 dark:bg-onyx-800">
+            <span>👤 Client Directory</span>
+            <span className="px-1.5 py-0.5 rounded-none text-xs bg-neutral-100 dark:bg-onyx-800 font-bold">
               {customers.length}
             </span>
           </button>
@@ -510,101 +642,316 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
             onClick={() => setActiveTab('subscribers')}
             className={`pb-3 transition whitespace-nowrap flex items-center space-x-1.5 ${
               activeTab === 'subscribers'
-                ? 'text-onyx-950 dark:text-linen-50 font-bold border-b-2 border-olive-700 dark:border-camel-400'
-                : 'text-onyx-500 dark:text-linen-400 hover:text-onyx-900'
+                ? 'text-black dark:text-[#E6D3B3] font-bold border-b-2 border-black dark:border-[#E6D3B3]'
+                : 'text-neutral-500 dark:text-neutral-400 hover:text-black dark:hover:text-[#E6D3B3]'
             }`}
           >
-            <span>📬 Subscribers & Messages</span>
-            <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-linen-200 dark:bg-onyx-800">
+            <span>📬 Gazette & Concierge</span>
+            <span className="px-1.5 py-0.5 rounded-none text-xs bg-neutral-100 dark:bg-onyx-800 font-bold">
               {subscribers.length + inquiries.length}
             </span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('security')}
+            className={`pb-3 transition whitespace-nowrap flex items-center space-x-1.5 ${
+              activeTab === 'security'
+                ? 'text-black dark:text-[#E6D3B3] font-bold border-b-2 border-black dark:border-[#E6D3B3]'
+                : 'text-neutral-500 dark:text-neutral-400 hover:text-black dark:hover:text-[#E6D3B3]'
+            }`}
+          >
+            <span>🛡️ Security & Access</span>
           </button>
 
           <button
             onClick={() => setActiveTab('appearance')}
             className={`pb-3 transition whitespace-nowrap flex items-center space-x-1.5 ${
               activeTab === 'appearance'
-                ? 'text-onyx-950 dark:text-linen-50 font-bold border-b-2 border-olive-700 dark:border-camel-400'
-                : 'text-onyx-500 dark:text-linen-400 hover:text-onyx-900'
+                ? 'text-black dark:text-[#E6D3B3] font-bold border-b-2 border-black dark:border-[#E6D3B3]'
+                : 'text-neutral-500 dark:text-neutral-400 hover:text-black dark:hover:text-[#E6D3B3]'
             }`}
           >
-            <span>🎨 Palette & Brand</span>
+            <span>🎨 Brand & Palette</span>
           </button>
         </div>
 
         {/* =========================================================================
-            TAB 1: EXECUTIVE OVERVIEW DASHBOARD
+            TAB 1: VISUAL ANALYTICS & INTERACTIVE REVENUE GRAPH
         ========================================================================= */}
         {activeTab === 'overview' && (
           <div className="space-y-8 animate-fadeIn">
             {/* 6 Key MongoDB Metrics Cards */}
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
-              <div className="p-4 rounded-2xl bg-white dark:bg-onyx-900 border border-linen-300 dark:border-onyx-800 shadow-sm">
-                <span className="text-[10px] uppercase font-bold text-onyx-500 dark:text-linen-400 tracking-wider">
-                  Total Revenue
+              <div className="p-4 rounded-none bg-white dark:bg-onyx-900 border border-neutral-300 dark:border-onyx-800 shadow-sm">
+                <span className="text-xs uppercase font-bold text-neutral-500 dark:text-neutral-400 tracking-wider">
+                  Total Sales
                 </span>
-                <p className="text-xl sm:text-2xl font-black text-olive-800 dark:text-camel-400 mt-1">
+                <p className="text-xl sm:text-2xl font-black text-black dark:text-[#E6D3B3] mt-1 font-mono">
                   Rs. {totalRevenue.toLocaleString()}
                 </p>
-                <span className="text-[10px] text-emerald-600 font-semibold">● Paid & COD Booked</span>
+                <span className="text-xs text-emerald-600 font-semibold">● Verified in Atlas</span>
               </div>
 
-              <div className="p-4 rounded-2xl bg-white dark:bg-onyx-900 border border-linen-300 dark:border-onyx-800 shadow-sm">
-                <span className="text-[10px] uppercase font-bold text-onyx-500 dark:text-linen-400 tracking-wider">
+              <div className="p-4 rounded-none bg-white dark:bg-onyx-900 border border-neutral-300 dark:border-onyx-800 shadow-sm">
+                <span className="text-xs uppercase font-bold text-neutral-500 dark:text-neutral-400 tracking-wider">
+                  Pending Approvals
+                </span>
+                <p className="text-xl sm:text-2xl font-black text-amber-600 dark:text-amber-400 mt-1 font-mono">
+                  {pendingOrders.length}
+                </p>
+                <span className="text-xs text-neutral-500">Awaiting Verification</span>
+              </div>
+
+              <div className="p-4 rounded-none bg-white dark:bg-onyx-900 border border-neutral-300 dark:border-onyx-800 shadow-sm">
+                <span className="text-xs uppercase font-bold text-neutral-500 dark:text-neutral-400 tracking-wider">
                   Total Orders
                 </span>
-                <p className="text-xl sm:text-2xl font-black text-onyx-950 dark:text-white mt-1">
+                <p className="text-xl sm:text-2xl font-black text-black dark:text-white mt-1 font-mono">
                   {liveOrders.length}
                 </p>
-                <span className="text-[10px] text-onyx-500">In MongoDB Atlas</span>
+                <span className="text-xs text-neutral-500">Live Consignments</span>
               </div>
 
-              <div className="p-4 rounded-2xl bg-white dark:bg-onyx-900 border border-linen-300 dark:border-onyx-800 shadow-sm">
-                <span className="text-[10px] uppercase font-bold text-onyx-500 dark:text-linen-400 tracking-wider">
-                  Total Garments
+              <div className="p-4 rounded-none bg-white dark:bg-onyx-900 border border-neutral-300 dark:border-onyx-800 shadow-sm">
+                <span className="text-xs uppercase font-bold text-neutral-500 dark:text-neutral-400 tracking-wider">
+                  Garments Catalog
                 </span>
-                <p className="text-xl sm:text-2xl font-black text-onyx-950 dark:text-white mt-1">
+                <p className="text-xl sm:text-2xl font-black text-black dark:text-white mt-1 font-mono">
                   {liveProducts.length}
                 </p>
-                <span className="text-[10px] text-camel-600 font-semibold">
-                  {liveProducts.filter(p => (p.person || p.gender) === 'women').length}W • {liveProducts.filter(p => (p.person || p.gender) === 'men').length}M
-                </span>
+                <span className="text-xs text-[#A6865A] dark:text-[#E6D3B3] font-semibold">Active Inventory</span>
               </div>
 
-              <div className="p-4 rounded-2xl bg-white dark:bg-onyx-900 border border-linen-300 dark:border-onyx-800 shadow-sm">
-                <span className="text-[10px] uppercase font-bold text-onyx-500 dark:text-linen-400 tracking-wider">
-                  Customers
+              <div className="p-4 rounded-none bg-white dark:bg-onyx-900 border border-neutral-300 dark:border-onyx-800 shadow-sm">
+                <span className="text-xs uppercase font-bold text-neutral-500 dark:text-neutral-400 tracking-wider">
+                  Clients (Unhashed)
                 </span>
-                <p className="text-xl sm:text-2xl font-black text-onyx-950 dark:text-white mt-1">
+                <p className="text-xl sm:text-2xl font-black text-black dark:text-white mt-1 font-mono">
                   {customers.length}
                 </p>
-                <span className="text-[10px] text-onyx-500">Google Verified</span>
+                <span className="text-xs text-neutral-500">Google Verified</span>
               </div>
 
-              <div className="p-4 rounded-2xl bg-white dark:bg-onyx-900 border border-linen-300 dark:border-onyx-800 shadow-sm">
-                <span className="text-[10px] uppercase font-bold text-onyx-500 dark:text-linen-400 tracking-wider">
-                  Subscribers
+              <div className="p-4 rounded-none bg-white dark:bg-onyx-900 border border-neutral-300 dark:border-onyx-800 shadow-sm">
+                <span className="text-xs uppercase font-bold text-neutral-500 dark:text-neutral-400 tracking-wider">
+                  Gazette Circle
                 </span>
-                <p className="text-xl sm:text-2xl font-black text-onyx-950 dark:text-white mt-1">
+                <p className="text-xl sm:text-2xl font-black text-black dark:text-white mt-1 font-mono">
                   {subscribers.length}
                 </p>
-                <span className="text-[10px] text-emerald-600 font-semibold">Newsletter Active</span>
+                <span className="text-xs text-emerald-600 font-semibold">Subscribers</span>
+              </div>
+            </div>
+
+            {/* INTERACTIVE ANIMATED REVENUE GRAPH (7-DAY TRAJECTORY) */}
+            <div className="p-6 rounded-none bg-white dark:bg-onyx-900 border border-neutral-300 dark:border-onyx-800 shadow-sm space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-neutral-200 dark:border-onyx-800 pb-4">
+                <div>
+                  <h3 className="font-editorial text-xl font-bold text-black dark:text-white flex items-center space-x-2">
+                    <span>📈 Revenue Trajectory</span>
+                    <span className="text-xs font-mono font-normal text-neutral-500">(Past 7 Days)</span>
+                  </h3>
+                  <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-0.5">
+                    Live revenue aggregation across completed &amp; booked orders
+                  </p>
+                </div>
+                <div className="flex items-center space-x-4 text-xs font-mono">
+                  <div>
+                    <span className="text-neutral-500">Peak Daily: </span>
+                    <strong className="text-black dark:text-[#E6D3B3]">Rs. {maxChartRevenue.toLocaleString()}</strong>
+                  </div>
+                  <div>
+                    <span className="text-neutral-500">Avg/Day: </span>
+                    <strong className="text-black dark:text-[#E6D3B3]">
+                      Rs. {Math.round(totalRevenue / 7).toLocaleString()}
+                    </strong>
+                  </div>
+                </div>
               </div>
 
-              <div className="p-4 rounded-2xl bg-white dark:bg-onyx-900 border border-linen-300 dark:border-onyx-800 shadow-sm">
-                <span className="text-[10px] uppercase font-bold text-onyx-500 dark:text-linen-400 tracking-wider">
-                  Inquiries
-                </span>
-                <p className="text-xl sm:text-2xl font-black text-onyx-950 dark:text-white mt-1">
-                  {inquiries.length}
-                </p>
-                <span className="text-[10px] text-onyx-500">Concierge Desk</span>
+              {/* Responsive SVG Chart */}
+              <div className="relative w-full overflow-x-auto pt-2">
+                <svg
+                  viewBox={`0 0 ${chartWidth} ${chartHeight}`}
+                  className="w-full h-56 select-none"
+                >
+                  <defs>
+                    <linearGradient id="sandAreaGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#E6D3B3" stopOpacity="0.45" />
+                      <stop offset="70%" stopColor="#E6D3B3" stopOpacity="0.1" />
+                      <stop offset="100%" stopColor="#E6D3B3" stopOpacity="0.0" />
+                    </linearGradient>
+                  </defs>
+
+                  {/* Horizontal Gridlines */}
+                  {[0, 0.25, 0.5, 0.75, 1].map((pct, idx) => {
+                    const y = paddingY + (chartHeight - paddingY * 2) * (1 - pct);
+                    const val = Math.round(maxChartRevenue * pct);
+                    return (
+                      <g key={idx}>
+                        <line
+                          x1={paddingX}
+                          y1={y}
+                          x2={chartWidth - paddingX}
+                          y2={y}
+                          stroke="#E5E7EB"
+                          strokeDasharray="4 4"
+                          className="dark:stroke-neutral-800"
+                        />
+                        <text
+                          x={paddingX - 6}
+                          y={y + 3}
+                          textAnchor="end"
+                          fontSize="9"
+                          fill="#9CA3AF"
+                          fontFamily="monospace"
+                        >
+                          {val >= 1000 ? `${(val / 1000).toFixed(0)}k` : val}
+                        </text>
+                      </g>
+                    );
+                  })}
+
+                  {/* Area Fill Under Curve */}
+                  {svgAreaD && (
+                    <path
+                      d={svgAreaD}
+                      fill="url(#sandAreaGrad)"
+                    />
+                  )}
+
+                  {/* Main Curve Line */}
+                  {svgPathD && (
+                    <path
+                      d={svgPathD}
+                      fill="none"
+                      stroke="#A6865A"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="dark:stroke-[#E6D3B3]"
+                    />
+                  )}
+
+                  {/* Interactive Data Points */}
+                  {chartPoints.map((pt, idx) => (
+                    <g key={idx} className="cursor-pointer group">
+                      <circle
+                        cx={pt.x}
+                        cy={pt.y}
+                        r={hoveredChartPoint?.date === pt.date ? 6 : 4}
+                        fill="#A6865A"
+                        className="dark:fill-[#E6D3B3] transition-all"
+                        stroke="#ffffff"
+                        strokeWidth="2"
+                        onMouseEnter={() => setHoveredChartPoint(pt)}
+                        onMouseLeave={() => setHoveredChartPoint(null)}
+                      />
+                      {/* Day Label on X Axis */}
+                      <text
+                        x={pt.x}
+                        y={chartHeight - 8}
+                        textAnchor="middle"
+                        fontSize="10"
+                        fill="#6B7280"
+                        fontFamily="sans-serif"
+                        fontWeight="600"
+                      >
+                        {pt.label}
+                      </text>
+                    </g>
+                  ))}
+                </svg>
+
+                {/* Hover Tooltip Box */}
+                {hoveredChartPoint && (
+                  <div
+                    className="absolute z-10 pointer-events-none bg-black text-white px-3 py-1.5 rounded-none shadow-lg text-xs font-mono border border-[#E6D3B3]"
+                    style={{
+                      left: `${(hoveredChartPoint.x / chartWidth) * 100}%`,
+                      top: `${(hoveredChartPoint.y / chartHeight) * 100 - 30}%`,
+                      transform: 'translate(-50%, -100%)'
+                    }}
+                  >
+                    <div className="text-[10px] text-[#E6D3B3] font-bold">{hoveredChartPoint.label}</div>
+                    <div className="font-bold text-sm">Rs. {hoveredChartPoint.revenue.toLocaleString()}</div>
+                  </div>
+                )}
               </div>
+            </div>
+
+            {/* FULFILLMENT STATUS & PAYMENT GATEWAYS SPLIT */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              
+              {/* Card 1: Fulfillment Status Distribution */}
+              <div className="p-6 rounded-none bg-white dark:bg-onyx-900 border border-neutral-300 dark:border-onyx-800 shadow-sm space-y-4">
+                <h4 className="font-editorial text-lg font-bold text-black dark:text-white">
+                  Order Status Breakdown
+                </h4>
+                <div className="space-y-3">
+                  {[
+                    { label: 'Pending Verification', count: statusStats.pending, color: 'bg-amber-500' },
+                    { label: 'Approved & Packed', count: statusStats.approved, color: 'bg-blue-600' },
+                    { label: 'Dispatched (In Transit)', count: statusStats.dispatched + statusStats.processing, color: 'bg-indigo-600' },
+                    { label: 'Delivered to Client', count: statusStats.delivered, color: 'bg-emerald-600' }
+                  ].map((st, idx) => {
+                    const total = liveOrders.length || 1;
+                    const pct = Math.round((st.count / total) * 100);
+                    return (
+                      <div key={idx} className="space-y-1">
+                        <div className="flex justify-between text-xs font-semibold">
+                          <span>{st.label}</span>
+                          <span className="font-mono">{st.count} orders ({pct}%)</span>
+                        </div>
+                        <div className="w-full h-2.5 bg-neutral-100 dark:bg-onyx-800 rounded-none overflow-hidden">
+                          <div
+                            className={`h-full ${st.color} transition-all duration-500`}
+                            style={{ width: `${pct}%` }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Card 2: Payment Gateways Breakdown */}
+              <div className="p-6 rounded-none bg-white dark:bg-onyx-900 border border-neutral-300 dark:border-onyx-800 shadow-sm space-y-4">
+                <h4 className="font-editorial text-lg font-bold text-black dark:text-white">
+                  Payment Channels Breakdown
+                </h4>
+                <div className="space-y-3">
+                  {[
+                    { label: 'Cash on Delivery (COD)', count: paymentStats.cod, color: 'bg-neutral-800 dark:bg-neutral-200' },
+                    { label: 'JazzCash Wallet', count: paymentStats.jazzcash, color: 'bg-red-600' },
+                    { label: 'EasyPaisa Wallet', count: paymentStats.easypaisa, color: 'bg-emerald-600' },
+                    { label: 'Credit / Debit Cards', count: paymentStats.card, color: 'bg-[#A6865A] dark:bg-[#E6D3B3]' }
+                  ].map((pm, idx) => {
+                    const total = liveOrders.length || 1;
+                    const pct = Math.round((pm.count / total) * 100);
+                    return (
+                      <div key={idx} className="space-y-1">
+                        <div className="flex justify-between text-xs font-semibold">
+                          <span>{pm.label}</span>
+                          <span className="font-mono">{pm.count} transactions ({pct}%)</span>
+                        </div>
+                        <div className="w-full h-2.5 bg-neutral-100 dark:bg-onyx-800 rounded-none overflow-hidden">
+                          <div
+                            className={`h-full ${pm.color} transition-all duration-500`}
+                            style={{ width: `${pct}%` }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
             </div>
 
             {/* Low Inventory Alert Banner (if any item has <= 4 stock) */}
             {lowStockProducts.length > 0 && (
-              <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+              <div className="p-4 rounded-none bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
                 <div className="flex items-center space-x-3 text-amber-900 dark:text-amber-200">
                   <span className="text-lg">⚠️</span>
                   <div>
@@ -622,32 +969,32 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
             )}
 
             {/* Recent Orders Section */}
-            <div className="bg-white dark:bg-onyx-900 rounded-2xl border border-linen-300 dark:border-onyx-800 shadow-sm overflow-hidden">
-              <div className="p-5 border-b border-linen-200 dark:border-onyx-800 flex items-center justify-between">
+            <div className="bg-white dark:bg-onyx-900 rounded-none border border-neutral-300 dark:border-onyx-800 shadow-sm overflow-hidden">
+              <div className="p-5 border-b border-neutral-200 dark:border-onyx-800 flex items-center justify-between">
                 <div>
-                  <h3 className="font-editorial text-lg font-bold text-onyx-950 dark:text-white">
+                  <h3 className="font-editorial text-lg font-bold text-black dark:text-white">
                     Recent Customer Orders
                   </h3>
-                  <p className="text-xs text-onyx-500 dark:text-linen-400">
-                    Direct from MongoDB Atlas `orders` collection
+                  <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                    Direct from MongoDB Atlas orders collection (Stored Unhashed)
                   </p>
                 </div>
                 <button
                   onClick={() => setActiveTab('orders')}
-                  className="text-xs font-bold text-olive-800 dark:text-camel-400 hover:underline"
+                  className="text-xs font-bold text-black dark:text-[#E6D3B3] hover:underline"
                 >
                   View All Orders ({liveOrders.length}) →
                 </button>
               </div>
 
               {liveOrders.length === 0 ? (
-                <div className="p-8 text-center text-xs text-onyx-500">
-                  No customer orders in MongoDB yet. Place a test order from the storefront!
+                <div className="p-8 text-center text-xs text-neutral-500">
+                  No customer orders in MongoDB yet. Place an order from the storefront!
                 </div>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs">
-                    <thead className="bg-linen-100 dark:bg-onyx-950 text-onyx-600 dark:text-linen-400 text-[10px] font-bold uppercase tracking-wider border-b border-linen-200 dark:border-onyx-800">
+                    <thead className="bg-neutral-100 dark:bg-onyx-950 text-neutral-600 dark:text-neutral-400 text-xs font-bold uppercase tracking-wider border-b border-neutral-200 dark:border-onyx-800">
                       <tr>
                         <th className="py-3 px-4">Order #</th>
                         <th className="py-3 px-4">Customer</th>
@@ -657,39 +1004,39 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                         <th className="py-3 px-4">Status</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-linen-200 dark:divide-onyx-800">
+                    <tbody className="divide-y divide-neutral-200 dark:divide-onyx-800">
                       {liveOrders.slice(0, 5).map((ord) => (
-                        <tr key={ord.id || ord.orderNumber} className="hover:bg-linen-50 dark:hover:bg-onyx-800/40 transition">
-                          <td className="py-3 px-4 font-mono font-bold text-olive-800 dark:text-camel-400">
+                        <tr key={ord.id || ord.orderNumber} className="hover:bg-neutral-50 dark:hover:bg-onyx-800/40 transition">
+                          <td className="py-3 px-4 font-mono font-bold text-black dark:text-[#E6D3B3]">
                             {ord.orderNumber || ord.id}
                           </td>
                           <td className="py-3 px-4">
-                            <span className="font-bold text-onyx-900 dark:text-white">
+                            <span className="font-bold text-black dark:text-white">
                               {ord.customer?.firstName} {ord.customer?.lastName}
                             </span>
-                            <span className="block text-[11px] text-onyx-500">{ord.customer?.phone}</span>
+                            <span className="block text-xs text-neutral-500 font-mono">{ord.customer?.phone}</span>
                           </td>
-                          <td className="py-3 px-4 text-onyx-700 dark:text-linen-300 font-medium">
+                          <td className="py-3 px-4 text-neutral-700 dark:text-neutral-300 font-medium">
                             {ord.customer?.city || 'Lahore'}
                           </td>
-                          <td className="py-3 px-4 font-mono uppercase text-[10px]">
+                          <td className="py-3 px-4 font-mono uppercase text-xs">
                             <div className="flex items-center space-x-1.5">
                               <span>{ord.paymentMethod === 'cod' ? '💵 COD' : ord.paymentMethod?.toUpperCase()}</span>
                               {ord.paymentReceipt && (
-                                <span className="px-1.5 py-0.5 bg-camel-100 text-camel-800 dark:bg-camel-900/50 dark:text-camel-300 font-bold text-[9px]">
+                                <span className="px-1.5 py-0.5 bg-[#E6D3B3] text-black font-bold text-xs">
                                   📎 PROOF
                                 </span>
                               )}
                             </div>
                           </td>
-                          <td className="py-3 px-4 font-bold text-onyx-950 dark:text-white">
+                          <td className="py-3 px-4 font-bold text-black dark:text-white font-mono">
                             Rs. {Number(ord.total || 0).toLocaleString()}
                           </td>
                           <td className="py-3 px-4">
                             <select
                               value={ord.status || 'processing'}
                               onChange={(e) => handleStatusChange(ord.id || ord.orderNumber, e.target.value)}
-                              className="px-2.5 py-1 rounded-lg text-xs font-bold border border-linen-300 dark:border-onyx-700 bg-linen-50 dark:bg-onyx-800 cursor-pointer"
+                              className="px-2.5 py-1 rounded-none text-xs font-bold border border-neutral-300 dark:border-onyx-700 bg-neutral-50 dark:bg-onyx-800 cursor-pointer"
                             >
                               <option value="pending">Pending</option>
                               <option value="approved">Approved</option>
@@ -705,6 +1052,184 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                   </table>
                 </div>
               )}
+            </div>
+          </div>
+        )}
+
+        {/* =========================================================================
+            TAB: APPROVALS QUEUE (PENDING ORDERS WITH PAYMENT RECEIPTS)
+        ========================================================================= */}
+        {activeTab === 'approvals' && (
+          <div className="space-y-6 animate-fadeIn">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-200 dark:border-onyx-800 pb-4">
+              <div>
+                <h3 className="font-editorial text-2xl font-bold text-black dark:text-white">
+                  Consignment Approval Queue
+                </h3>
+                <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                  Review payment screenshots, approve orders, and auto-dispatch courier tracking numbers
+                </p>
+              </div>
+              <span className="px-3 py-1 bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-200 text-xs font-bold uppercase tracking-wider">
+                {pendingOrders.length} Pending Verifications
+              </span>
+            </div>
+
+            {pendingOrders.length === 0 ? (
+              <div className="p-12 text-center border-2 border-dashed border-neutral-300 dark:border-onyx-800 bg-white dark:bg-onyx-900 rounded-none space-y-2">
+                <span className="text-3xl">🎉</span>
+                <h4 className="font-bold text-sm text-black dark:text-white">Queue Clear!</h4>
+                <p className="text-xs text-neutral-500">All received orders have been approved and processed.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {pendingOrders.map(order => (
+                  <div
+                    key={order.orderNumber || order.id}
+                    className="p-5 rounded-none bg-white dark:bg-onyx-900 border-2 border-neutral-300 dark:border-onyx-800 space-y-4 shadow-sm"
+                  >
+                    <div className="flex justify-between items-start border-b border-neutral-200 dark:border-onyx-800 pb-3">
+                      <div>
+                        <span className="font-mono text-xs font-black text-black dark:text-[#E6D3B3] block">
+                          #{order.orderNumber || order.id}
+                        </span>
+                        <span className="text-xs text-neutral-500 font-mono">
+                          {order.createdAt ? new Date(order.createdAt).toLocaleDateString() : 'Today'}
+                        </span>
+                      </div>
+                      <span className="px-2 py-0.5 bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-300 font-bold text-xs uppercase">
+                        Pending
+                      </span>
+                    </div>
+
+                    {/* Customer Info (Unhashed) */}
+                    <div className="text-xs space-y-1 font-mono">
+                      <div><strong className="font-sans text-neutral-700 dark:text-neutral-300">Client:</strong> {order.customer?.firstName} {order.customer?.lastName}</div>
+                      <div><strong className="font-sans text-neutral-700 dark:text-neutral-300">Phone:</strong> {order.customer?.phone}</div>
+                      <div><strong className="font-sans text-neutral-700 dark:text-neutral-300">City:</strong> {order.customer?.city}</div>
+                      <div><strong className="font-sans text-neutral-700 dark:text-neutral-300">Total:</strong> Rs. {Number(order.total || 0).toLocaleString()}</div>
+                    </div>
+
+                    {/* Receipt Screenshot Preview */}
+                    {order.paymentReceipt ? (
+                      <div
+                        onClick={() => setEnlargedReceipt({ src: order.paymentReceipt, fileName: order.receiptFileName })}
+                        className="p-2 bg-neutral-100 dark:bg-onyx-950 border border-dashed border-neutral-400 cursor-pointer text-center group"
+                      >
+                        <img
+                          src={order.paymentReceipt}
+                          alt="Receipt Preview"
+                          className="max-h-36 mx-auto object-contain transition-transform group-hover:scale-105"
+                        />
+                        <span className="block text-[11px] font-bold text-neutral-600 dark:text-neutral-300 mt-1">
+                          🔍 Click to Inspect Fullscreen
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="p-3 bg-neutral-100 dark:bg-onyx-950 text-neutral-500 text-xs text-center font-mono">
+                        No receipt attached (COD or Direct)
+                      </div>
+                    )}
+
+                    {/* 1-Click Approve Action */}
+                    <div className="space-y-2 pt-2">
+                      <button
+                        type="button"
+                        disabled={approvalLoading}
+                        onClick={() => handleApproveOrder(order)}
+                        className="w-full py-2.5 bg-black hover:bg-neutral-800 text-white dark:bg-[#E6D3B3] dark:hover:bg-[#d9c19b] dark:text-black font-bold uppercase tracking-wider text-xs transition active:scale-95 shadow-sm"
+                      >
+                        {approvalLoading ? 'Approving...' : '✓ Approve & Assign TCS Tracking'}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const cleanPhone = (order.customer?.phone || '').replace(/[^0-9]/g, '');
+                          const formattedPhone = cleanPhone.startsWith('0') ? '92' + cleanPhone.slice(1) : cleanPhone;
+                          const msg = `Assalam-o-Alaikum ${order.customer?.firstName || 'Valued Client'},\nYour Zaytoun order #${order.orderNumber || order.id} is verified and booked for delivery.`;
+                          window.open(`https://wa.me/${formattedPhone}?text=${encodeURIComponent(msg)}`, '_blank');
+                        }}
+                        className="w-full py-2 bg-emerald-700 hover:bg-emerald-800 text-white font-bold uppercase tracking-wider text-xs transition flex items-center justify-center space-x-1"
+                      >
+                        <span>📱 WhatsApp Customer</span>
+                      </button>
+                    </div>
+
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* =========================================================================
+            TAB: SECURITY & ACCESS CONTROL (OWNER CONFIGURATION)
+        ========================================================================= */}
+        {activeTab === 'security' && (
+          <div className="max-w-2xl mx-auto space-y-6 animate-fadeIn p-6 bg-white dark:bg-onyx-900 border border-neutral-300 dark:border-onyx-800 shadow-sm">
+            <div className="border-b border-neutral-200 dark:border-onyx-800 pb-4">
+              <span className="text-xs font-mono font-bold uppercase tracking-widest text-[#A6865A] dark:text-[#E6D3B3]">
+                Atelier Security Core
+              </span>
+              <h3 className="font-editorial text-2xl font-bold text-black dark:text-white mt-1">
+                Executive Access &amp; 404 Shield
+              </h3>
+              <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-1">
+                Manage who can unlock the Studio Dashboard. All unauthorized visitors or random URL attempts are automatically redirected to 404 Page Not Found.
+              </p>
+            </div>
+
+            {/* Active Security Badges */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+              <div className="p-3 bg-neutral-50 dark:bg-onyx-950 border border-neutral-200 dark:border-onyx-800 space-y-1">
+                <span className="text-emerald-600 font-bold block">● 404 Cloaking</span>
+                <span className="text-neutral-500">Public sees 404 for /studio &amp; /admin</span>
+              </div>
+              <div className="p-3 bg-neutral-50 dark:bg-onyx-950 border border-neutral-200 dark:border-onyx-800 space-y-1">
+                <span className="text-emerald-600 font-bold block">● Google OAuth 2.0</span>
+                <span className="text-neutral-500">Strict cryptographically signed session</span>
+              </div>
+              <div className="p-3 bg-neutral-50 dark:bg-onyx-950 border border-neutral-200 dark:border-onyx-800 space-y-1">
+                <span className="text-emerald-600 font-bold block">● Atlas Direct Sync</span>
+                <span className="text-neutral-500">Unhashed database storage</span>
+              </div>
+            </div>
+
+            {/* Change Owner Email Form */}
+            <form onSubmit={handleSaveAdminEmail} className="space-y-4 pt-2">
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-black dark:text-white mb-1.5">
+                  Authorized Owner Google Email Address *
+                </label>
+                <input
+                  type="email"
+                  value={adminEmailInput}
+                  onChange={(e) => setAdminEmailInput(e.target.value)}
+                  placeholder="e.g. shaahrozdogar@gmail.com"
+                  required
+                  className="w-full bg-neutral-50 dark:bg-onyx-800 border border-neutral-300 dark:border-onyx-700 p-3 text-xs font-mono text-black dark:text-white outline-none focus:border-black dark:focus:border-[#E6D3B3]"
+                />
+                <span className="text-xs text-neutral-500 mt-1 block">
+                  Only this verified Google account can access Studio. If you ever want to change it, update it here.
+                </span>
+              </div>
+
+              {adminEmailSavedMessage && (
+                <div className="p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 text-emerald-800 dark:text-emerald-200 text-xs font-bold">
+                  {adminEmailSavedMessage}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                className="px-6 py-3 bg-black hover:bg-neutral-800 text-white dark:bg-[#E6D3B3] dark:hover:bg-[#d9c19b] dark:text-black font-bold uppercase tracking-wider text-xs transition shadow-sm"
+              >
+                Save &amp; Update Authorized Email
+              </button>
+            </form>
+
+            <div className="pt-4 border-t border-neutral-200 dark:border-onyx-800 text-xs text-neutral-500 font-mono">
+              Current Session: {user?.email || 'Logged In'} • Role: Master Atelier Owner
             </div>
           </div>
         )}

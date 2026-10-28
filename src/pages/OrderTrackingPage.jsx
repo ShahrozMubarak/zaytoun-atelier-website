@@ -158,7 +158,7 @@ export default function OrderTrackingPage() {
         
         {/* Breadcrumb & Slogan */}
         <div className="text-center mb-8 space-y-2">
-          <span className="text-[11px] font-mono uppercase tracking-[0.25em] text-camel-600 dark:text-camel-400 font-bold">
+          <span className="text-xs font-mono uppercase tracking-[0.25em] text-sand-700 dark:text-sand-400 font-bold">
             Wear Less, Wear Longer • Nationwide Fulfillment
           </span>
           <h1 className="font-editorial text-3xl sm:text-5xl font-bold tracking-tight">
@@ -200,14 +200,14 @@ export default function OrderTrackingPage() {
             {/* Order Header Summary Banner */}
             <div className="bg-white dark:bg-onyx-900 rounded-none p-6 shadow-sm border border-linen-300 dark:border-onyx-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <span className="text-[10px] font-mono uppercase tracking-widest text-onyx-500 dark:text-linen-400">
+                <span className="text-xs font-mono uppercase tracking-widest text-onyx-500 dark:text-linen-400">
                   Confirmed Consignment
                 </span>
                 <div className="flex items-center space-x-3 mt-1">
                   <h2 className="font-mono text-xl sm:text-2xl font-bold text-neutral-900 dark:text-camel-400">
                     {order.orderNumber || order.id}
                   </h2>
-                  <span className={`px-3 py-1 rounded-none text-[10px] font-bold uppercase tracking-wider border ${
+                  <span className={`px-3 py-1 rounded-none text-xs font-bold uppercase tracking-wider border ${
                     isPendingApproval
                       ? 'bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-700'
                       : 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700'
@@ -307,7 +307,7 @@ export default function OrderTrackingPage() {
                           }`}>
                             {stage.label}
                           </p>
-                          <p className="text-[10px] text-onyx-500 dark:text-linen-400 mt-0.5">
+                          <p className="text-xs text-onyx-500 dark:text-linen-400 mt-0.5">
                             {stage.desc}
                           </p>
                         </div>
@@ -324,7 +324,7 @@ export default function OrderTrackingPage() {
                     🚚
                   </div>
                   <div>
-                    <span className="text-[10px] uppercase font-mono tracking-wider text-onyx-500 dark:text-linen-400 block">
+                    <span className="text-xs uppercase font-mono tracking-wider text-onyx-500 dark:text-linen-400 block">
                       Assigned White-Glove Courier:
                     </span>
                     <strong className="text-onyx-950 dark:text-linen-50 font-bold">
@@ -339,10 +339,10 @@ export default function OrderTrackingPage() {
                 </div>
 
                 <div className="sm:text-right">
-                  <span className="text-[10px] uppercase font-mono tracking-wider text-onyx-500 dark:text-linen-400 block">
+                  <span className="text-xs uppercase font-mono tracking-wider text-onyx-500 dark:text-linen-400 block">
                     Estimated Doorstep Arrival:
                   </span>
-                  <strong className="text-camel-700 dark:text-camel-300">
+                  <strong className="text-sand-700 dark:text-sand-300">
                     {isPendingApproval ? '2 to 4 Days (Post-Verification)' : '2 to 4 Business Days'}
                   </strong>
                 </div>
@@ -372,17 +372,17 @@ export default function OrderTrackingPage() {
                   </div>
                 </div>
 
-                <div className="pt-3 border-t border-linen-200 dark:border-onyx-800 space-y-2 text-[11px]">
+                <div className="pt-3 border-t border-linen-200 dark:border-onyx-800 space-y-2 text-xs">
                   <div className="flex items-center justify-between">
                     <span className="text-onyx-500 dark:text-linen-400">Payment Method:</span>
-                    <span className="inline-block px-2.5 py-1 rounded-none bg-camel-100 dark:bg-camel-900/40 text-camel-800 dark:text-camel-300 font-bold uppercase text-[10px] tracking-wider">
+                    <span className="inline-block px-2.5 py-1 rounded-none bg-sand-200 dark:bg-sand-900/40 text-sand-800 dark:text-sand-300 font-bold uppercase text-xs tracking-wider">
                       {order.paymentMethod ? order.paymentMethod.toUpperCase() : 'Cash on Delivery'}
                     </span>
                   </div>
                   {order.paymentReceipt && (
-                    <div className="p-2.5 bg-linen-100 dark:bg-onyx-950 border border-linen-300 dark:border-onyx-800 flex items-center justify-between text-[11px]">
-                      <span className="font-mono text-camel-700 dark:text-camel-300">📎 Screenshot on File</span>
-                      <span className="text-[10px] text-emerald-700 dark:text-emerald-400 font-bold uppercase">Stored</span>
+                    <div className="p-2.5 bg-linen-100 dark:bg-onyx-950 border border-linen-300 dark:border-onyx-800 flex items-center justify-between text-xs">
+                      <span className="font-mono text-sand-700 dark:text-sand-300">📎 Screenshot on File</span>
+                      <span className="text-xs text-emerald-700 dark:text-emerald-400 font-bold uppercase">Stored</span>
                     </div>
                   )}
                 </div>
@@ -409,8 +409,8 @@ export default function OrderTrackingPage() {
                           <strong className="block text-onyx-950 dark:text-linen-50 font-medium">
                             {item.name || item.product?.name}
                           </strong>
-                          <span className="text-onyx-500 dark:text-linen-400 text-[11px]">
-                            Qty: {item.quantity} • Size: {item.selectedSize || item.size || 'M'} • Color: {item.selectedColor || item.color || 'Olive'}
+                          <span className="text-onyx-500 dark:text-linen-400 text-xs">
+                            Qty: {item.quantity} • Size: {item.selectedSize || item.size || 'M'} • Color: {item.selectedColor || item.color || 'Sand'}
                           </span>
                         </div>
                       </div>

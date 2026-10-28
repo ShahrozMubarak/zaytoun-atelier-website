@@ -82,7 +82,7 @@ export default function ProductCard({
         {/* Subtle Badge (e.g. "NEW ARRIVAL", "BESTSELLER") - Minimalist sharp box */}
         {product.badge && (
           <div className="absolute top-2.5 left-2.5 z-10 pointer-events-none">
-            <span className="text-[9px] uppercase tracking-widest font-black bg-black text-white dark:bg-white dark:text-black px-2 py-0.5 rounded-none shadow-sm">
+            <span className="text-xs uppercase tracking-widest font-black bg-black text-white dark:bg-white dark:text-black px-2.5 py-1 rounded-none shadow-sm">
               {product.badge}
             </span>
           </div>
@@ -94,22 +94,22 @@ export default function ProductCard({
       <div className="p-3 sm:p-3.5 flex flex-col flex-grow bg-white dark:bg-onyx-950">
         
         {/* 1. Product Title (Uppercase sans-serif) */}
-        <h3 className="font-sans text-xs sm:text-[13px] font-bold text-neutral-900 dark:text-neutral-100 uppercase tracking-wide line-clamp-1 group-hover:text-neutral-600 dark:group-hover:text-neutral-300 transition-colors">
+        <h3 className="font-sans text-xs sm:text-sm font-bold text-neutral-900 dark:text-neutral-100 uppercase tracking-wide line-clamp-1 group-hover:text-neutral-600 dark:group-hover:text-neutral-300 transition-colors">
           {product.name}
         </h3>
 
         {/* 2. Fit & Demographics Subtitle (e.g. BARREL FIT | MEN) */}
-        <p className="text-[10px] sm:text-[11px] text-neutral-500 dark:text-neutral-400 font-medium uppercase tracking-wider mt-0.5">
+        <p className="text-xs text-neutral-500 dark:text-neutral-400 font-medium uppercase tracking-wider mt-1">
           {fitSubtitle}
         </p>
 
         {/* 3. Price in PKR (Bold with strikethrough if on sale) */}
-        <div className="mt-2 flex items-baseline space-x-2">
-          <span className="font-sans text-xs sm:text-sm font-black text-black dark:text-white tracking-tight">
+        <div className="mt-2.5 flex items-baseline space-x-2">
+          <span className="font-sans text-sm sm:text-base font-black text-black dark:text-white tracking-tight">
             {formatPrice(product.price)}
           </span>
           {product.originalPrice && product.originalPrice > product.price && (
-            <span className="font-sans text-[10px] sm:text-xs text-neutral-400 line-through font-normal">
+            <span className="font-sans text-xs sm:text-sm text-neutral-400 line-through font-normal">
               {formatPrice(product.originalPrice)}
             </span>
           )}

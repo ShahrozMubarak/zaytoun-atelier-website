@@ -33,6 +33,7 @@ import StudioPage from './pages/StudioPage';
 import OrderTrackingPage from './pages/OrderTrackingPage';
 import GoogleAuthCallbackPage from './pages/GoogleAuthCallbackPage';
 import ProductDetailPage from './pages/ProductDetailPage';
+import NotFoundPage from './pages/NotFoundPage';
 
 export default function App() {
   // Theme Mode: 'light' | 'dark'
@@ -822,7 +823,7 @@ export default function App() {
             {/* Concierge & Showroom Page */}
             <Route path="/contact" element={<ContactPage />} />
 
-            {/* Studio / Admin Dashboard Page */}
+            {/* Studio / Admin Dashboard Page (Strictly Gated by Owner Email) */}
             <Route
               path="/studio"
               element={
@@ -838,12 +839,33 @@ export default function App() {
                   themeConfig={themeConfig}
                   onUpdateTheme={handleUpdateTheme}
                   onTryOnProduct={handleTryOnProduct}
+                  user={currentUser}
+                  onOpenAuthModal={handleOpenAuthModal}
                 />
               }
             />
 
             {/* Dedicated Admin Portal Route */}
-            <Route path="/admin" element={<Navigate to="/studio" replace />} />
+            <Route
+              path="/admin"
+              element={
+                <StudioPage
+                  orders={orders}
+                  onUpdateOrderStatus={handleUpdateOrderStatus}
+                  products={products}
+                  onAddProduct={handleAddProduct}
+                  onUpdateProductStock={handleUpdateProductStock}
+                  onUpdateProductPrice={handleUpdateProductPrice}
+                  onDeleteProduct={handleDeleteProduct}
+                  onImportCatalog={handleImportCatalog}
+                  themeConfig={themeConfig}
+                  onUpdateTheme={handleUpdateTheme}
+                  onTryOnProduct={handleTryOnProduct}
+                  user={currentUser}
+                  onOpenAuthModal={handleOpenAuthModal}
+                />
+              }
+            />
 
             {/* Order Consignment Tracking Pages */}
             <Route path="/track" element={<OrderTrackingPage />} />
@@ -855,8 +877,11 @@ export default function App() {
               element={<GoogleAuthCallbackPage onAuthSuccess={handleAuthSuccess} />}
             />
 
-            {/* Catch-all route redirects to Home */}
-            <Route path="*" element={<Navigate to="/" replace />} />
+            {/* Explicit 404 Route */}
+            <Route path="/404" element={<NotFoundPage onOpenAuthModal={handleOpenAuthModal} />} />
+
+            {/* Catch-all route renders 404 Page Not Found */}
+            <Route path="*" element={<NotFoundPage onOpenAuthModal={handleOpenAuthModal} />} />
           </Routes>
         </main>
 
