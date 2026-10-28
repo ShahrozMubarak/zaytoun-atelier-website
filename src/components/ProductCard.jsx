@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useCurrency } from '../context/CurrencyContext';
 
 /**
@@ -22,6 +23,7 @@ export default function ProductCard({
   isWishlisted,
   onToggleWishlist
 }) {
+  const navigate = useNavigate();
   const [isHovered, setIsHovered] = useState(false);
   const { formatPrice } = useCurrency();
 
@@ -40,12 +42,16 @@ export default function ProductCard({
     { name: 'Dark Indigo', hex: '#1E2A38' }
   ];
 
+  const handleCardClick = () => {
+    navigate(`/product/${product.id}`);
+  };
+
   return (
     <div
       className="group relative flex flex-col bg-white dark:bg-onyx-950 rounded-none border border-neutral-200 dark:border-onyx-800 transition-colors cursor-pointer select-none"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      onClick={() => onQuickView && onQuickView(product)}
+      onClick={handleCardClick}
       id={`product-${product.id}`}
     >
       {/* Tall 3:4 Vertical Image Container with Zero Rounded Corners */}

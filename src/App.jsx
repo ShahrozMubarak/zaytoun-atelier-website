@@ -32,6 +32,7 @@ import ContactPage from './pages/ContactPage';
 import StudioPage from './pages/StudioPage';
 import OrderTrackingPage from './pages/OrderTrackingPage';
 import GoogleAuthCallbackPage from './pages/GoogleAuthCallbackPage';
+import ProductDetailPage from './pages/ProductDetailPage';
 
 export default function App() {
   // Theme Mode: 'light' | 'dark'
@@ -749,6 +750,40 @@ export default function App() {
               }
             />
 
+            {/* Dedicated Product Detail Page Routes */}
+            <Route
+              path="/product/:id"
+              element={
+                <ProductDetailPage
+                  products={products}
+                  onAddToCart={handleAddToCart}
+                  onToggleWishlist={handleToggleWishlist}
+                  wishlist={wishlist}
+                  onOpenProductModal={(p) => setSelectedProductModal(p)}
+                />
+              }
+            />
+            <Route
+              path="/shop/:id"
+              element={
+                <ProductDetailPage
+                  products={products}
+                  onAddToCart={handleAddToCart}
+                  onToggleWishlist={handleToggleWishlist}
+                  wishlist={wishlist}
+                  onOpenProductModal={(p) => setSelectedProductModal(p)}
+                />
+              }
+            />
+
+            {/* Cart Route: Opens Cart & navigates cleanly */}
+            <Route
+              path="/cart"
+              element={
+                <Navigate to="/shop" replace />
+              }
+            />
+
             {/* Fitting Room Redirect */}
             <Route path="/fitting-room" element={<Navigate to="/shop" replace />} />
 
@@ -854,6 +889,9 @@ export default function App() {
           onClose={() => setSelectedProductModal(null)}
           onAddToCart={handleAddToCart}
           onTryOn={handleTryOnProduct}
+          onToggleWishlist={handleToggleWishlist}
+          isWishlisted={selectedProductModal ? wishlist.includes(selectedProductModal.id) : false}
+          onOpenSizeGuide={() => setIsSizeGuideOpen(true)}
         />
 
         <BrandPaletteGuide

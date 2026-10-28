@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useCurrency } from '../context/CurrencyContext';
 
 /**
@@ -18,9 +19,20 @@ export default function ProductModal({
 }) {
   if (!isOpen || !product) return null;
 
+  const navigate = useNavigate();
+  const productImages = Array.isArray(product?.images) && product.images.length > 0 
+    ? product.images 
+    : [product?.image || "/images/catalog/men_barrel_jeans_flat.jpg"];
+  const colors = Array.isArray(product?.colors) && product.colors.length > 0
+    ? product.colors
+    : [{ name: product?.colorName || 'Default', hex: product?.color || '#1E2A38' }];
+  const sizes = Array.isArray(product?.sizes) && product.sizes.length > 0
+    ? product.sizes
+    : ['28', '30', '32', '34', '36'];
+
   const [activeImageIndex, setActiveImageIndex] = useState(0);
-  const [selectedColor, setSelectedColor] = useState(product.colors?.[0]?.name || "");
-  const [selectedSize, setSelectedSize] = useState(product.sizes?.[0] || "M");
+  const [selectedColor, setSelectedColor] = useState(colors[0]?.name || "");
+  const [selectedSize, setSelectedSize] = useState(sizes[0] || "32");
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState('fabric'); // 'fabric' | 'care' | 'delivery'
   const [isAdded, setIsAdded] = useState(false);
@@ -59,7 +71,7 @@ export default function ProductModal({
           <div className="p-4 sm:p-6 bg-white dark:bg-onyx-900 border-b md:border-b-0 md:border-r border-neutral-200 dark:border-onyx-800 flex flex-col justify-between">
             <div className="relative rounded-none overflow-hidden bg-white dark:bg-onyx-950 aspect-[3/4] border border-neutral-200 dark:border-onyx-800">
               <img
-                src={product.images[activeImageIndex] || product.images[0]}
+                src={productImages[activeImageIndex] || productImages[0]}
                 alt={product.name}
                 className="w-full h-full object-cover object-center transition-opacity duration-300"
               />
@@ -71,9 +83,9 @@ export default function ProductModal({
             </div>
 
             {/* Thumbnail Gallery (Sharp Squares) */}
-            {product.images.length > 1 && (
+            {productImages.length > 1 && (
               <div className="flex items-center space-x-2.5 mt-3">
-                {product.images.map((img, idx) => (
+                {productImages.map((img, idx) => (
                   <button
                     key={idx}
                     onClick={() => setActiveImageIndex(idx)}
@@ -133,7 +145,7 @@ export default function ProductModal({
                   </span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  {product.colors?.map((c) => (
+                  {colors?.map((c) => (
                     <button
                       key={c.name}
                       onClick={() => setSelectedColor(c.name)}
@@ -175,7 +187,7 @@ export default function ProductModal({
                 </div>
 
                 <div className="flex items-center space-x-2">
-                  {product.sizes?.map((s) => (
+                  {sizes?.map((s) => (
                     <button
                       key={s}
                       onClick={() => setSelectedSize(s)}
@@ -274,7 +286,7 @@ export default function ProductModal({
                 </button>
 
                 <button
-                  onClick={() => onToggleWishlist(product.id)}
+                  onClick={() => onToggleWishlist && onToggleWishlist(product.id)}
                   className={`p-3.5 rounded-none border transition active:scale-90 ${
                     isWishlisted 
                       ? 'bg-red-600 text-white border-red-600 shadow-sm' 
@@ -285,6 +297,19 @@ export default function ProductModal({
                   <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
                     <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                   </svg>
+                </button>
+              </div>
+
+              {/* View Full Product Page Link */}
+              <div className="pt-1 text-center">
+                <button
+                  onClick={() => {
+                    onClose();
+                    navigate(`/product/${product.id}`);
+                  }}
+                  className="text-[11px] font-mono uppercase tracking-widest text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white underline underline-offset-4 transition"
+                >
+                  Open Full Product Page →
                 </button>
               </div>
 
