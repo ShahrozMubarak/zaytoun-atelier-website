@@ -154,7 +154,7 @@ export default function CartDrawer({
               </p>
               <button
                 onClick={onClose}
-                className="bg-olive-700 dark:bg-camel-500 text-linen-100 dark:text-onyx-950 px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider hover:opacity-90 transition shadow-sm"
+                className="bg-black hover:bg-neutral-800 text-white dark:bg-white dark:text-black dark:hover:bg-neutral-200 px-6 py-2.5 rounded-none text-xs font-bold uppercase tracking-wider transition shadow-sm"
               >
                 Start Shopping
               </button>
@@ -163,43 +163,43 @@ export default function CartDrawer({
             normalizedCartItems.map((item) => (
               <div 
                 key={`${item.id}-${item.size}-${item.color}`}
-                className="flex items-start space-x-3 p-3 rounded-2xl border border-linen-300 dark:border-onyx-800 bg-linen-50/50 dark:bg-onyx-950/50 hover:bg-white dark:hover:bg-onyx-950 transition"
+                className="flex items-start space-x-3 p-3 rounded-none border border-neutral-200 dark:border-onyx-800 bg-white dark:bg-onyx-950 transition"
               >
                 {/* Thumbnail */}
                 <img
                   src={item.images[0]}
                   alt={item.name}
-                  className="w-16 h-20 object-cover object-top rounded-xl bg-linen-200 dark:bg-onyx-800 flex-shrink-0"
+                  className="w-16 h-20 object-cover object-top rounded-none bg-neutral-100 dark:bg-onyx-800 flex-shrink-0"
                 />
 
                 {/* Info */}
                 <div className="flex-1 min-w-0">
-                  <h4 className="text-xs font-bold text-onyx-900 dark:text-linen-100 truncate">
+                  <h4 className="text-xs font-bold text-neutral-900 dark:text-neutral-100 truncate uppercase">
                     {item.name}
                   </h4>
-                  <div className="flex items-center space-x-2 text-[11px] text-onyx-600 dark:text-linen-400 mt-0.5">
-                    <span>Size: <strong className="text-olive-800 dark:text-camel-400">{item.size}</strong></span>
+                  <div className="flex items-center space-x-2 text-[11px] text-neutral-500 mt-0.5">
+                    <span>Size: <strong className="text-black dark:text-white">{item.size}</strong></span>
                     <span>•</span>
-                    <span>Color: <strong className="text-camel-700 dark:text-camel-300">{item.color}</strong></span>
+                    <span>Color: <strong>{item.color}</strong></span>
                   </div>
-                  <div className="text-xs font-bold text-olive-800 dark:text-camel-400 mt-1">
+                  <div className="text-xs font-bold text-black dark:text-white mt-1">
                     {formatPrice(item.price * item.quantity)}
                   </div>
 
                   {/* Quantity controls */}
                   <div className="flex items-center justify-between mt-2">
-                    <div className="flex items-center border border-linen-300 dark:border-onyx-800 rounded-lg bg-white dark:bg-onyx-900">
+                    <div className="flex items-center border border-neutral-300 dark:border-onyx-800 rounded-none bg-white dark:bg-onyx-900">
                       <button
                         onClick={() => {
                           if (onUpdateQuantity) {
                             onUpdateQuantity(item.id, item.size, -1);
                           }
                         }}
-                        className="px-2 py-0.5 text-xs text-onyx-700 dark:text-linen-300 hover:bg-linen-200 dark:hover:bg-onyx-800 font-bold"
+                        className="px-2 py-0.5 text-xs text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-onyx-800 font-bold"
                       >
                         -
                       </button>
-                      <span className="px-2.5 text-xs font-semibold text-onyx-950 dark:text-linen-50">
+                      <span className="px-2.5 text-xs font-semibold text-black dark:text-white">
                         {item.quantity}
                       </span>
                       <button
@@ -208,7 +208,7 @@ export default function CartDrawer({
                             onUpdateQuantity(item.id, item.size, 1);
                           }
                         }}
-                        className="px-2 py-0.5 text-xs text-onyx-700 dark:text-linen-300 hover:bg-linen-200 dark:hover:bg-onyx-800 font-bold"
+                        className="px-2 py-0.5 text-xs text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-onyx-800 font-bold"
                       >
                         +
                       </button>
@@ -234,7 +234,7 @@ export default function CartDrawer({
 
         {/* Promo Code & Order Summary Footer */}
         {normalizedCartItems.length > 0 && (
-          <div className="p-5 border-t border-linen-300 dark:border-onyx-800 bg-linen-100/90 dark:bg-onyx-950/90 space-y-3">
+          <div className="p-5 border-t border-neutral-200 dark:border-onyx-800 bg-white dark:bg-onyx-950 space-y-3">
             
             {/* Promo Code Input */}
             <form onSubmit={handleApplyPromo} className="flex gap-2">
@@ -243,11 +243,11 @@ export default function CartDrawer({
                 placeholder="Promo Code (ZAYTOUN10)"
                 value={promoCode}
                 onChange={(e) => setPromoCode(e.target.value)}
-                className="flex-1 bg-white dark:bg-onyx-900 border border-linen-300 dark:border-onyx-800 rounded-xl px-3 py-2 text-xs text-onyx-950 dark:text-linen-50 focus:outline-none focus:border-olive-700 dark:focus:border-camel-400 uppercase"
+                className="flex-1 bg-neutral-50 dark:bg-onyx-900 border border-neutral-300 dark:border-onyx-800 rounded-none px-3 py-2 text-xs text-black dark:text-white focus:outline-none focus:border-black dark:focus:border-white uppercase"
               />
               <button
                 type="submit"
-                className="bg-onyx-950 dark:bg-linen-100 text-linen-100 dark:text-onyx-950 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider hover:opacity-90 transition whitespace-nowrap"
+                className="bg-black dark:bg-white text-white dark:text-black px-4 py-2 rounded-none text-xs font-bold uppercase tracking-wider hover:opacity-90 transition whitespace-nowrap"
               >
                 Apply
               </button>
@@ -258,7 +258,7 @@ export default function CartDrawer({
             )}
 
             {appliedPromo && (
-              <div className="flex justify-between items-center bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-300 dark:border-emerald-800 px-3 py-1.5 rounded-lg text-xs text-emerald-800 dark:text-emerald-300">
+              <div className="flex justify-between items-center bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-300 dark:border-emerald-800 px-3 py-1.5 rounded-none text-xs text-emerald-800 dark:text-emerald-300">
                 <span>Code <strong>{appliedPromo.code}</strong> applied!</span>
                 <button 
                   onClick={() => setAppliedPromo(null)}
@@ -270,7 +270,7 @@ export default function CartDrawer({
             )}
 
             {/* Calculations Breakdown */}
-            <div className="space-y-1.5 text-xs text-onyx-700 dark:text-linen-300 pt-2 border-t border-linen-200 dark:border-onyx-800">
+            <div className="space-y-1.5 text-xs text-neutral-600 dark:text-neutral-400 pt-2 border-t border-neutral-200 dark:border-onyx-800">
               <div className="flex justify-between">
                 <span>Subtotal</span>
                 <span className="font-mono">{formatPrice(subtotal)}</span>
@@ -278,7 +278,7 @@ export default function CartDrawer({
 
               {discountAmount > 0 && (
                 <div className="flex justify-between text-emerald-600 dark:text-emerald-400">
-                  <span>Atelier Discount ({appliedPromo?.discountPercent}%)</span>
+                  <span>Discount ({appliedPromo?.discountPercent}%)</span>
                   <span className="font-mono">-{formatPrice(discountAmount)}</span>
                 </div>
               )}
@@ -287,16 +287,16 @@ export default function CartDrawer({
                 <span>Express Courier Shipping</span>
                 <span className="font-mono">
                   {shippingFee === 0 ? (
-                    <strong className="text-olive-700 dark:text-camel-400">FREE</strong>
+                    <strong className="text-black dark:text-white">FREE</strong>
                   ) : (
                     formatPrice(shippingFee)
                   )}
                 </span>
               </div>
 
-              <div className="flex justify-between items-center pt-2 border-t border-linen-300 dark:border-onyx-800 text-base font-bold text-onyx-950 dark:text-linen-50">
+              <div className="flex justify-between items-center pt-2 border-t border-neutral-200 dark:border-onyx-800 text-base font-bold text-black dark:text-white">
                 <span>Total Due</span>
-                <span className="font-editorial text-xl text-olive-800 dark:text-camel-400">
+                <span className="font-sans text-xl text-black dark:text-white">
                   {formatPrice(finalTotal)}
                 </span>
               </div>
@@ -305,16 +305,16 @@ export default function CartDrawer({
             {/* Checkout Action Button */}
             <button
               onClick={handleCheckoutClick}
-              className="w-full bg-olive-700 hover:bg-olive-800 dark:bg-camel-500 dark:hover:bg-camel-600 text-linen-100 dark:text-onyx-950 font-bold py-3.5 rounded-full shadow-lg transition active:scale-95 flex items-center justify-center space-x-2 text-xs uppercase tracking-widest"
+              className="w-full bg-black hover:bg-neutral-800 dark:bg-white dark:hover:bg-neutral-200 text-white dark:text-black font-bold py-3.5 rounded-none shadow-sm transition active:scale-95 flex items-center justify-center space-x-2 text-xs uppercase tracking-widest"
             >
               <span>Proceed to Checkout</span>
               <span>→</span>
             </button>
 
             {/* Secure Atelier Checkout Note */}
-            <div className="flex items-center justify-center space-x-2 text-[10px] text-onyx-500 dark:text-linen-400 font-mono tracking-wider pt-1 uppercase">
-              <span className="w-1.5 h-1.5 rounded-full bg-camel-500" />
-              <span>Complimentary Courier & Secure Checkout</span>
+            <div className="flex items-center justify-center space-x-2 text-[10px] text-neutral-400 font-mono tracking-wider pt-1 uppercase">
+              <span className="w-1.5 h-1.5 rounded-none bg-emerald-500" />
+              <span>Complimentary TCS Express & Secure Checkout</span>
             </div>
           </div>
         )}

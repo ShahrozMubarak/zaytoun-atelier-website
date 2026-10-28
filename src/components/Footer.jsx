@@ -16,11 +16,11 @@ export default function Footer({ onOpenSizeGuide }) {
           {/* Brand & Ethos (5 cols) */}
           <div className="md:col-span-5 space-y-3">
             <Link to="/" className="inline-flex items-center space-x-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-olive-500"></span>
+              <span className="w-2.5 h-2.5 rounded-none bg-olive-500"></span>
               <span className="font-editorial text-2xl font-bold tracking-tight text-linen-50 uppercase">
                 ZAYTOUN & CO.
               </span>
-              <span className="w-2.5 h-2.5 rounded-full bg-camel-500"></span>
+              <span className="w-2.5 h-2.5 rounded-none bg-camel-500"></span>
             </Link>
             
             <p className="text-xs text-linen-400 max-w-sm leading-relaxed font-light">

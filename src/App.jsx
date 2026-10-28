@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { PRODUCTS, COLOR_PALETTE_INFO } from './data/products';
+import { PRODUCTS, COLOR_PALETTE_INFO, CATALOG_VERSION } from './data/products';
 import * as FormeEngine from './engine/formeEngine';
 import { CurrencyProvider } from './context/CurrencyContext';
 import * as API from './services/api';
@@ -14,6 +14,8 @@ import Footer from './components/Footer';
 import CartDrawer from './components/CartDrawer';
 import CheckoutModal from './components/CheckoutModal';
 import OrderConfirmationModal from './components/OrderConfirmationModal';
+import AutomatedOrderNoticeModal from './components/AutomatedOrderNoticeModal';
+import NotificationPromptModal from './components/NotificationPromptModal';
 import ProductModal from './components/ProductModal';
 import BrandPaletteGuide from './components/BrandPaletteGuide';
 import SizeGuideModal from './components/SizeGuideModal';
@@ -90,9 +92,15 @@ export default function App() {
     setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
   };
 
-  // Products catalog (persisted to localStorage)
+  // Products catalog (persisted to localStorage with automatic version sync)
   const [products, setProducts] = useState(() => {
     try {
+      const savedVersion = localStorage.getItem('zaytoun_catalog_version');
+      if (savedVersion !== CATALOG_VERSION) {
+        localStorage.setItem('zaytoun_catalog_version', CATALOG_VERSION);
+        localStorage.setItem('zaytoun_products', JSON.stringify(PRODUCTS));
+        return PRODUCTS;
+      }
       const saved = localStorage.getItem('zaytoun_products');
       return saved ? JSON.parse(saved) : PRODUCTS;
     } catch {
@@ -140,16 +148,16 @@ export default function App() {
 
     return {
       women: {
-        top: { id: "forme-02", variant: 0 },
-        bottom: { id: "forme-03", variant: 0 }
+        top: { id: "women-shirt-01", variant: 0 },
+        bottom: { id: "women-jeans-01", variant: 0 }
       },
       men: {
-        top: { id: "forme-07", variant: 0 },
-        bottom: { id: "forme-08", variant: 0 }
+        top: { id: "men-tee-01", variant: 0 },
+        bottom: { id: "men-jeans-01", variant: 0 }
       },
       kids: {
-        top: { id: "forme-13", variant: 0 },
-        bottom: { id: "forme-14", variant: 0 }
+        top: { id: "men-tee-01", variant: 0 },
+        bottom: { id: "men-jeans-01", variant: 0 }
       }
     };
   });
@@ -362,10 +370,29 @@ export default function App() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [confirmedOrder, setConfirmedOrder] = useState(null);
+  const [isAutomatedOrderModalOpen, setIsAutomatedOrderModalOpen] = useState(false);
   const [selectedProductModal, setSelectedProductModal] = useState(null);
   const [isPaletteGuideOpen, setIsPaletteGuideOpen] = useState(false);
   const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
   const [isFabricModalOpen, setIsFabricModalOpen] = useState(false);
+
+  // Automated notification handler for subscriptions
+  const handleSubscriptionNotification = (email) => {
+    if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
+      try {
+        new Notification("🎉 Zaytoun Atelier Gazette", {
+          body: `Welcome ${email}! You're subscribed for automated drop notifications and order updates.`,
+          icon: "/images/catalog/men_barrel_jeans_flat.jpg"
+        });
+      } catch (e) {
+        console.log("Sub notif note:", e);
+      }
+    }
+    setToastNotification({
+      title: "Gazette Subscription Active",
+      message: `Thank you for subscribing! Drop alerts and receipts will be delivered to ${email}.`
+    });
+  };
 
   // Direct Cart Addition (Internal)
   const addToCartDirect = (product, size = 'M', color = null, quantity = 1) => {
@@ -491,9 +518,9 @@ export default function App() {
 
   const handleResetOutfit = (person = selectedPerson) => {
     const defaults = {
-      women: { top: { id: "forme-02", variant: 0 }, bottom: { id: "forme-03", variant: 0 } },
-      men: { top: { id: "forme-07", variant: 0 }, bottom: { id: "forme-08", variant: 0 } },
-      kids: { top: { id: "forme-13", variant: 0 }, bottom: { id: "forme-14", variant: 0 } }
+      women: { top: { id: "women-shirt-01", variant: 0 }, bottom: { id: "women-jeans-01", variant: 0 } },
+      men: { top: { id: "men-tee-01", variant: 0 }, bottom: { id: "men-jeans-01", variant: 0 } },
+      kids: { top: { id: "men-tee-01", variant: 0 }, bottom: { id: "men-jeans-01", variant: 0 } }
     };
     setOutfits(prev => ({
       ...prev,
@@ -559,6 +586,24 @@ export default function App() {
     setCart([]);
     setIsCheckoutOpen(false);
     setConfirmedOrder(newOrder);
+    setIsAutomatedOrderModalOpen(true);
+
+    // Browser Push Notification on Buy
+    if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
+      try {
+        new Notification(`🛍️ Order Placed: #${orderNumber}`, {
+          body: `Your order of ${newOrder.items.length} item(s) (Rs. ${newOrder.total?.toLocaleString()}) has been received and dispatched to our Lahore Atelier fulfillment center.`,
+          icon: "/images/catalog/men_barrel_jeans_flat.jpg"
+        });
+      } catch (e) {
+        console.log("Push notif note:", e);
+      }
+    }
+
+    setToastNotification({
+      title: `Order #${orderNumber} Confirmed`,
+      message: `Automated confirmation sent! Courier TCS Express assigned tracking #${newOrder.trackingNumber}.`
+    });
 
     // Save directly to MongoDB Atlas
     API.saveOrderToDB(newOrder);
@@ -684,6 +729,7 @@ export default function App() {
                   wishlist={wishlist}
                   outfits={outfits}
                   themeConfig={themeConfig}
+                  onSubscribe={handleSubscriptionNotification}
                 />
               }
             />
@@ -788,9 +834,17 @@ export default function App() {
           onConfirmOrder={handleConfirmOrder}
         />
 
+        <NotificationPromptModal />
+
+        <AutomatedOrderNoticeModal
+          order={confirmedOrder}
+          isOpen={isAutomatedOrderModalOpen}
+          onClose={() => setIsAutomatedOrderModalOpen(false)}
+        />
+
         <OrderConfirmationModal
           order={confirmedOrder}
-          isOpen={Boolean(confirmedOrder)}
+          isOpen={Boolean(confirmedOrder) && !isAutomatedOrderModalOpen}
           onClose={() => setConfirmedOrder(null)}
         />
 

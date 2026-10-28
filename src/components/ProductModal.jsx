@@ -3,8 +3,8 @@ import { useCurrency } from '../context/CurrencyContext';
 
 /**
  * ProductModal - High-end editorial product detail modal
- * Includes micro-animated Add-to-Bag button, image zoom, Find My Size calculator,
- * and elevated luxury garment accordions.
+ * Styled with zero rounded corners (rounded-none), pure white studio image block,
+ * and seamless garment specifications.
  */
 export default function ProductModal({
   product,
@@ -41,13 +41,13 @@ export default function ProductModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-onyx-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 select-none animate-fadeIn">
-      <div className="bg-linen-100 dark:bg-onyx-900 rounded-3xl max-w-4xl w-full overflow-hidden shadow-2xl border border-linen-300 dark:border-onyx-800 relative">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 select-none animate-fadeIn">
+      <div className="bg-white dark:bg-onyx-950 rounded-none max-w-4xl w-full overflow-hidden shadow-2xl border-2 border-black dark:border-white relative">
         
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 z-20 w-9 h-9 rounded-full bg-linen-200/90 dark:bg-onyx-800/90 hover:bg-linen-300 dark:hover:bg-onyx-700 text-onyx-800 dark:text-linen-200 flex items-center justify-center shadow-md transition active:scale-90"
+          className="absolute top-4 right-4 z-20 w-8 h-8 rounded-none bg-neutral-100 dark:bg-onyx-800 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black text-black dark:text-white flex items-center justify-center transition active:scale-90 font-bold"
           aria-label="Close modal"
         >
           ✕
@@ -55,32 +55,32 @@ export default function ProductModal({
 
         <div className="grid grid-cols-1 md:grid-cols-2">
           
-          {/* Left Column: Image Gallery with Zoom */}
-          <div className="p-5 sm:p-7 bg-linen-200/60 dark:bg-onyx-950 flex flex-col justify-between">
-            <div className="relative rounded-2xl overflow-hidden bg-linen-300/40 dark:bg-onyx-900 h-[380px] sm:h-[460px] shadow-inner group cursor-zoom-in">
+          {/* Left Column: Image Gallery with Clean Pure White Studio BG */}
+          <div className="p-4 sm:p-6 bg-white dark:bg-onyx-900 border-b md:border-b-0 md:border-r border-neutral-200 dark:border-onyx-800 flex flex-col justify-between">
+            <div className="relative rounded-none overflow-hidden bg-white dark:bg-onyx-950 aspect-[3/4] border border-neutral-200 dark:border-onyx-800">
               <img
                 src={product.images[activeImageIndex] || product.images[0]}
                 alt={product.name}
-                className="w-full h-full object-cover object-top transition duration-700 ease-out group-hover:scale-110"
+                className="w-full h-full object-cover object-center transition-opacity duration-300"
               />
               {product.badge && (
-                <span className="absolute top-4 left-4 bg-olive-800 dark:bg-camel-500 text-linen-100 dark:text-onyx-950 text-[10px] font-mono font-bold tracking-widest uppercase px-3 py-1 rounded-full shadow-md">
+                <span className="absolute top-3 left-3 bg-black dark:bg-white text-white dark:text-black text-[9px] font-mono font-bold tracking-widest uppercase px-2.5 py-1 rounded-none shadow-sm">
                   {product.badge}
                 </span>
               )}
             </div>
 
-            {/* Thumbnail Gallery */}
+            {/* Thumbnail Gallery (Sharp Squares) */}
             {product.images.length > 1 && (
-              <div className="flex items-center space-x-3 mt-4">
+              <div className="flex items-center space-x-2.5 mt-3">
                 {product.images.map((img, idx) => (
                   <button
                     key={idx}
                     onClick={() => setActiveImageIndex(idx)}
-                    className={`w-16 h-20 rounded-xl overflow-hidden border-2 transition transform active:scale-95 ${
+                    className={`w-16 h-20 rounded-none overflow-hidden border-2 transition active:scale-95 bg-white ${
                       activeImageIndex === idx
-                        ? 'border-olive-800 dark:border-camel-400 shadow-md scale-105'
-                        : 'border-transparent opacity-60 hover:opacity-100'
+                        ? 'border-black dark:border-white shadow-sm'
+                        : 'border-neutral-200 dark:border-onyx-700 opacity-60 hover:opacity-100'
                     }`}
                   >
                     <img src={img} alt="Thumb" className="w-full h-full object-cover" />
@@ -91,59 +91,59 @@ export default function ProductModal({
           </div>
 
           {/* Right Column: Garment Specs & Purchase Controls */}
-          <div className="p-6 sm:p-8 flex flex-col justify-between space-y-6 overflow-y-auto max-h-[85vh]">
-            <div className="space-y-4">
+          <div className="p-5 sm:p-7 flex flex-col justify-between space-y-5 overflow-y-auto max-h-[85vh] bg-white dark:bg-onyx-950">
+            <div className="space-y-3.5">
               
               {/* Category & Collection */}
-              <div className="flex items-center justify-between text-xs font-mono text-camel-600 dark:text-camel-400 uppercase tracking-widest">
-                <span>{product.collection || "Permanent Edition"}</span>
-                <span className="text-onyx-500 dark:text-linen-400">SKU: {product.id.toUpperCase()}</span>
+              <div className="flex items-center justify-between text-xs font-mono text-neutral-500 uppercase tracking-widest">
+                <span>{product.fitLine || product.collection || "Permanent Edition"}</span>
+                <span>SKU: {product.id.toUpperCase()}</span>
               </div>
 
               {/* Title */}
-              <h2 className="font-editorial text-2xl sm:text-3xl font-bold text-onyx-950 dark:text-linen-50">
+              <h2 className="font-sans text-xl sm:text-2xl font-bold uppercase tracking-wide text-neutral-900 dark:text-neutral-100">
                 {product.name}
               </h2>
 
               {/* Price Row */}
               <div className="flex items-baseline space-x-3">
-                <span className="font-editorial text-2xl sm:text-3xl font-bold text-olive-800 dark:text-camel-300">
+                <span className="font-sans text-2xl font-black text-black dark:text-white">
                   {formatPrice(product.price)}
                 </span>
                 {product.originalPrice && (
-                  <span className="text-sm font-mono text-onyx-400 dark:text-linen-500 line-through">
+                  <span className="text-xs font-mono text-neutral-400 line-through">
                     {formatPrice(product.originalPrice)}
                   </span>
                 )}
-                <span className="text-[10px] font-mono font-bold text-camel-700 dark:text-camel-300 bg-camel-500/10 px-2 py-0.5 rounded-full">
-                  Atelier Edition
+                <span className="text-[10px] font-mono font-bold text-black dark:text-white bg-neutral-100 dark:bg-onyx-800 px-2 py-0.5 rounded-none border border-neutral-300 dark:border-onyx-700">
+                  Ready to Dispatch
                 </span>
               </div>
 
               {/* Description */}
-              <p className="text-xs sm:text-sm text-onyx-700 dark:text-linen-300 font-light leading-relaxed">
+              <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed font-light">
                 {product.description}
               </p>
 
               {/* Color Swatches */}
               <div className="pt-2">
                 <div className="flex items-center justify-between text-xs font-mono mb-2">
-                  <span className="text-onyx-800 dark:text-linen-200">
-                    Fabric Tone: <strong className="text-camel-600 dark:text-camel-400">{selectedColor}</strong>
+                  <span className="text-neutral-800 dark:text-neutral-200">
+                    Color: <strong className="uppercase">{selectedColor}</strong>
                   </span>
                 </div>
-                <div className="flex items-center space-x-2.5">
+                <div className="flex items-center space-x-2">
                   {product.colors?.map((c) => (
                     <button
                       key={c.name}
                       onClick={() => setSelectedColor(c.name)}
-                      className={`flex items-center space-x-2 px-3 py-1.5 rounded-full border text-xs font-mono transition transform active:scale-95 ${
+                      className={`flex items-center space-x-2 px-3 py-1.5 rounded-none border text-xs font-mono transition active:scale-95 ${
                         selectedColor === c.name
-                          ? 'border-olive-800 dark:border-camel-400 bg-olive-900/10 dark:bg-camel-400/15 text-olive-900 dark:text-camel-300 font-bold shadow-sm'
-                          : 'border-linen-300 dark:border-onyx-700 text-onyx-700 dark:text-linen-300'
+                          ? 'border-black dark:border-white bg-neutral-100 dark:bg-onyx-800 font-bold shadow-sm'
+                          : 'border-neutral-200 dark:border-onyx-700 text-neutral-700 dark:text-neutral-300'
                       }`}
                     >
-                      <span className="w-3.5 h-3.5 rounded-full border border-black/10 shrink-0" style={{ backgroundColor: c.hex }} />
+                      <span className="w-3 h-3 rounded-none border border-neutral-300 shrink-0" style={{ backgroundColor: c.hex }} />
                       <span>{c.name}</span>
                     </button>
                   ))}
@@ -153,20 +153,20 @@ export default function ProductModal({
               {/* Size Selector & Fit Helper */}
               <div className="pt-2">
                 <div className="flex items-center justify-between text-xs font-mono mb-2">
-                  <span className="text-onyx-800 dark:text-linen-200">
+                  <span className="text-neutral-800 dark:text-neutral-200">
                     Size: <strong>{selectedSize}</strong>
                   </span>
                   <div className="flex items-center space-x-3">
                     <button
                       onClick={() => setShowFitHelper(!showFitHelper)}
-                      className="text-camel-600 dark:text-camel-400 underline font-bold"
+                      className="text-neutral-900 dark:text-neutral-100 underline font-bold"
                     >
-                      Find My Fit
+                      Find Fit
                     </button>
                     {onOpenSizeGuide && (
                       <button
                         onClick={onOpenSizeGuide}
-                        className="text-onyx-500 dark:text-linen-400 hover:underline"
+                        className="text-neutral-500 hover:underline"
                       >
                         Size Guide
                       </button>
@@ -179,10 +179,10 @@ export default function ProductModal({
                     <button
                       key={s}
                       onClick={() => setSelectedSize(s)}
-                      className={`min-w-[44px] h-10 rounded-xl text-xs font-mono font-bold border transition transform active:scale-95 flex items-center justify-center ${
+                      className={`min-w-[44px] h-10 rounded-none text-xs font-mono font-bold border transition active:scale-95 flex items-center justify-center ${
                         selectedSize === s
-                          ? 'bg-onyx-950 dark:bg-linen-100 text-linen-100 dark:text-onyx-950 border-onyx-950 dark:border-linen-100 shadow-sm'
-                          : 'bg-linen-100 dark:bg-onyx-900 text-onyx-800 dark:text-linen-200 border-linen-300 dark:border-onyx-800 hover:border-camel-500'
+                          ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white shadow-sm'
+                          : 'bg-white dark:bg-onyx-900 text-neutral-800 dark:text-neutral-200 border-neutral-300 dark:border-onyx-700 hover:border-black dark:hover:border-white'
                       }`}
                     >
                       {s}
@@ -200,21 +200,14 @@ export default function ProductModal({
 
                   return (
                     <div className="mt-2.5 flex items-center space-x-2 text-xs">
-                      <span className="relative flex h-2 w-2">
-                        <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
-                          sizeStock <= 0 ? 'bg-red-400' : sizeStock <= 3 ? 'bg-amber-400' : 'bg-emerald-400'
-                        }`}></span>
-                        <span className={`relative inline-flex rounded-full h-2 w-2 ${
-                          sizeStock <= 0 ? 'bg-red-500' : sizeStock <= 3 ? 'bg-amber-500' : 'bg-emerald-500'
-                        }`}></span>
-                      </span>
-                      <span className="font-mono text-[11px] text-onyx-700 dark:text-linen-300">
+                      <span className="w-2 h-2 rounded-none bg-emerald-500"></span>
+                      <span className="font-mono text-[11px] text-neutral-600 dark:text-neutral-400">
                         {sizeStock <= 0 ? (
-                          <strong className="text-red-600 dark:text-red-400">Out of Stock in Size {selectedSize}</strong>
+                          <strong className="text-red-600">Out of Stock in Size {selectedSize}</strong>
                         ) : sizeStock <= 3 ? (
-                          <strong className="text-amber-700 dark:text-amber-400 font-bold">Only {sizeStock} pieces remaining in Size {selectedSize}!</strong>
+                          <strong className="text-amber-600 font-bold">Only {sizeStock} pieces remaining!</strong>
                         ) : (
-                          <span className="text-emerald-700 dark:text-emerald-400 font-semibold">{sizeStock} pieces available in Size {selectedSize}</span>
+                          <span>{sizeStock} in stock for immediate dispatch</span>
                         )}
                       </span>
                     </div>
@@ -223,29 +216,29 @@ export default function ProductModal({
 
                 {/* Fit Helper Modal Box */}
                 {showFitHelper && (
-                  <div className="mt-3 p-3.5 rounded-2xl bg-linen-200 dark:bg-onyx-800 border border-linen-300 dark:border-onyx-700 text-xs space-y-2 animate-fadeIn">
+                  <div className="mt-3 p-3.5 rounded-none bg-neutral-100 dark:bg-onyx-900 border border-neutral-300 dark:border-onyx-700 text-xs space-y-2 animate-fadeIn">
                     <div className="flex items-center justify-between">
-                      <span className="font-mono uppercase text-[10px] text-camel-600 dark:text-camel-400 font-bold">
-                        Fit Recommendation Engine
+                      <span className="font-mono uppercase text-[10px] text-neutral-500 font-bold">
+                        Fit Recommendation
                       </span>
-                      <button onClick={() => setShowFitHelper(false)} className="text-onyx-500">✕</button>
+                      <button onClick={() => setShowFitHelper(false)} className="text-neutral-500">✕</button>
                     </div>
                     <div className="flex items-center space-x-2">
                       {['Slim', 'True to Size', 'Relaxed'].map(f => (
                         <button
                           key={f}
                           onClick={() => setFitPreference(f.toLowerCase())}
-                          className={`px-3 py-1 rounded-full text-[10px] font-mono border transition ${
+                          className={`px-3 py-1 rounded-none text-[10px] font-mono border transition ${
                             fitPreference === f.toLowerCase()
-                              ? 'bg-olive-800 text-linen-100 dark:bg-camel-400 dark:text-onyx-950 font-bold'
-                              : 'bg-linen-100 dark:bg-onyx-900 text-onyx-700 dark:text-linen-300 border-linen-300 dark:border-onyx-700'
+                              ? 'bg-black text-white dark:bg-white dark:text-black font-bold'
+                              : 'bg-white dark:bg-onyx-950 text-neutral-700 dark:text-neutral-300 border-neutral-300 dark:border-onyx-700'
                           }`}
                         >
                           {f}
                         </button>
                       ))}
                     </div>
-                    <p className="text-[11px] text-onyx-600 dark:text-linen-300 font-light">
+                    <p className="text-[11px] text-neutral-600 dark:text-neutral-400 font-light">
                       For a {fitPreference} drape with South Asian tailoring proportions, we recommend ordering your normal size <strong>({selectedSize})</strong>.
                     </p>
                   </div>
@@ -254,22 +247,19 @@ export default function ProductModal({
 
             </div>
 
-            {/* Actions: Add to Bag (Micro-Animated) & 3D Fitting Room */}
-            <div className="space-y-4 pt-4 border-t border-linen-300 dark:border-onyx-800">
-              <div className="flex items-center space-x-3">
+            {/* Actions: Add to Bag (Clean Rectangular Button) */}
+            <div className="space-y-4 pt-4 border-t border-neutral-200 dark:border-onyx-800">
+              <div className="flex items-center space-x-2.5">
                 <button
                   onClick={handleAddToCart}
-                  className={`flex-1 py-4 rounded-full font-bold text-xs uppercase tracking-widest transition-all duration-300 shadow-xl flex items-center justify-center space-x-2 active:scale-95 ${
+                  className={`flex-1 py-3.5 rounded-none font-bold text-xs uppercase tracking-widest transition-all duration-300 shadow-sm flex items-center justify-center space-x-2 active:scale-95 ${
                     isAdded
-                      ? 'bg-emerald-700 text-white shadow-emerald-700/30'
-                      : 'bg-olive-800 hover:bg-olive-900 dark:bg-camel-500 dark:hover:bg-camel-600 text-linen-100 dark:text-onyx-950'
+                      ? 'bg-emerald-700 text-white'
+                      : 'bg-black hover:bg-neutral-800 dark:bg-white dark:hover:bg-neutral-200 text-white dark:text-black'
                   }`}
                 >
                   {isAdded ? (
                     <>
-                      <svg className="w-4 h-4 animate-bounce" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                      </svg>
                       <span>Added to Bag ✓</span>
                     </>
                   ) : (
@@ -278,18 +268,17 @@ export default function ProductModal({
                         <path d="M6 7h12l2 14H4L6 7Z" />
                         <path d="M9 8V6a3 3 0 0 1 6 0v2" />
                       </svg>
-                      <span>Add to Bag • Rs. {(product.price * quantity).toLocaleString()}</span>
+                      <span>Add to Bag • {formatPrice(product.price * quantity)}</span>
                     </>
                   )}
                 </button>
 
-
                 <button
                   onClick={() => onToggleWishlist(product.id)}
-                  className={`p-4 rounded-full border transition active:scale-90 ${
+                  className={`p-3.5 rounded-none border transition active:scale-90 ${
                     isWishlisted 
-                      ? 'bg-camel-500 text-white border-camel-500 shadow-md' 
-                      : 'border-linen-300 dark:border-onyx-700 text-onyx-700 dark:text-linen-300 hover:border-camel-500'
+                      ? 'bg-red-600 text-white border-red-600 shadow-sm' 
+                      : 'border-neutral-300 dark:border-onyx-700 text-neutral-700 dark:text-neutral-300 hover:border-black dark:hover:border-white'
                   }`}
                   title={isWishlisted ? "Wishlisted" : "Add to Wishlist"}
                 >
@@ -299,34 +288,34 @@ export default function ProductModal({
                 </button>
               </div>
 
-              {/* Elevated Accordions */}
-              <div className="text-xs pt-2 border-t border-linen-300 dark:border-onyx-800">
-                <div className="flex border-b border-linen-300 dark:border-onyx-800 space-x-5 mb-3 pb-1 font-mono uppercase text-[11px]">
+              {/* Elevated Garment Specs */}
+              <div className="text-xs pt-2 border-t border-neutral-200 dark:border-onyx-800">
+                <div className="flex border-b border-neutral-200 dark:border-onyx-800 space-x-5 mb-3 pb-1 font-mono uppercase text-[11px]">
                   <button
                     onClick={() => setActiveTab('fabric')}
-                    className={`pb-1.5 transition ${activeTab === 'fabric' ? 'text-olive-800 dark:text-camel-400 border-b-2 border-olive-800 dark:border-camel-400 font-bold' : 'text-onyx-500'}`}
+                    className={`pb-1.5 transition ${activeTab === 'fabric' ? 'text-black dark:text-white border-b-2 border-black dark:border-white font-bold' : 'text-neutral-400'}`}
                   >
                     Fabric & Weave
                   </button>
                   <button
                     onClick={() => setActiveTab('care')}
-                    className={`pb-1.5 transition ${activeTab === 'care' ? 'text-olive-800 dark:text-camel-400 border-b-2 border-olive-800 dark:border-camel-400 font-bold' : 'text-onyx-500'}`}
+                    className={`pb-1.5 transition ${activeTab === 'care' ? 'text-black dark:text-white border-b-2 border-black dark:border-white font-bold' : 'text-neutral-400'}`}
                   >
                     Wash & Care
                   </button>
                   <button
                     onClick={() => setActiveTab('delivery')}
-                    className={`pb-1.5 transition ${activeTab === 'delivery' ? 'text-olive-800 dark:text-camel-400 border-b-2 border-olive-800 dark:border-camel-400 font-bold' : 'text-onyx-500'}`}
+                    className={`pb-1.5 transition ${activeTab === 'delivery' ? 'text-black dark:text-white border-b-2 border-black dark:border-white font-bold' : 'text-neutral-400'}`}
                   >
-                    Delivery & Returns
+                    Courier & Delivery
                   </button>
                 </div>
 
-                <div className="text-onyx-700 dark:text-linen-300 font-light leading-relaxed">
-                  {activeTab === 'fabric' && <p>🌿 <strong>Craftsmanship:</strong> {product.fabric || "100% Belgian Organic Washed Linen Twill with reinforced stress points."}</p>}
-                  {activeTab === 'care' && <p>💧 <strong>Longevity Guide:</strong> {product.care || "Dry clean or gentle hand wash in cold water with botanical detergent. Steam press low."}</p>}
+                <div className="text-neutral-600 dark:text-neutral-300 font-light leading-relaxed">
+                  {activeTab === 'fabric' && <p>🧵 <strong>Fabric:</strong> {product.fabric || "100% Authentic Ring-Spun Cotton Denim (13.5oz)."}</p>}
+                  {activeTab === 'care' && <p>💧 <strong>Care:</strong> {product.care || "Machine wash cold inside out with similar colors. Line dry."}</p>}
                   {activeTab === 'delivery' && (
-                    <p>🚚 <strong>Atelier Assurance:</strong> Complimentary nationwide courier delivery. Doorstep try-on and 14-day seamless exchange with complimentary home pickup.</p>
+                    <p>🚚 <strong>Courier:</strong> Standard courier delivery via TCS Express (2-3 business days across Pakistan). Automated tracking provided upon checkout.</p>
                   )}
                 </div>
               </div>

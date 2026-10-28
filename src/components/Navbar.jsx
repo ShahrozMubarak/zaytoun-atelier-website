@@ -76,7 +76,7 @@ export default function Navbar({
               const nextIdx = (order.indexOf(currency) + 1) % order.length;
               setCurrency(order[nextIdx]);
             }}
-            className="hidden sm:inline-block text-xs font-bold px-2 py-1 rounded border border-neutral-300 dark:border-neutral-700 hover:border-black dark:hover:border-white transition uppercase"
+            className="hidden sm:inline-block text-xs font-bold px-2 py-1 rounded-none border border-neutral-300 dark:border-neutral-700 hover:border-black dark:hover:border-white transition uppercase"
             title="Switch Currency"
           >
             {currency}
@@ -85,7 +85,7 @@ export default function Navbar({
           {/* Theme Toggle Button (Desktop/Tablet) */}
           <button
             onClick={onToggleTheme}
-            className="hidden sm:inline-flex p-1.5 rounded-full text-neutral-700 dark:text-neutral-300 hover:text-black dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-900 transition items-center justify-center"
+            className="hidden sm:inline-flex p-1.5 rounded-none text-neutral-700 dark:text-neutral-300 hover:text-black dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-900 transition items-center justify-center border border-transparent hover:border-neutral-300 dark:hover:border-neutral-700"
             title={theme === 'dark' ? "Light Mode" : "Dark Mode"}
             aria-label="Toggle Theme"
           >
@@ -105,7 +105,7 @@ export default function Navbar({
           {!user ? (
             <button
               onClick={() => onOpenAuthModal && onOpenAuthModal({ title: "Sign in with Google", subtitle: "Access your saved bag, couture orders, and concierge." })}
-              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-full border border-neutral-300 dark:border-onyx-700 hover:border-camel-500 dark:hover:border-camel-500 bg-white dark:bg-onyx-900 text-xs font-bold transition-all shadow-sm hover:shadow active:scale-95 text-neutral-800 dark:text-white"
+              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-none border border-neutral-300 dark:border-onyx-700 hover:border-black dark:hover:border-white bg-white dark:bg-onyx-900 text-xs font-bold transition-all shadow-sm active:scale-95 text-neutral-800 dark:text-white"
               title="Sign in with Google"
             >
               <svg className="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 24 24">

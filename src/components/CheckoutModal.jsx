@@ -50,6 +50,18 @@ export default function CheckoutModal({
     orderNotes: "Please deliver between 2 PM and 6 PM."
   }));
 
+  // Automatically sync customer name and email when Google user is logged in
+  useEffect(() => {
+    if (user) {
+      setFormData(prev => ({
+        ...prev,
+        firstName: user.firstName || (user.name ? user.name.split(' ')[0] : prev.firstName),
+        lastName: user.lastName || (user.name ? user.name.split(' ').slice(1).join(' ') : prev.lastName),
+        email: user.email || prev.email
+      }));
+    }
+  }, [user]);
+
   // Selected Payment Method: 'cod' | 'card' | 'jazzcash' | 'easypaisa'
   const [paymentMethod, setPaymentMethod] = useState('cod');
 
@@ -131,14 +143,14 @@ export default function CheckoutModal({
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-onyx-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6">
-      <div className="bg-white rounded-2xl max-w-3xl w-full overflow-hidden shadow-2xl border border-linen-300 relative fade-in">
+      <div className="bg-white rounded-none max-w-3xl w-full overflow-hidden shadow-2xl border border-linen-300 relative fade-in">
         
         {/* Modal Top Header */}
         <div className="p-5 bg-linen-100 border-b border-linen-300 flex items-center justify-between">
           <div>
             <div className="flex items-center space-x-2">
               <span className="font-editorial text-xl font-bold text-onyx-950">ZAYTOUN & CO.</span>
-              <span className="text-xs bg-olive-700 text-white px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider">
+              <span className="text-xs bg-olive-700 text-white px-2 py-0.5 rounded-none font-semibold uppercase tracking-wider">
                 Secure 256-Bit SSL Checkout
               </span>
             </div>
@@ -148,7 +160,7 @@ export default function CheckoutModal({
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-full text-onyx-500 hover:text-onyx-950 hover:bg-linen-200 transition"
+            className="p-1.5 rounded-none text-onyx-500 hover:text-onyx-950 hover:bg-linen-200 transition"
           >
             ✕
           </button>
@@ -175,7 +187,7 @@ export default function CheckoutModal({
               </h3>
 
               {user && (
-                <div className="flex items-center space-x-2.5 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/50 text-xs text-emerald-900 dark:text-emerald-200">
+                <div className="flex items-center space-x-2.5 p-3 rounded-none bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/50 text-xs text-emerald-900 dark:text-emerald-200">
                   <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24">
                     <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
                     <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
@@ -186,7 +198,7 @@ export default function CheckoutModal({
                     <span className="font-bold">Ordering as Google Verified Client: </span>
                     <span>{user.name} ({user.email})</span>
                   </div>
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                  <span className="w-2 h-2 rounded-none bg-emerald-500 animate-ping"></span>
                 </div>
               )}
 
@@ -199,7 +211,7 @@ export default function CheckoutModal({
                     value={formData.firstName}
                     onChange={handleInputChange}
                     required
-                    className="w-full bg-linen-50 border border-linen-300 rounded-lg p-2.5 text-xs text-onyx-900 focus:outline-none focus:ring-1 focus:ring-olive-700"
+                    className="w-full bg-linen-50 border border-linen-300 rounded-none p-2.5 text-xs text-onyx-900 focus:outline-none focus:ring-1 focus:ring-olive-700"
                   />
                 </div>
                 <div>
@@ -210,7 +222,7 @@ export default function CheckoutModal({
                     value={formData.lastName}
                     onChange={handleInputChange}
                     required
-                    className="w-full bg-linen-50 border border-linen-300 rounded-lg p-2.5 text-xs text-onyx-900 focus:outline-none focus:ring-1 focus:ring-olive-700"
+                    className="w-full bg-linen-50 border border-linen-300 rounded-none p-2.5 text-xs text-onyx-900 focus:outline-none focus:ring-1 focus:ring-olive-700"
                   />
                 </div>
               </div>
@@ -227,7 +239,7 @@ export default function CheckoutModal({
                       onChange={handleInputChange}
                       placeholder="03001234567"
                       required
-                      className="w-full bg-linen-50 border border-linen-300 rounded-lg p-2.5 pl-11 text-xs text-onyx-900 focus:outline-none focus:ring-1 focus:ring-olive-700 font-medium"
+                      className="w-full bg-linen-50 border border-linen-300 rounded-none p-2.5 pl-11 text-xs text-onyx-900 focus:outline-none focus:ring-1 focus:ring-olive-700 font-medium"
                     />
                   </div>
                   <span className="text-[10px] text-onyx-500">Required for COD verification and rider updates</span>
@@ -240,7 +252,7 @@ export default function CheckoutModal({
                     value={formData.email}
                     onChange={handleInputChange}
                     required
-                    className="w-full bg-linen-50 border border-linen-300 rounded-lg p-2.5 text-xs text-onyx-900 focus:outline-none focus:ring-1 focus:ring-olive-700"
+                    className="w-full bg-linen-50 border border-linen-300 rounded-none p-2.5 text-xs text-onyx-900 focus:outline-none focus:ring-1 focus:ring-olive-700"
                   />
                 </div>
               </div>
@@ -254,7 +266,7 @@ export default function CheckoutModal({
                   onChange={handleInputChange}
                   placeholder="e.g. House 42-B, Street 14, Phase 6, DHA"
                   required
-                  className="w-full bg-linen-50 border border-linen-300 rounded-lg p-2.5 text-xs text-onyx-900 focus:outline-none focus:ring-1 focus:ring-olive-700"
+                  className="w-full bg-linen-50 border border-linen-300 rounded-none p-2.5 text-xs text-onyx-900 focus:outline-none focus:ring-1 focus:ring-olive-700"
                 />
               </div>
 
@@ -265,7 +277,7 @@ export default function CheckoutModal({
                     name="city"
                     value={formData.city}
                     onChange={handleInputChange}
-                    className="w-full bg-linen-50 border border-linen-300 rounded-lg p-2.5 text-xs text-onyx-900 focus:outline-none focus:ring-1 focus:ring-olive-700 font-medium"
+                    className="w-full bg-linen-50 border border-linen-300 rounded-none p-2.5 text-xs text-onyx-900 focus:outline-none focus:ring-1 focus:ring-olive-700 font-medium"
                   >
                     {PAKISTANI_CITIES.map(c => (
                       <option key={c} value={c}>{c}</option>
@@ -279,7 +291,7 @@ export default function CheckoutModal({
                     name="province"
                     value={formData.province}
                     onChange={handleInputChange}
-                    className="w-full bg-linen-50 border border-linen-300 rounded-lg p-2.5 text-xs text-onyx-900 focus:outline-none focus:ring-1 focus:ring-olive-700"
+                    className="w-full bg-linen-50 border border-linen-300 rounded-none p-2.5 text-xs text-onyx-900 focus:outline-none focus:ring-1 focus:ring-olive-700"
                   />
                 </div>
                 <div>
@@ -289,7 +301,7 @@ export default function CheckoutModal({
                     name="postalCode"
                     value={formData.postalCode}
                     onChange={handleInputChange}
-                    className="w-full bg-linen-50 border border-linen-300 rounded-lg p-2.5 text-xs text-onyx-900 focus:outline-none focus:ring-1 focus:ring-olive-700"
+                    className="w-full bg-linen-50 border border-linen-300 rounded-none p-2.5 text-xs text-onyx-900 focus:outline-none focus:ring-1 focus:ring-olive-700"
                   />
                 </div>
               </div>
@@ -303,7 +315,7 @@ export default function CheckoutModal({
                   value={formData.orderNotes}
                   onChange={handleInputChange}
                   placeholder="e.g. Ring bell twice, deliver to security guard"
-                  className="w-full bg-linen-50 border border-linen-300 rounded-lg p-2.5 text-xs text-onyx-900 focus:outline-none focus:ring-1 focus:ring-olive-700"
+                  className="w-full bg-linen-50 border border-linen-300 rounded-none p-2.5 text-xs text-onyx-900 focus:outline-none focus:ring-1 focus:ring-olive-700"
                 />
               </div>
 
@@ -318,7 +330,7 @@ export default function CheckoutModal({
                 </button>
                 <button
                   type="submit"
-                  className="bg-olive-700 hover:bg-olive-800 text-linen-100 font-bold px-6 py-3 rounded-xl text-xs uppercase tracking-wider transition shadow"
+                  className="bg-olive-700 hover:bg-olive-800 text-linen-100 font-bold px-6 py-3 rounded-none text-xs uppercase tracking-wider transition shadow"
                 >
                   Continue to Payment Options →
                 </button>
@@ -346,7 +358,7 @@ export default function CheckoutModal({
                 {/* 1. Cash on Delivery (COD) */}
                 <div 
                   onClick={() => setPaymentMethod('cod')}
-                  className={`p-4 rounded-xl border-2 transition cursor-pointer flex items-start space-x-3 ${
+                  className={`p-4 rounded-none border-2 transition cursor-pointer flex items-start space-x-3 ${
                     paymentMethod === 'cod'
                       ? 'border-olive-700 bg-olive-50/40 ring-1 ring-olive-700'
                       : 'border-linen-300 hover:border-onyx-400 bg-white'
@@ -377,7 +389,7 @@ export default function CheckoutModal({
                 {/* 2. Credit / Debit Card */}
                 <div 
                   onClick={() => setPaymentMethod('card')}
-                  className={`p-4 rounded-xl border-2 transition cursor-pointer flex items-start space-x-3 ${
+                  className={`p-4 rounded-none border-2 transition cursor-pointer flex items-start space-x-3 ${
                     paymentMethod === 'card'
                       ? 'border-olive-700 bg-olive-50/40 ring-1 ring-olive-700'
                       : 'border-linen-300 hover:border-onyx-400 bg-white'
@@ -412,7 +424,7 @@ export default function CheckoutModal({
                 {/* 3. JazzCash */}
                 <div 
                   onClick={() => setPaymentMethod('jazzcash')}
-                  className={`p-4 rounded-xl border-2 transition cursor-pointer flex items-start space-x-3 ${
+                  className={`p-4 rounded-none border-2 transition cursor-pointer flex items-start space-x-3 ${
                     paymentMethod === 'jazzcash'
                       ? 'border-red-600 bg-red-50/30 ring-1 ring-red-600'
                       : 'border-linen-300 hover:border-onyx-400 bg-white'
@@ -428,7 +440,7 @@ export default function CheckoutModal({
                   <div className="flex-1">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
-                        <span className="w-5 h-5 rounded-full bg-red-600 text-white flex items-center justify-center text-[10px] font-black">JC</span>
+                        <span className="w-5 h-5 rounded-none bg-red-600 text-white flex items-center justify-center text-[10px] font-black">JC</span>
                         <strong className="text-xs sm:text-sm font-bold text-red-700">JazzCash Mobile Wallet</strong>
                         <span className="text-[10px] bg-red-100 text-red-800 font-bold px-2 py-0.5 rounded">Instant MPIN</span>
                       </div>
@@ -443,7 +455,7 @@ export default function CheckoutModal({
                 {/* 4. EasyPaisa */}
                 <div 
                   onClick={() => setPaymentMethod('easypaisa')}
-                  className={`p-4 rounded-xl border-2 transition cursor-pointer flex items-start space-x-3 ${
+                  className={`p-4 rounded-none border-2 transition cursor-pointer flex items-start space-x-3 ${
                     paymentMethod === 'easypaisa'
                       ? 'border-emerald-600 bg-emerald-50/30 ring-1 ring-emerald-600'
                       : 'border-linen-300 hover:border-onyx-400 bg-white'
@@ -459,7 +471,7 @@ export default function CheckoutModal({
                   <div className="flex-1">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
-                        <span className="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] font-black">EP</span>
+                        <span className="w-5 h-5 rounded-none bg-emerald-600 text-white flex items-center justify-center text-[10px] font-black">EP</span>
                         <strong className="text-xs sm:text-sm font-bold text-emerald-800">EasyPaisa Mobile Account</strong>
                         <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded">USSD Prompt</span>
                       </div>
@@ -474,7 +486,7 @@ export default function CheckoutModal({
               </div>
 
               {/* Sub-Forms depending on selected payment method */}
-              <div className="p-4 rounded-xl bg-linen-100 border border-linen-300">
+              <div className="p-4 rounded-none bg-linen-100 border border-linen-300">
                 {paymentMethod === 'cod' && (
                   <div className="space-y-2 text-xs">
                     <div className="flex items-center space-x-2 text-olive-800 font-bold">
@@ -592,7 +604,7 @@ export default function CheckoutModal({
                   type="button"
                   onClick={handleFinalizeOrder}
                   disabled={isSubmitting}
-                  className="bg-olive-700 hover:bg-olive-800 text-linen-100 font-bold px-8 py-3.5 rounded-xl text-xs uppercase tracking-wider transition shadow-lg flex items-center space-x-2"
+                  className="bg-olive-700 hover:bg-olive-800 text-linen-100 font-bold px-8 py-3.5 rounded-none text-xs uppercase tracking-wider transition shadow-lg flex items-center space-x-2"
                 >
                   {isSubmitting ? (
                     <>

@@ -183,8 +183,9 @@ export async function sendOrderEmails(order) {
   }).join('');
 
   // 1A. Email to Customer
+  let customerHtml = null;
   if (customerEmail) {
-    const customerHtml = `
+    customerHtml = `
       <!DOCTYPE html>
       <html>
       <head>
@@ -308,13 +309,6 @@ export async function sendOrderEmails(order) {
       </body>
       </html>
     `;
-
-    sendMailSafely({
-      to: customerEmail,
-      subject: `Order Confirmed: #${orderNumber} — Zaytoun Atelier`,
-      html: customerHtml,
-      text: `Thank you for your order #${orderNumber} of Rs. ${total.toLocaleString()} with Zaytoun Atelier. Courier: ${courier} (${trackingNumber}). Track: http://localhost:5173/track?order=${orderNumber}`
-    });
   }
 
   // 1B. Alert to Store Owner (shaahrozdogar@gmail.com)
@@ -523,6 +517,19 @@ export async function sendSubscriptionEmails(subscriberEmail, source = 'website'
       </table>
     </body>
     </html>
+  `;
+
+  // 3B. Alert Email to Store Owner
+  const alertOwnerHtml = `
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 560px; margin: 0 auto; background: #ffffff; padding: 24px; border: 2px solid #364634; border-radius: 8px;">
+      <h2 style="color: #364634; margin-top: 0;">📬 New Newsletter Subscriber</h2>
+      <p style="font-size: 14px; color: #333;">A new client subscribed to the Zaytoun Gazette:</p>
+      <div style="background: #FAF8F5; padding: 14px; border-radius: 6px; margin: 16px 0; font-size: 14px; line-height: 1.6;">
+        <strong>Subscriber Email:</strong> <a href="mailto:${subscriberEmail}" style="color: #364634;">${subscriberEmail}</a><br/>
+        <strong>Acquisition Source:</strong> ${source}<br/>
+        <strong>Timestamp:</strong> ${new Date().toLocaleString('en-PK', { timeZone: 'Asia/Karachi' })} PKT
+      </div>
+    </div>
   `;
 
   return await Promise.allSettled([

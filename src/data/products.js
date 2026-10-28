@@ -1,780 +1,525 @@
+export const CATALOG_VERSION = "2026.10.outfitters_v4_purged";
+
 const RAW_PRODUCTS = [
+  // =========================================================================
+  // MEN'S COLLECTION: REALISTIC JEANS, T-SHIRTS & SHIRTS (WHITE STUDIO BG)
+  // =========================================================================
   {
-    id: "forme-01",
-    name: "The Olive Heritage Double-Breasted Trench",
-    slug: "olive-heritage-double-breasted-trench",
-    person: "women",
-    category: "Outerwear",
-    slot: "outer",
-    style: "coat",
-    collection: "Autumn / Winter Edit",
-    price: 18500,
-    originalPrice: 22000,
-    badge: "Bestseller",
+    id: "men-jeans-01",
+    name: "BARREL FIT JEANS",
+    slug: "barrel-fit-jeans-light-indigo",
+    person: "men",
+    gender: "men",
+    category: "Men's Collection",
+    slot: "bottom",
+    style: "trouser",
+    collection: "Denim Edit 2026",
+    price: 7490,
+    originalPrice: 8990,
+    badge: "NEW ARRIVAL",
     rating: 4.9,
-    reviewCount: 38,
-    primaryColor: "Olive Green",
+    reviewCount: 42,
+    fitLine: "BARREL FIT | MEN",
+    primaryColor: "Light Blue",
     colors: [
-      { name: "Olive Green", hex: "#364634", bgClass: "bg-[#364634]" },
-      { name: "Desert Camel", hex: "#C69F6F", bgClass: "bg-[#C69F6F]" },
-      { name: "Obsidian Black", hex: "#111315", bgClass: "bg-[#111315]" }
+      { name: "Light Blue", hex: "#8FA9C4", bgClass: "bg-[#8FA9C4]" },
+      { name: "Dark Indigo", hex: "#1E2A38", bgClass: "bg-[#1E2A38]" }
     ],
-    sizes: ["XS", "S", "M", "L", "XL"],
-    stockPerSize: { XS: 4, S: 8, M: 12, L: 6, XL: 2 },
+    sizes: ["28", "30", "32", "34", "36"],
+    stockPerSize: { "28": 6, "30": 14, "32": 18, "34": 12, "36": 5 },
     images: [
-      "/images/heritage_trench_coat.jpg",
-      "/images/editorial_camel_banner.jpg"
+      "/images/catalog/men_barrel_jeans_flat.jpg",
+      "/images/catalog/men_model_white_tee_jeans.jpg"
     ],
-    description: "Tailored from heavyweight Belgian linen-cotton twill with weather-resistant finishing. Features horn buttons and structured storm flaps.",
-    fabric: "70% Organic Cotton Twill, 30% European Washed Linen",
-    care: "Dry clean only. Press with low steam.",
-    fit: "Relaxed tailored fit with belt cinching."
+    description: "Curved barrel silhouette crafted from 13.5oz ring-spun authentic washed cotton denim. Features ergonomic outer seam curvature, vintage whiskering, and branded metal rivet detailing.",
+    fabric: "100% Rigid Ring-Spun Cotton Denim (13.5oz)",
+    care: "Machine wash cold inside out with similar colors. Line dry.",
+    fit: "High-rise waist with relaxed curved barrel leg tapering subtly at the ankle."
   },
   {
-    id: "forme-02",
-    name: "Pure Mongolian Camel Cashmere Knit",
-    slug: "pure-mongolian-camel-cashmere-knit",
-    person: "women",
-    category: "Knitwear",
-    slot: "top",
-    style: "knit",
-    collection: "Autumn / Winter Edit",
-    price: 14200,
-    originalPrice: 16500,
-    badge: "Pure Luxury",
+    id: "men-jeans-02",
+    name: "BAGGY FIT JEANS",
+    slug: "baggy-fit-jeans-washed-black",
+    person: "men",
+    gender: "men",
+    category: "Men's Collection",
+    slot: "bottom",
+    style: "wide",
+    collection: "Denim Edit 2026",
+    price: 6990,
+    originalPrice: 7990,
+    badge: "BESTSELLER",
     rating: 5.0,
-    reviewCount: 52,
-    primaryColor: "Camel",
+    reviewCount: 58,
+    fitLine: "BAGGY FIT | MEN",
+    primaryColor: "Washed Black",
     colors: [
-      { name: "Desert Camel", hex: "#C69F6F", bgClass: "bg-[#C69F6F]" },
-      { name: "Linen White", hex: "#FAF8F5", bgClass: "bg-[#FAF8F5] border border-gray-300" },
-      { name: "Obsidian Black", hex: "#111315", bgClass: "bg-[#111315]" }
+      { name: "Washed Black", hex: "#222224", bgClass: "bg-[#222224]" },
+      { name: "Vintage Blue", hex: "#4C6B8B", bgClass: "bg-[#4C6B8B]" }
     ],
-    sizes: ["XS", "S", "M", "L", "XL"],
-    stockPerSize: { XS: 3, S: 7, M: 9, L: 4, XL: 2 },
+    sizes: ["28", "30", "32", "34", "36"],
+    stockPerSize: { "28": 8, "30": 15, "32": 20, "34": 10, "36": 4 },
     images: [
-      "/images/camel_cashmere_knit.jpg",
-      "/images/campaign_camel_knit.jpg"
+      "/images/catalog/men_baggy_black_jeans_flat.jpg",
+      "/images/catalog/men_model_white_tee_jeans.jpg"
     ],
-    description: "Spun from 100% Grade-A Mongolian cashmere fibers in a warm camel tone. Ribbed neck and drop shoulders for effortless draping.",
-    fabric: "100% Mongolian Cashmere (12-Gauge)",
-    care: "Hand wash cold with wool wash or dry clean.",
-    fit: "Regular easy fit. Size up for oversized drape."
+    description: "Relaxed skater-inspired baggy denim cut with generous volume through the thigh and calf. Mineral enzyme wash gives a soft lived-in drape from day one.",
+    fabric: "100% Premium Cotton Denim (13oz)",
+    care: "Machine wash cold gentle. Do not tumble dry.",
+    fit: "Mid-rise, loose wide cut stacking naturally over sneakers."
   },
   {
-    id: "forme-03",
-    name: "Camel Pleated Wide-Leg Palazzo Trouser",
-    slug: "camel-pleated-wide-leg-palazzo-trouser",
+    id: "men-jeans-03",
+    name: "WIDE LEG JEANS",
+    slug: "wide-leg-jeans-vintage-blue",
+    person: "men",
+    gender: "men",
+    category: "Men's Collection",
+    slot: "bottom",
+    style: "wide",
+    collection: "Denim Edit 2026",
+    price: 6990,
+    originalPrice: 8490,
+    badge: "POPULAR",
+    rating: 4.8,
+    reviewCount: 36,
+    fitLine: "WIDE LEG FIT | MEN",
+    primaryColor: "Classic Wash",
+    colors: [
+      { name: "Classic Wash", hex: "#5C768D", bgClass: "bg-[#5C768D]" },
+      { name: "Dark Indigo", hex: "#1D2834", bgClass: "bg-[#1D2834]" }
+    ],
+    sizes: ["30", "32", "34", "36"],
+    stockPerSize: { "30": 11, "32": 16, "34": 9, "36": 3 },
+    images: [
+      "/images/catalog/men_model_white_tee_jeans.jpg",
+      "/images/catalog/men_barrel_jeans_flat.jpg"
+    ],
+    description: "Contemporary wide-leg denim engineered with a straight drop from hip to hem. Pairs effortlessly with clean oversized white tees and workwear jackets.",
+    fabric: "100% Combed Cotton Denim (12.8oz)",
+    care: "Wash cold. Hang dry in shade.",
+    fit: "Mid-rise, continuous wide-leg drape."
+  },
+  {
+    id: "men-jeans-04",
+    name: "STRAIGHT FIT CARPENTER JEANS",
+    slug: "straight-fit-carpenter-jeans",
+    person: "men",
+    gender: "men",
+    category: "Men's Collection",
+    slot: "bottom",
+    style: "trouser",
+    collection: "Utility Edit",
+    price: 6990,
+    originalPrice: 7990,
+    badge: "UTILITY",
+    rating: 4.9,
+    reviewCount: 29,
+    fitLine: "STRAIGHT FIT | MEN",
+    primaryColor: "Deep Denim Blue",
+    colors: [
+      { name: "Indigo Workwear", hex: "#273D54", bgClass: "bg-[#273D54]" },
+      { name: "Washed Slate", hex: "#4D5D6B", bgClass: "bg-[#4D5D6B]" },
+      { name: "Ecru", hex: "#E8E2D8", bgClass: "bg-[#E8E2D8]" }
+    ],
+    sizes: ["30", "32", "34", "36"],
+    stockPerSize: { "30": 10, "32": 14, "34": 8, "36": 4 },
+    images: [
+      "/images/catalog/men_model_carpenter.jpg",
+      "/images/catalog/men_barrel_jeans_flat.jpg"
+    ],
+    description: "Heritage workwear carpenter jeans equipped with authentic utility pocket detailing, hammer loop, reinforced bar-tacks, and triple-needle chain stitching.",
+    fabric: "100% Heavy Duty Cotton Denim (14oz)",
+    care: "Machine wash warm with like colors.",
+    fit: "Classic straight-leg cut with comfortable room in seat and thigh."
+  },
+  {
+    id: "men-jeans-05",
+    name: "BALLOON FIT JEANS",
+    slug: "balloon-fit-jeans-raw-indigo",
+    person: "men",
+    gender: "men",
+    category: "Men's Collection",
+    slot: "bottom",
+    style: "trouser",
+    collection: "Denim Edit 2026",
+    price: 6990,
+    originalPrice: 8490,
+    badge: "TRENDING",
+    rating: 4.9,
+    reviewCount: 31,
+    fitLine: "BALLOON FIT | MEN",
+    primaryColor: "Raw Dark Indigo",
+    colors: [
+      { name: "Raw Dark Indigo", hex: "#1C2536", bgClass: "bg-[#1C2536]" },
+      { name: "Medium Wash", hex: "#476175", bgClass: "bg-[#476175]" }
+    ],
+    sizes: ["28", "30", "32", "34"],
+    stockPerSize: { "28": 5, "30": 12, "32": 15, "34": 7 },
+    images: [
+      "/images/catalog/men_model_balloon_indigo.jpg",
+      "/images/catalog/men_barrel_jeans_flat.jpg"
+    ],
+    description: "Architectural balloon silhouette featuring an exaggerated rounded volume around the knee and an intentional tapered cuff that neatly frames sneakers.",
+    fabric: "100% Ring-Spun Indigo Denim (13.5oz)",
+    care: "Cold wash separate first 3 washes to set indigo pigment.",
+    fit: "High-rise balloon fit with pronounced taper at the leg opening."
+  },
+  {
+    id: "men-tee-01",
+    name: "HEAVYWEIGHT BOXY T-SHIRT",
+    slug: "heavyweight-boxy-tshirt-white",
+    person: "men",
+    gender: "men",
+    category: "Men's Collection",
+    slot: "top",
+    style: "tee",
+    collection: "Core Essentials",
+    price: 3490,
+    originalPrice: 4200,
+    badge: "CORE EDIT",
+    rating: 5.0,
+    reviewCount: 84,
+    fitLine: "BOXY FIT | MEN",
+    primaryColor: "Pure White",
+    colors: [
+      { name: "Pure White", hex: "#FFFFFF", bgClass: "bg-[#FFFFFF] border border-gray-300" },
+      { name: "Washed Black", hex: "#1A1A1A", bgClass: "bg-[#1A1A1A]" }
+    ],
+    sizes: ["S", "M", "L", "XL"],
+    stockPerSize: { S: 15, M: 28, L: 24, XL: 10 },
+    images: [
+      "/images/catalog/men_white_tee_flat.jpg",
+      "/images/catalog/men_model_white_tee_jeans.jpg"
+    ],
+    description: "Engineered from ultra-dense 280 GSM combed organic cotton. Features a thick 1.2-inch ribbed collar that holds shape permanently, dropped shoulders, and a clean boxy torso.",
+    fabric: "100% Combed Heavyweight Organic Cotton (280 GSM)",
+    care: "Machine wash cold. Reshape and dry flat.",
+    fit: "Boxy relaxed cut. True to size for street drape."
+  },
+  {
+    id: "men-tee-02",
+    name: "OVERSIZED MINERAL T-SHIRT",
+    slug: "oversized-mineral-tshirt-earth-brown",
+    person: "men",
+    gender: "men",
+    category: "Men's Collection",
+    slot: "top",
+    style: "tee",
+    collection: "Core Essentials",
+    price: 3690,
+    originalPrice: 4500,
+    badge: "ESSENTIAL",
+    rating: 4.8,
+    reviewCount: 47,
+    fitLine: "OVERSIZED | MEN",
+    primaryColor: "Earth Brown",
+    colors: [
+      { name: "Earth Brown", hex: "#6F5C4D", bgClass: "bg-[#6F5C4D]" },
+      { name: "Desert Camel", hex: "#C69F6F", bgClass: "bg-[#C69F6F]" }
+    ],
+    sizes: ["S", "M", "L", "XL"],
+    stockPerSize: { S: 8, M: 19, L: 17, XL: 6 },
+    images: [
+      "/images/catalog/men_model_carpenter.jpg",
+      "/images/catalog/men_white_tee_flat.jpg"
+    ],
+    description: "Washed earth-tone tee pigment-dyed for vintage variation. Cut with drop shoulders, relaxed long sleeves, and buttery soft pre-shrunk cotton jersey.",
+    fabric: "100% Ring-Spun Cotton Jersey (240 GSM)",
+    care: "Wash cold gentle with mild detergent.",
+    fit: "Oversized silhouette with relaxed chest and armholes."
+  },
+  {
+    id: "men-shirt-01",
+    name: "RELAXED SAGE LINEN SHIRT",
+    slug: "relaxed-sage-linen-shirt",
+    person: "men",
+    gender: "men",
+    category: "Men's Collection",
+    slot: "top",
+    style: "shirt",
+    collection: "Resort Edit",
+    price: 5990,
+    originalPrice: 7490,
+    badge: "RESORT",
+    rating: 4.9,
+    reviewCount: 39,
+    fitLine: "RELAXED FIT | MEN",
+    primaryColor: "Sage Green",
+    colors: [
+      { name: "Sage Green", hex: "#879B84", bgClass: "bg-[#879B84]" },
+      { name: "Linen White", hex: "#FAF8F5", bgClass: "bg-[#FAF8F5] border border-gray-300" }
+    ],
+    sizes: ["S", "M", "L", "XL"],
+    stockPerSize: { S: 7, M: 16, L: 14, XL: 5 },
+    images: [
+      "/images/catalog/men_model_sage_shirt.jpg",
+      "/images/catalog/men_white_tee_flat.jpg"
+    ],
+    description: "Woven from breathable Normandy flax linen with a smooth enzyme-softened finish. Features natural mother-of-pearl buttons, curved hem, and a structured spread collar.",
+    fabric: "100% Pure European Flax Linen",
+    care: "Machine wash cold delicate. Warm iron or steam.",
+    fit: "Relaxed tailored cut that can be worn tucked or casually untucked."
+  },
+
+  // =========================================================================
+  // WOMEN'S COLLECTION: REALISTIC JEANS, TROUSERS & SHIRTS (WHITE STUDIO BG)
+  // =========================================================================
+  {
+    id: "women-jeans-01",
+    name: "HIGH-RISE WIDE LEG JEANS",
+    slug: "high-rise-wide-leg-jeans",
     person: "women",
+    gender: "women",
     category: "Women's Pret",
     slot: "bottom",
     style: "wide",
-    collection: "Earth Pret 2026",
-    price: 11500,
-    originalPrice: 13500,
-    badge: "Trending",
-    rating: 4.9,
-    reviewCount: 31,
-    primaryColor: "Camel",
+    collection: "Denim Edit 2026",
+    price: 6990,
+    originalPrice: 8490,
+    badge: "TRENDING",
+    rating: 5.0,
+    reviewCount: 63,
+    fitLine: "WIDE LEG | WOMEN",
+    primaryColor: "Vintage Blue",
     colors: [
-      { name: "Desert Camel", hex: "#C69F6F", bgClass: "bg-[#C69F6F]" },
-      { name: "Olive Green", hex: "#364634", bgClass: "bg-[#364634]" },
-      { name: "Obsidian Black", hex: "#111315", bgClass: "bg-[#111315]" }
+      { name: "Vintage Blue", hex: "#4C6B8B", bgClass: "bg-[#4C6B8B]" },
+      { name: "Linen Ecru", hex: "#EDE8DF", bgClass: "bg-[#EDE8DF]" }
     ],
-    sizes: ["XS", "S", "M", "L"],
-    stockPerSize: { XS: 4, S: 9, M: 11, L: 3 },
+    sizes: ["26", "28", "30", "32"],
+    stockPerSize: { "26": 9, "28": 18, "30": 15, "32": 6 },
     images: [
-      "/images/women_camel_palazzo.jpg",
-      "/images/editorial_camel_banner.jpg"
+      "/images/catalog/women_wide_leg_jeans_flat.jpg",
+      "/images/catalog/women_model_jeans_shirt.jpg"
     ],
-    description: "High-waisted tailored trousers with twin front pleats and a dramatic wide leg cut that floats effortlessly with every stride.",
-    fabric: "65% Lyocell Tencel, 35% Cotton Twill",
-    care: "Machine wash gentle cold or dry clean.",
-    fit: "High-rise, fluid wide-leg cut."
+    description: "Sculpted high-rise waistline contouring smoothly into an effortless wide-leg drape. Premium 100% cotton denim gives structural elegance without sagging.",
+    fabric: "100% Premium Cotton Denim (12.5oz)",
+    care: "Machine wash cold. Hang dry.",
+    fit: "Fitted through high waist and hips, fluid wide leg opening."
   },
   {
-    id: "forme-04",
-    name: "The Couture Silk Gown in Olive & Camel",
-    slug: "couture-silk-gown-olive-camel",
+    id: "women-jeans-02",
+    name: "STRAIGHT LEG VINTAGE JEANS",
+    slug: "straight-leg-vintage-jeans",
     person: "women",
+    gender: "women",
     category: "Women's Pret",
-    slot: "dress",
-    style: "dress",
-    collection: "Evening Capsule",
-    price: 15900,
-    originalPrice: 18000,
-    badge: "Exclusive Couture",
+    slot: "bottom",
+    style: "trouser",
+    collection: "Denim Edit 2026",
+    price: 6490,
+    originalPrice: 7990,
+    badge: "NEW ARRIVAL",
+    rating: 4.9,
+    reviewCount: 41,
+    fitLine: "STRAIGHT FIT | WOMEN",
+    primaryColor: "Medium Denim",
+    colors: [
+      { name: "Medium Denim", hex: "#3F6488", bgClass: "bg-[#3F6488]" },
+      { name: "Washed Black", hex: "#222224", bgClass: "bg-[#222224]" }
+    ],
+    sizes: ["26", "28", "30", "32"],
+    stockPerSize: { "26": 8, "28": 16, "30": 12, "32": 5 },
+    images: [
+      "/images/catalog/women_model_jeans_shirt.jpg",
+      "/images/catalog/women_wide_leg_jeans_flat.jpg"
+    ],
+    description: "The quintessential 90s vintage straight cut with a flattering mid-to-high rise. Engineered with subtle natural fading along the thighs and classic 5-pocket construction.",
+    fabric: "99% Cotton, 1% Comfort Elastane (12oz)",
+    care: "Wash inside out in cold water.",
+    fit: "Classic straight leg from hip to ankle."
+  },
+  {
+    id: "women-pant-01",
+    name: "PLEATED TAILORED TROUSERS",
+    slug: "pleated-tailored-camel-trousers",
+    person: "women",
+    gender: "women",
+    category: "Women's Pret",
+    slot: "bottom",
+    style: "wide",
+    collection: "Tailored Pret",
+    price: 7990,
+    originalPrice: 9490,
+    badge: "BESTSELLER",
     rating: 5.0,
-    reviewCount: 44,
+    reviewCount: 77,
+    fitLine: "TAILORED WIDE | WOMEN",
     primaryColor: "Desert Camel",
     colors: [
       { name: "Desert Camel", hex: "#C69F6F", bgClass: "bg-[#C69F6F]" },
-      { name: "Olive Green", hex: "#364634", bgClass: "bg-[#364634]" },
       { name: "Obsidian Black", hex: "#111315", bgClass: "bg-[#111315]" }
     ],
     sizes: ["XS", "S", "M", "L"],
-    stockPerSize: { XS: 5, S: 7, M: 6, L: 2 },
+    stockPerSize: { XS: 6, S: 14, M: 18, L: 8 },
     images: [
-      "/images/couture_silk_dress.jpg",
-      "/images/editorial_camel_banner.jpg"
+      "/images/catalog/women_model_camel_trouser.jpg",
+      "/images/catalog/women_linen_trousers_flat.jpg"
     ],
-    description: "Bias-cut silk charmeuse midi dress with delicate rouleau straps, subtle cowl neckline, and a gentle flare at the hem.",
-    fabric: "100% Grade 6A Mulberry Silk Charmeuse (19 Momme)",
-    care: "Dry clean or gentle hand wash in silk detergent.",
-    fit: "Fluid bias cut skimming contours."
+    description: "Tailored high-waisted trousers with razor-sharp front pleats and side slash pockets. Fluid suiting twill provides an elegant drape whether worn with heels or flats.",
+    fabric: "70% Polyester Suiting Twill, 26% Rayon, 4% Spandex",
+    care: "Dry clean or gentle cold machine wash in mesh bag.",
+    fit: "High waist fit with sweeping wide-leg puddle hem."
   },
   {
-    id: "forme-05",
-    name: "Structured Olive Raw-Silk Pret Shirt",
-    slug: "structured-olive-raw-silk-pret-shirt",
+    id: "women-pant-02",
+    name: "RELAXED PLEATED LINEN TROUSERS",
+    slug: "relaxed-pleated-linen-trousers",
     person: "women",
+    gender: "women",
     category: "Women's Pret",
-    slot: "top",
-    style: "shirt",
-    collection: "Earth Pret 2026",
-    price: 12800,
-    originalPrice: 14500,
-    badge: "New Arrival",
+    slot: "bottom",
+    style: "wide",
+    collection: "Linen Capsule",
+    price: 6290,
+    originalPrice: 7490,
+    badge: "LINEN",
     rating: 4.8,
-    reviewCount: 29,
-    primaryColor: "Olive Green",
-    colors: [
-      { name: "Olive Green", hex: "#364634", bgClass: "bg-[#364634]" },
-      { name: "Desert Camel", hex: "#C69F6F", bgClass: "bg-[#C69F6F]" },
-      { name: "Linen White", hex: "#FAF8F5", bgClass: "bg-[#FAF8F5] border border-gray-300" }
-    ],
-    sizes: ["XS", "S", "M", "L"],
-    stockPerSize: { XS: 3, S: 8, M: 10, L: 5 },
-    images: [
-      "/images/women_olive_silk_shirt.jpg",
-      "/images/campaign_olive_coat.jpg"
-    ],
-    description: "Crafted from handspun slub raw silk with tonal stitchwork, mandarin slit collar, and clean button front.",
-    fabric: "100% Handwoven Raw Silk",
-    care: "Dry clean only to preserve raw slub luster.",
-    fit: "Straight tailored silhouette."
-  },
-  {
-    id: "forme-06",
-    name: "Minimalist Onyx Tailored Wool Blazer",
-    slug: "minimalist-onyx-tailored-wool-blazer",
-    person: "women",
-    category: "Outerwear",
-    slot: "outer",
-    style: "blazer",
-    collection: "Earth Tailoring",
-    price: 21500,
-    originalPrice: 24000,
-    badge: "Iconic",
-    rating: 4.9,
-    reviewCount: 44,
-    primaryColor: "Obsidian Black",
-    colors: [
-      { name: "Obsidian Black", hex: "#111315", bgClass: "bg-[#111315]" },
-      { name: "Desert Camel", hex: "#C69F6F", bgClass: "bg-[#C69F6F]" },
-      { name: "Olive Green", hex: "#364634", bgClass: "bg-[#364634]" }
-    ],
-    sizes: ["S", "M", "L", "XL"],
-    stockPerSize: { S: 6, M: 10, L: 8, XL: 3 },
-    images: [
-      "/images/women_onyx_blazer.jpg",
-      "/images/camel_cashmere_knit.jpg"
-    ],
-    description: "Precision-cut wool blazer with soft structured shoulders, notched lapels, and interior silk piped seams.",
-    fabric: "80% Super 120s Wool, 20% Mulberry Silk Lining",
-    care: "Specialist dry clean only.",
-    fit: "Modern tailored fit."
-  },
-
-  // --- ADDITIONAL WOMEN'S ATELIER PIECES ---
-  {
-    id: "forme-21",
-    name: "Liquid Silk Halter Column Gown",
-    slug: "liquid-silk-halter-column-gown",
-    person: "women",
-    category: "Women's Pret",
-    slot: "dress",
-    style: "dress",
-    collection: "Evening Capsule",
-    price: 18900,
-    originalPrice: 22000,
-    badge: "New Arrival",
-    rating: 5.0,
-    reviewCount: 16,
-    primaryColor: "Olive Green",
-    colors: [
-      { name: "Olive Green", hex: "#364634", bgClass: "bg-[#364634]" },
-      { name: "Desert Camel", hex: "#C69F6F", bgClass: "bg-[#C69F6F]" }
-    ],
-    sizes: ["XS", "S", "M", "L"],
-    stockPerSize: { XS: 4, S: 6, M: 8, L: 3 },
-    images: [
-      "/images/couture_silk_dress.jpg",
-      "/images/women_camel_palazzo.jpg"
-    ],
-    description: "Floor-sweeping liquid silk gown in bespoke olive green and desert camel, tailored with an elegant low-back drape.",
-    fabric: "100% Pure Mulberry Silk (19 Momme)",
-    care: "Dry clean only.",
-    fit: "Column silhouette with fluid drape."
-  },
-  {
-    id: "forme-22",
-    name: "The Camel Wool & Cashmere Overcoat",
-    slug: "camel-wool-cashmere-overcoat",
-    person: "women",
-    category: "Outerwear",
-    slot: "outer",
-    style: "coat",
-    collection: "Autumn / Winter Edit",
-    price: 24500,
-    originalPrice: 28000,
-    badge: "Atelier Edit",
-    rating: 4.9,
-    reviewCount: 28,
-    primaryColor: "Desert Camel",
-    colors: [
-      { name: "Desert Camel", hex: "#C69F6F", bgClass: "bg-[#C69F6F]" },
-      { name: "Olive Green", hex: "#364634", bgClass: "bg-[#364634]" }
-    ],
-    sizes: ["XS", "S", "M", "L"],
-    stockPerSize: { XS: 3, S: 7, M: 9, L: 4 },
-    images: [
-      "/images/editorial_camel_banner.jpg",
-      "/images/heritage_trench_coat.jpg"
-    ],
-    description: "Architectural structured double-face virgin wool and pure cashmere overcoat cinched with tonal belt and horn buttons.",
-    fabric: "70% Virgin Wool, 30% Pure Mongolian Cashmere",
-    care: "Specialist dry clean only.",
-    fit: "Relaxed tailored silhouette."
-  },
-  {
-    id: "forme-23",
-    name: "Chunky Ribbed Desert Camel Cashmere Rollneck",
-    slug: "chunky-ribbed-camel-cashmere-rollneck",
-    person: "women",
-    category: "Knitwear",
-    slot: "top",
-    style: "knit",
-    collection: "Autumn / Winter Edit",
-    price: 15800,
-    originalPrice: 18500,
-    badge: "Winter Runway",
-    rating: 5.0,
-    reviewCount: 35,
-    primaryColor: "Desert Camel",
-    colors: [
-      { name: "Desert Camel", hex: "#C69F6F", bgClass: "bg-[#C69F6F]" },
-      { name: "Linen White", hex: "#FAF8F5", bgClass: "bg-[#FAF8F5] border border-gray-300" }
-    ],
-    sizes: ["XS", "S", "M", "L"],
-    stockPerSize: { XS: 5, S: 8, M: 10, L: 4 },
-    images: [
-      "/images/camel_cashmere_knit.jpg",
-      "/images/campaign_camel_knit.jpg"
-    ],
-    description: "Heavyweight 7-gauge ribbed cashmere rollneck spun from pure un-dyed Mongolian camel fibers.",
-    fabric: "100% Grade-A Mongolian Cashmere",
-    care: "Hand wash cold with wool detergent or dry clean.",
-    fit: "Cozy relaxed fit."
-  },
-  {
-    id: "forme-24",
-    name: "The Olive Double-Breasted Wool Coat",
-    slug: "olive-double-breasted-wool-coat",
-    person: "women",
-    category: "Outerwear",
-    slot: "outer",
-    style: "coat",
-    collection: "Autumn / Winter Edit",
-    price: 22500,
-    originalPrice: 26000,
-    badge: "Quiet Luxury",
-    rating: 4.9,
-    reviewCount: 21,
-    primaryColor: "Olive Green",
-    colors: [
-      { name: "Olive Green", hex: "#364634", bgClass: "bg-[#364634]" },
-      { name: "Obsidian Black", hex: "#111315", bgClass: "bg-[#111315]" }
-    ],
-    sizes: ["S", "M", "L", "XL"],
-    stockPerSize: { S: 4, M: 8, L: 6, XL: 2 },
-    images: [
-      "/images/campaign_olive_coat.jpg",
-      "/images/heritage_trench_coat.jpg"
-    ],
-    description: "Master-tailored olive green virgin wool overcoat with peak lapels, deep jet pockets, and cupro lining.",
-    fabric: "100% Superfine Virgin Wool",
-    care: "Dry clean only.",
-    fit: "Tailored longline silhouette."
-  },
-
-  // --- MEN'S CAPSULE ---
-  {
-    id: "forme-07",
-    name: "Crisp Alabaster Linen Resort Shirt",
-    slug: "crisp-alabaster-linen-resort-shirt",
-    person: "men",
-    category: "Men's Collection",
-    slot: "top",
-    style: "shirt",
-    collection: "Earth Essentials",
-    price: 7800,
-    originalPrice: 9200,
-    badge: "Essential",
-    rating: 4.7,
-    reviewCount: 65,
+    reviewCount: 33,
+    fitLine: "RELAXED FIT | WOMEN",
     primaryColor: "Linen White",
     colors: [
       { name: "Linen White", hex: "#FAF8F5", bgClass: "bg-[#FAF8F5] border border-gray-300" },
-      { name: "Olive Green", hex: "#364634", bgClass: "bg-[#364634]" },
       { name: "Desert Camel", hex: "#C69F6F", bgClass: "bg-[#C69F6F]" }
-    ],
-    sizes: ["S", "M", "L", "XL", "XXL"],
-    stockPerSize: { S: 11, M: 14, L: 9, XL: 4, XXL: 2 },
-    images: [
-      "/images/men_linen_shirt.jpg",
-      "/images/men_camel_trouser.jpg"
-    ],
-    description: "Breathable garment-washed French linen shirt featuring camp collar, mother-of-pearl buttons, and clean hem.",
-    fabric: "100% Normandy Flax Linen",
-    care: "Machine wash cold delicate. Hang dry.",
-    fit: "Relaxed resort silhouette."
-  },
-  {
-    id: "forme-08",
-    name: "The Daily Tailored Camel Trouser",
-    slug: "the-daily-tailored-camel-trouser",
-    person: "men",
-    category: "Men's Collection",
-    slot: "bottom",
-    style: "trouser",
-    collection: "Earth Tailoring",
-    price: 9800,
-    originalPrice: 11500,
-    badge: "Staff Pick",
-    rating: 4.8,
-    reviewCount: 39,
-    primaryColor: "Camel",
-    colors: [
-      { name: "Desert Camel", hex: "#C69F6F", bgClass: "bg-[#C69F6F]" },
-      { name: "Obsidian Black", hex: "#111315", bgClass: "bg-[#111315]" },
-      { name: "Olive Green", hex: "#364634", bgClass: "bg-[#364634]" }
-    ],
-    sizes: ["S", "M", "L", "XL"],
-    stockPerSize: { S: 7, M: 12, L: 8, XL: 3 },
-    images: [
-      "/images/men_camel_trouser.jpg",
-      "/images/men_linen_shirt.jpg"
-    ],
-    description: "Straight-leg tailored trousers cut from crisp cotton gabardine with hidden tab closure and finished cuffs.",
-    fabric: "98% Cotton Gabardine, 2% Elastane",
-    care: "Machine wash cold or dry clean.",
-    fit: "Straight modern fit."
-  },
-  {
-    id: "forme-09",
-    name: "Heavyweight Organic Cotton Earth Tee",
-    slug: "heavyweight-organic-cotton-earth-tee",
-    person: "men",
-    category: "Men's Collection",
-    slot: "top",
-    style: "tee",
-    collection: "Earth Essentials",
-    price: 4500,
-    originalPrice: 5500,
-    badge: "Wardrobe Foundation",
-    rating: 4.9,
-    reviewCount: 78,
-    primaryColor: "Olive Green",
-    colors: [
-      { name: "Olive Green", hex: "#364634", bgClass: "bg-[#364634]" },
-      { name: "Linen White", hex: "#FAF8F5", bgClass: "bg-[#FAF8F5] border border-gray-300" },
-      { name: "Obsidian Black", hex: "#111315", bgClass: "bg-[#111315]" }
-    ],
-    sizes: ["S", "M", "L", "XL"],
-    stockPerSize: { S: 14, M: 20, L: 15, XL: 6 },
-    images: [
-      "/images/men_linen_shirt.jpg",
-      "/images/men_olive_safari.jpg"
-    ],
-    description: "260 GSM combed organic cotton t-shirt with reinforced double-needle collar that keeps its structure wash after wash.",
-    fabric: "100% GOTS Certified Organic Cotton",
-    care: "Machine wash cold with similar colors.",
-    fit: "Relaxed classic cut."
-  },
-  {
-    id: "forme-10",
-    name: "Olive Safari Overshirt in Brushed Cotton",
-    slug: "olive-safari-overshirt-brushed-cotton",
-    person: "men",
-    category: "Outerwear",
-    slot: "outer",
-    style: "blazer",
-    collection: "Earth Tailoring",
-    price: 12400,
-    originalPrice: 14000,
-    badge: "Staff Pick",
-    rating: 4.8,
-    reviewCount: 42,
-    primaryColor: "Olive Green",
-    colors: [
-      { name: "Olive Green", hex: "#364634", bgClass: "bg-[#364634]" },
-      { name: "Desert Camel", hex: "#C69F6F", bgClass: "bg-[#C69F6F]" },
-      { name: "Obsidian Black", hex: "#111315", bgClass: "bg-[#111315]" }
-    ],
-    sizes: ["S", "M", "L", "XL"],
-    stockPerSize: { S: 7, M: 15, L: 8, XL: 2 },
-    images: [
-      "/images/men_olive_safari.jpg",
-      "/images/men_camel_trouser.jpg"
-    ],
-    description: "Utilitarian 4-pocket safari overshirt with horn buttons, double-stitched seams, and buttoned cuffs.",
-    fabric: "100% Heavyweight Brushed Japanese Cotton",
-    care: "Cold wash with darks. Tumble dry low.",
-    fit: "Boxy layering cut."
-  },
-  {
-    id: "forme-25",
-    name: "The Desert Camel Gabardine Field Jacket",
-    slug: "desert-camel-gabardine-field-jacket",
-    person: "men",
-    category: "Men's Collection",
-    slot: "outer",
-    style: "blazer",
-    collection: "Earth Tailoring",
-    price: 16500,
-    originalPrice: 19000,
-    badge: "New Release",
-    rating: 4.9,
-    reviewCount: 24,
-    primaryColor: "Desert Camel",
-    colors: [
-      { name: "Desert Camel", hex: "#C69F6F", bgClass: "bg-[#C69F6F]" },
-      { name: "Olive Green", hex: "#364634", bgClass: "bg-[#364634]" }
-    ],
-    sizes: ["S", "M", "L", "XL"],
-    stockPerSize: { S: 6, M: 10, L: 7, XL: 3 },
-    images: [
-      "/images/men_olive_safari.jpg",
-      "/images/men_linen_shirt.jpg"
-    ],
-    description: "Utility meets quiet luxury: heavy brushed desert camel gabardine jacket with horn buttons and interior cinch cord.",
-    fabric: "100% Cotton Gabardine",
-    care: "Machine wash cold delicate.",
-    fit: "Relaxed structured cut."
-  },
-  {
-    id: "forme-26",
-    name: "The Olive Pleated Wool-Linen Trouser",
-    slug: "olive-pleated-wool-linen-trouser",
-    person: "men",
-    category: "Men's Collection",
-    slot: "bottom",
-    style: "trouser",
-    collection: "Earth Tailoring",
-    price: 11200,
-    originalPrice: 13000,
-    badge: "Bespoke Cut",
-    rating: 4.8,
-    reviewCount: 19,
-    primaryColor: "Olive Green",
-    colors: [
-      { name: "Olive Green", hex: "#364634", bgClass: "bg-[#364634]" },
-      { name: "Desert Camel", hex: "#C69F6F", bgClass: "bg-[#C69F6F]" }
-    ],
-    sizes: ["S", "M", "L", "XL"],
-    stockPerSize: { S: 8, M: 12, L: 9, XL: 4 },
-    images: [
-      "/images/men_camel_trouser.jpg",
-      "/images/men_linen_shirt.jpg"
-    ],
-    description: "Deep front double pleats in a breathable olive wool-linen blend, tailored with side adjusters and hand-finished hems.",
-    fabric: "55% European Linen, 45% Tropical Wool",
-    care: "Dry clean only.",
-    fit: "Tapered relaxed cut."
-  },
-  {
-    id: "forme-27",
-    name: "The Olive Fine-Gauge Cashmere Crewneck",
-    slug: "olive-fine-gauge-cashmere-crewneck",
-    person: "men",
-    category: "Knitwear",
-    slot: "top",
-    style: "knit",
-    collection: "Autumn / Winter Edit",
-    price: 13900,
-    originalPrice: 16000,
-    badge: "Essential",
-    rating: 5.0,
-    reviewCount: 31,
-    primaryColor: "Olive Green",
-    colors: [
-      { name: "Olive Green", hex: "#364634", bgClass: "bg-[#364634]" },
-      { name: "Desert Camel", hex: "#C69F6F", bgClass: "bg-[#C69F6F]" }
-    ],
-    sizes: ["S", "M", "L", "XL"],
-    stockPerSize: { S: 5, M: 11, L: 8, XL: 3 },
-    images: [
-      "/images/men_camel_trouser.jpg",
-      "/images/campaign_camel_knit.jpg"
-    ],
-    description: "Featherweight 16-gauge pure cashmere crewneck in rich forest olive green with subtle ribbed trims.",
-    fabric: "100% Grade-A Cashmere",
-    care: "Hand wash cold or dry clean.",
-    fit: "Classic regular fit."
-  },
-
-  // --- KIDS CAPSULE ---
-  {
-    id: "forme-13",
-    name: "The Little Adventurer Earth Tee",
-    slug: "little-adventurer-earth-tee",
-    person: "kids",
-    category: "Kids Pret",
-    slot: "top",
-    style: "tee",
-    collection: "Kids Pret 2026",
-    price: 3800,
-    originalPrice: 4500,
-    badge: "Organic Pret",
-    rating: 4.9,
-    reviewCount: 22,
-    primaryColor: "Camel",
-    colors: [
-      { name: "Desert Camel", hex: "#C69F6F", bgClass: "bg-[#C69F6F]" },
-      { name: "Olive Green", hex: "#364634", bgClass: "bg-[#364634]" },
-      { name: "Linen White", hex: "#FAF8F5", bgClass: "bg-[#FAF8F5] border border-gray-300" }
-    ],
-    sizes: ["4–5", "6–7", "8–9", "10–11"],
-    stockPerSize: { "4–5": 6, "6–7": 10, "8–9": 8, "10–11": 4 },
-    images: [
-      "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?auto=format&fit=crop&w=1000&q=80",
-      "https://images.unsplash.com/photo-1503919545889-aef636e10ad4?auto=format&fit=crop&w=1000&q=80"
-    ],
-    description: "Ultra-soft hypoallergenic Peruvian pima cotton tee designed for play and comfort.",
-    fabric: "100% Pima Cotton",
-    care: "Machine wash warm.",
-    fit: "Easy movement fit."
-  },
-  {
-    id: "forme-14",
-    name: "The Little Linen Adventure Short",
-    slug: "little-linen-adventure-short",
-    person: "kids",
-    category: "Kids Pret",
-    slot: "bottom",
-    style: "shorts",
-    collection: "Kids Pret 2026",
-    price: 4600,
-    originalPrice: 5200,
-    badge: "Breathable",
-    rating: 4.8,
-    reviewCount: 19,
-    primaryColor: "Olive Green",
-    colors: [
-      { name: "Olive Green", hex: "#364634", bgClass: "bg-[#364634]" },
-      { name: "Desert Camel", hex: "#C69F6F", bgClass: "bg-[#C69F6F]" },
-      { name: "Obsidian Black", hex: "#111315", bgClass: "bg-[#111315]" }
-    ],
-    sizes: ["4–5", "6–7", "8–9", "10–11"],
-    stockPerSize: { "4–5": 5, "6–7": 9, "8–9": 7, "10–11": 3 },
-    images: [
-      "https://images.unsplash.com/photo-1503919545889-aef636e10ad4?auto=format&fit=crop&w=1000&q=80",
-      "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?auto=format&fit=crop&w=1000&q=80"
-    ],
-    description: "Elastic waist shorts in soft garment-washed linen with functional drawstring and side pockets.",
-    fabric: "100% Washed Linen",
-    care: "Machine wash delicate.",
-    fit: "Relaxed pull-on fit."
-  },
-  {
-    id: "forme-17",
-    name: "The Little Heirloom Sunday Dress",
-    slug: "little-heirloom-sunday-dress",
-    person: "kids",
-    category: "Kids Pret",
-    slot: "dress",
-    style: "dress",
-    collection: "Kids Pret 2026",
-    price: 6800,
-    originalPrice: 7800,
-    badge: "Handcrafted",
-    rating: 5.0,
-    reviewCount: 26,
-    primaryColor: "Olive Green",
-    colors: [
-      { name: "Olive Green", hex: "#364634", bgClass: "bg-[#364634]" },
-      { name: "Linen White", hex: "#FAF8F5", bgClass: "bg-[#FAF8F5] border border-gray-300" },
-      { name: "Desert Camel", hex: "#C69F6F", bgClass: "bg-[#C69F6F]" }
-    ],
-    sizes: ["4–5", "6–7", "8–9", "10–11"],
-    stockPerSize: { "4–5": 4, "6–7": 8, "8–9": 6, "10–11": 2 },
-    images: [
-      "https://images.unsplash.com/photo-1622290291468-a28f7a7dc6a8?auto=format&fit=crop&w=1000&q=80",
-      "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?auto=format&fit=crop&w=1000&q=80"
-    ],
-    description: "Artisan tiered dress crafted from washed slub cotton with wooden buttons and delicate gathers.",
-    fabric: "100% Slub Cotton",
-    care: "Hand wash cold.",
-    fit: "Flowing smock fit."
-  },
-
-  // --- 3D INTERACTIVE ORBIT CAPSULE COLLECTION ---
-  {
-    id: "forme-3d-01",
-    name: "Puff Sleeve Jumper Skirt in Belgian Linen",
-    slug: "puff-sleeve-jumper-skirt-belgian-linen",
-    person: "women",
-    category: "Women's Pret",
-    slot: "dress",
-    style: "dress",
-    collection: "3D Revolving Capsule",
-    price: 19500,
-    originalPrice: 23000,
-    badge: "3D Orbit",
-    rating: 5.0,
-    reviewCount: 44,
-    primaryColor: "Olive Green",
-    colors: [
-      { name: "Olive Green", hex: "#364634", bgClass: "bg-[#364634]" },
-      { name: "Desert Camel", hex: "#C69F6F", bgClass: "bg-[#C69F6F]" },
-      { name: "Obsidian Black", hex: "#111315", bgClass: "bg-[#111315]" }
     ],
     sizes: ["XS", "S", "M", "L"],
-    stockPerSize: { XS: 3, S: 8, M: 10, L: 4 },
+    stockPerSize: { XS: 7, S: 13, M: 15, L: 6 },
     images: [
-      "/images/couture_silk_dress.jpg",
-      "/images/women_olive_silk_shirt.jpg"
+      "/images/catalog/women_linen_trousers_flat.jpg",
+      "/images/catalog/women_model_striped_shirt.jpg"
     ],
-    model3d: "/models/model.glb",
-    description: "Sculptural balloon sleeves paired with high-waisted pleated jumper skirt in natural river-washed Belgian flax.",
-    fabric: "100% Organic Belgian Flax Linen",
-    care: "Dry clean or gentle cold hand wash.",
-    fit: "Fitted bodice with voluminous architectural sleeves."
+    description: "Breezy warm-weather trousers tailored from 100% natural European flax linen. Elasticated drawcord waistband with elegant front pleats for all-day effortless comfort.",
+    fabric: "100% Pure Washed Flax Linen",
+    care: "Cold gentle cycle, air dry flat.",
+    fit: "Easy relaxed fit with straight wide leg."
   },
   {
-    id: "forme-3d-02",
-    name: "Noir Architectural Evening Slip",
-    slug: "noir-architectural-evening-slip",
+    id: "women-shirt-01",
+    name: "OVERSIZED CRISP POPLIN SHIRT",
+    slug: "oversized-crisp-poplin-shirt-white",
     person: "women",
+    gender: "women",
     category: "Women's Pret",
-    slot: "dress",
-    style: "dress",
-    collection: "3D Revolving Capsule",
-    price: 24000,
-    originalPrice: 28000,
-    badge: "3D Orbit",
+    slot: "top",
+    style: "shirt",
+    collection: "Core Edit",
+    price: 5490,
+    originalPrice: 6800,
+    badge: "CORE EDIT",
+    rating: 5.0,
+    reviewCount: 92,
+    fitLine: "OVERSIZED | WOMEN",
+    primaryColor: "Pure White",
+    colors: [
+      { name: "Pure White", hex: "#FFFFFF", bgClass: "bg-[#FFFFFF] border border-gray-300" },
+      { name: "Sky Blue", hex: "#B0C7DE", bgClass: "bg-[#B0C7DE]" }
+    ],
+    sizes: ["XS", "S", "M", "L"],
+    stockPerSize: { XS: 12, S: 22, M: 25, L: 10 },
+    images: [
+      "/images/catalog/women_white_shirt_flat.jpg",
+      "/images/catalog/women_model_jeans_shirt.jpg"
+    ],
+    description: "The modern wardrobe foundation. Tailored from high-thread-count 100% organic cotton poplin with clean French cuffs, structured collar, and an airy relaxed volume.",
+    fabric: "100% Long-Staple Organic Cotton Poplin (140 GSM)",
+    care: "Machine wash cold. Warm steam iron for crisp look.",
+    fit: "Deliberately oversized boyfriend cut with curved hemline."
+  },
+  {
+    id: "women-shirt-02",
+    name: "STRIPED RELAXED POPLIN SHIRT",
+    slug: "striped-relaxed-poplin-shirt",
+    person: "women",
+    gender: "women",
+    category: "Women's Pret",
+    slot: "top",
+    style: "shirt",
+    collection: "Core Edit",
+    price: 5790,
+    originalPrice: 7200,
+    badge: "POPULAR",
     rating: 4.9,
-    reviewCount: 39,
+    reviewCount: 48,
+    fitLine: "RELAXED FIT | WOMEN",
+    primaryColor: "Sky Blue Stripe",
+    colors: [
+      { name: "Sky Blue Stripe", hex: "#8DA9C4", bgClass: "bg-[#8DA9C4]" },
+      { name: "Navy Stripe", hex: "#22384D", bgClass: "bg-[#22384D]" }
+    ],
+    sizes: ["XS", "S", "M", "L"],
+    stockPerSize: { XS: 9, S: 17, M: 20, L: 8 },
+    images: [
+      "/images/catalog/women_model_striped_shirt.jpg",
+      "/images/catalog/women_white_shirt_flat.jpg"
+    ],
+    description: "Chic Parisian blue and white bengal stripe shirt with dropped shoulders, elongated sleeves, and a clean forward point collar. Perfect half-tucked into denim or linen trousers.",
+    fabric: "100% Yarn-Dyed Cotton Poplin",
+    care: "Machine wash cold with like colors.",
+    fit: "Relaxed slouchy drape."
+  },
+  {
+    id: "women-jeans-03",
+    name: "BAGGY SLOUCH JEANS",
+    slug: "baggy-slouch-jeans-charcoal",
+    person: "women",
+    gender: "women",
+    category: "Women's Pret",
+    slot: "bottom",
+    style: "wide",
+    collection: "Denim Edit 2026",
+    price: 6790,
+    originalPrice: 7990,
+    badge: "TRENDING",
+    rating: 4.8,
+    reviewCount: 28,
+    fitLine: "SLOUCH FIT | WOMEN",
+    primaryColor: "Washed Charcoal",
+    colors: [
+      { name: "Washed Charcoal", hex: "#2B2C2E", bgClass: "bg-[#2B2C2E]" },
+      { name: "Vintage Blue", hex: "#4C6B8B", bgClass: "bg-[#4C6B8B]" }
+    ],
+    sizes: ["26", "28", "30", "32"],
+    stockPerSize: { "26": 6, "28": 12, "30": 10, "32": 4 },
+    images: [
+      "/images/catalog/men_baggy_black_jeans_flat.jpg",
+      "/images/catalog/women_model_jeans_shirt.jpg"
+    ],
+    description: "Low-slung relaxed slouch jeans featuring an authentic washed charcoal fade. Wide leg profile that puddles cleanly over heels or sneakers.",
+    fabric: "100% Rigid Washed Cotton Denim (13oz)",
+    care: "Cold wash inside out. Line dry in shade.",
+    fit: "Relaxed slouchy rise with wide straight leg."
+  },
+  {
+    id: "women-tee-01",
+    name: "MINIMALIST RIBBED TANK TOP",
+    slug: "minimalist-ribbed-tank-top",
+    person: "women",
+    gender: "women",
+    category: "Women's Pret",
+    slot: "top",
+    style: "tee",
+    collection: "Core Essentials",
+    price: 2990,
+    originalPrice: 3800,
+    badge: "ESSENTIAL",
+    rating: 4.9,
+    reviewCount: 51,
+    fitLine: "SLIM FIT | WOMEN",
     primaryColor: "Obsidian Black",
     colors: [
       { name: "Obsidian Black", hex: "#111315", bgClass: "bg-[#111315]" },
-      { name: "Desert Camel", hex: "#C69F6F", bgClass: "bg-[#C69F6F]" }
+      { name: "Linen White", hex: "#FAF8F5", bgClass: "bg-[#FAF8F5] border border-gray-300" }
     ],
     sizes: ["XS", "S", "M", "L"],
-    stockPerSize: { XS: 2, S: 6, M: 7, L: 3 },
+    stockPerSize: { XS: 10, S: 20, M: 22, L: 9 },
     images: [
-      "/images/women_onyx_blazer.jpg",
-      "/images/couture_silk_dress.jpg"
+      "/images/catalog/women_model_camel_trouser.jpg",
+      "/images/catalog/women_white_shirt_flat.jpg"
     ],
-    model3d: "/models/black_dress.glb",
-    description: "Pure liquid silk drape engineered for evening poise with open architectural back and subtle puddle train.",
-    fabric: "100% Mulberry Silk Charmeuse (19 Momme)",
-    care: "Dry clean only.",
-    fit: "Fluid bias cut skimming natural body contours."
-  },
-  {
-    id: "forme-3d-03",
-    name: "Artisanal Selvedge Distressed Denim",
-    slug: "artisanal-selvedge-distressed-denim",
-    person: "men",
-    category: "Men's Collection",
-    slot: "bottom",
-    style: "jeans",
-    collection: "3D Revolving Capsule",
-    price: 14500,
-    originalPrice: 17000,
-    badge: "3D Orbit",
-    rating: 4.8,
-    reviewCount: 31,
-    primaryColor: "Indigo Mineral",
-    colors: [
-      { name: "Indigo Mineral", hex: "#3D526A", bgClass: "bg-[#3D526A]" },
-      { name: "Obsidian Black", hex: "#111315", bgClass: "bg-[#111315]" }
-    ],
-    sizes: ["S", "M", "L", "XL", "30", "32", "34", "36"],
-    stockPerSize: { S: 4, M: 9, L: 8, XL: 3, 30: 4, 32: 9, 34: 8, 36: 3 },
-    images: [
-      "/images/men_camel_trouser.jpg",
-      "/images/men_linen_shirt.jpg"
-    ],
-    model3d: "/models/jeans.glb",
-    description: "Japanese shuttle-loomed selvedge denim, enzyme river-washed with hand-distressed whiskers and copper rivets.",
-    fabric: "100% Kurabo Shuttle-Loomed Cotton (14oz)",
-    care: "Machine wash cold inside out, hang dry.",
-    fit: "Modern relaxed straight cut."
-  },
-  {
-    id: "forme-3d-04",
-    name: "The Moto Leather Full-Grain Trench",
-    slug: "moto-leather-full-grain-trench",
-    person: "men",
-    category: "Outerwear",
-    slot: "outer",
-    style: "coat",
-    collection: "3D Revolving Capsule",
-    price: 42000,
-    originalPrice: 48000,
-    badge: "3D Orbit",
-    rating: 5.0,
-    reviewCount: 22,
-    primaryColor: "Desert Leather",
-    colors: [
-      { name: "Desert Leather", hex: "#2B231D", bgClass: "bg-[#2B231D]" },
-      { name: "Obsidian Black", hex: "#111315", bgClass: "bg-[#111315]" }
-    ],
-    sizes: ["S", "M", "L", "XL"],
-    stockPerSize: { S: 2, M: 5, L: 4, XL: 2 },
-    images: [
-      "/images/heritage_trench_coat.jpg",
-      "/images/men_olive_safari.jpg"
-    ],
-    model3d: "/models/coat_leather.glb",
-    description: "Heavyweight yet supple full-grain calf leather trench with notched storm lapels and double-prong waist cincher.",
-    fabric: "100% Full-Grain Calf Nappa Leather, Cupro Lining",
-    care: "Professional leather specialist clean only.",
-    fit: "Structured military trench silhouette with belted waist."
-  },
-  {
-    id: "forme-3d-05",
-    name: "Night Hunter Tactical Armor Cape",
-    slug: "night-hunter-tactical-armor-cape",
-    person: "men",
-    category: "Outerwear",
-    slot: "outer",
-    style: "coat",
-    collection: "3D Revolving Capsule",
-    price: 58000,
-    originalPrice: 65000,
-    badge: "Runway Masterpiece",
-    rating: 5.0,
-    reviewCount: 18,
-    primaryColor: "Shadow Steel",
-    colors: [
-      { name: "Shadow Steel", hex: "#12161A", bgClass: "bg-[#12161A]" },
-      { name: "Obsidian Black", hex: "#111315", bgClass: "bg-[#111315]" }
-    ],
-    sizes: ["M", "L"],
-    stockPerSize: { M: 2, L: 2 },
-    images: [
-      "/images/campaign_olive_coat.jpg",
-      "/images/women_onyx_blazer.jpg"
-    ],
-    model3d: "/models/assassin.glb",
-    description: "Avant-garde runway masterwork featuring segmented cuirass plating, hand-embossed vambraces, and raven cowl hood.",
-    fabric: "Reinforced Composite Armor Panels & Heavyweight Wool Gauze",
-    care: "Specialist museum conservation clean.",
-    fit: "Sculptural tailored cuirass with flowing dramatic cape."
+    description: "Sleek high-neck ribbed tank cut from modal cotton blend with shape-retaining recovery. Ideal for pairing with pleated trousers or layered under unbuttoned poplin shirts.",
+    fabric: "95% Cotton Modal Rib, 5% Spandex (220 GSM)",
+    care: "Machine wash cold gentle. Lay flat to dry.",
+    fit: "Body-skimming slim silhouette with high crew neckline."
   }
 ];
 
@@ -782,17 +527,17 @@ export const PRODUCTS = RAW_PRODUCTS.map(p => ({
   ...p,
   gender: p.gender || p.person || 'women',
   person: p.person || p.gender || 'women',
-  color: p.color || p.colors?.[0]?.hex || '#364634',
-  colorName: p.colorName || p.colors?.[0]?.name || p.primaryColor || 'Olive Green'
+  color: p.color || p.colors?.[0]?.hex || '#1E2A38',
+  colorName: p.colorName || p.colors?.[0]?.name || p.primaryColor || 'Indigo Blue'
 }));
 
 export const CATEGORIES = [
   "All Pieces",
-  "Women's Pret",
   "Men's Collection",
-  "Outerwear",
-  "Knitwear",
-  "Kids Pret"
+  "Women's Pret",
+  "Jeans",
+  "T-Shirts",
+  "Shirts"
 ];
 
 export const COLOR_PALETTE_INFO = {
@@ -800,36 +545,24 @@ export const COLOR_PALETTE_INFO = {
     name: "Olive Green",
     hex: "#364634",
     rgb: "54, 70, 52",
-    cmyk: "23, 0, 26, 73",
-    role: "Primary Brand Anchor (Nature, Serenity, Grounded Luxury)",
-    contrastOnWhite: "9.2:1 (AAA Pass)",
-    application: "Brand Headers, Primary CTAs, Key Garments, Packaging Bags"
+    role: "Brand Anchor"
   },
   camel: {
     name: "Desert Camel",
     hex: "#C69F6F",
     rgb: "198, 159, 111",
-    cmyk: "0, 20, 44, 22",
-    role: "Signature Warm Neutral (Earthy Warmth, Artisan Leather, Wool)",
-    contrastOnBlack: "8.4:1 (AAA Pass)",
-    application: "Accent Badges, Price Highlights, Secondary Buttons, Hangtags"
+    role: "Warm Neutral"
   },
   black: {
     name: "Obsidian Black",
     hex: "#111315",
     rgb: "17, 19, 21",
-    cmyk: "19, 10, 0, 92",
-    role: "Foundation Dark (Elegance, Crisp Contrast, Editorial Typo)",
-    contrastOnWhite: "18.8:1 (AAA Pass)",
-    application: "Headings, Fine Outlines, Dark Garment Variants, Footers"
+    role: "Editorial Black"
   },
   white: {
-    name: "Alabaster Linen White",
-    hex: "#FAF8F5",
-    rgb: "250, 248, 245",
-    cmyk: "0, 1, 2, 2",
-    role: "Canvas Light (Organic Cotton, Breathable Space, Soft Background)",
-    contrastOnBlack: "18.8:1 (AAA Pass)",
-    application: "Page Canvas, Modal Backgrounds, Clean Product Card Backdrop"
+    name: "Studio Pure White",
+    hex: "#FFFFFF",
+    rgb: "255, 255, 255",
+    role: "Canvas Studio White"
   }
 };
