@@ -1,7 +1,8 @@
 /**
  * 🌐 Google Identity & Authentication Service for Zaytoun Atelier
- * Supports both Google Identity Services (GIS) Token Client popup flow
- * and instant verified shopper profile generation for seamless shopping.
+ * Exclusively supports official Google Identity Services (GIS) Token Client popup flow
+ * and Google OAuth 2.0 account authentication.
+ * No alternate or unverified logins are allowed.
  */
 
 export const GOOGLE_AUTH_ENDPOINT = "https://accounts.google.com/o/oauth2/v2/auth";
@@ -9,37 +10,6 @@ export const GOOGLE_USERINFO_ENDPOINT = "https://www.googleapis.com/oauth2/v3/us
 
 export function getGoogleClientId() {
   return import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
-}
-
-/**
- * Creates a standardized, verified shopper profile recognized across Zaytoun Atelier.
- */
-export function createVerifiedShopperProfile({
-  name = "Client",
-  email = "client@zaytoun.pk",
-  avatar = null,
-  googleId = null
-} = {}) {
-  const cleanEmail = (email || "client@zaytoun.pk").toLowerCase().trim();
-  const parts = (name || "Client").trim().split(" ");
-  const firstName = parts[0] || "Valued";
-  const lastName = parts.slice(1).join(" ") || "Client";
-
-  return {
-    name: name || `${firstName} ${lastName}`.trim(),
-    firstName,
-    lastName,
-    email: cleanEmail,
-    avatar:
-      avatar ||
-      `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name || cleanEmail)}`,
-    googleId: googleId || `google-verified-${Date.now()}`,
-    email_verified: true,
-    authProvider: "google",
-    verified: true,
-    googleVerified: true,
-    verifiedAt: new Date().toISOString()
-  };
 }
 
 /**
@@ -109,7 +79,7 @@ export function launchGooglePopupLogin({ onSuccess, onError }) {
   if (onError) {
     onError(
       new Error(
-        "Google Identity Services is initializing. Please retry in a moment or use 1-Click Sign-In."
+        "Google Identity Services is initializing. Please retry in a moment."
       )
     );
   }

@@ -270,11 +270,20 @@ export default function App() {
     }
   }, [orders]);
 
-  // Client Google User State
+  // Client Google User State - Strictly enforces Google authentication
   const [currentUser, setCurrentUser] = useState(() => {
     try {
       const saved = localStorage.getItem('zaytoun_client_user');
-      return saved ? JSON.parse(saved) : null;
+      const parsed = saved ? JSON.parse(saved) : null;
+      if (
+        parsed &&
+        parsed.authProvider === 'google' &&
+        parsed.googleVerified === true &&
+        parsed.email
+      ) {
+        return parsed;
+      }
+      return null;
     } catch {
       return null;
     }
@@ -282,7 +291,7 @@ export default function App() {
 
   useEffect(() => {
     try {
-      if (currentUser) {
+      if (currentUser && currentUser.authProvider === 'google' && currentUser.googleVerified) {
         localStorage.setItem('zaytoun_client_user', JSON.stringify(currentUser));
       } else {
         localStorage.removeItem('zaytoun_client_user');
@@ -322,8 +331,13 @@ export default function App() {
     setIsAuthModalOpen(true);
   };
 
-  // On Google Sign In Success
+  // On Google Sign In Success - Strictly accepts verified Google users
   const handleAuthSuccess = (googleUser) => {
+    if (!googleUser || googleUser.authProvider !== 'google') {
+      console.warn("Blocked non-Google login attempt:", googleUser);
+      return;
+    }
+
     setCurrentUser(googleUser);
     setIsAuthModalOpen(false);
 
@@ -423,7 +437,7 @@ export default function App() {
 
   // Gated Cart Handler: Requires Google Sign-In before anyone can add to cart or buy
   const handleAddToCart = (product, size = 'M', color = null, quantity = 1) => {
-    if (!currentUser) {
+    if (!currentUser || currentUser.authProvider !== 'google' || !currentUser.googleVerified) {
       const garmentColor = color || product.colors?.[0]?.name || product.primaryColor || 'Olive';
       setAuthModalConfig({
         title: "Sign in with Google to Add to Bag",

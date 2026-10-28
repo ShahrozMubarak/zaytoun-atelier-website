@@ -385,13 +385,19 @@ app.post('/api/orders', validateOrder, async (req, res) => {
       return res.status(503).json({ error: 'MongoDB database is connecting or unavailable. Please retry in a few moments.' });
     }
     const orderData = req.body;
+    if (!orderData.customer?.googleVerified) {
+      return res.status(403).json({
+        error: 'Authentication Required: You must be signed in with Google to place an order.'
+      });
+    }
+
     if (!orderData.orderNumber) {
       orderData.orderNumber = `ZYT-2026-${Math.floor(1000 + Math.random() * 9000)}`;
     }
     const newOrder = await Order.create(orderData);
     console.log(`📦 [MongoDB] Order created successfully: ${newOrder.orderNumber}`);
 
-    // Update Customer Profile
+    // Update Customer Profile and User Profile in MongoDB Atlas
     if (orderData.customer?.email) {
       const email = orderData.customer.email.toLowerCase().trim();
       const fullName = [orderData.customer.firstName, orderData.customer.lastName]
@@ -424,6 +430,24 @@ app.post('/api/orders', validateOrder, async (req, res) => {
           { upsert: true, returnDocument: 'after' }
         );
 
+        // Also update User record in MongoDB Atlas
+        await User.findOneAndUpdate(
+          { email },
+          {
+            $set: {
+              firstName: orderData.customer.firstName,
+              lastName: orderData.customer.lastName,
+              name: fullName,
+              lastOrderDate: new Date()
+            },
+            $inc: {
+              ordersCount: 1,
+              totalSpent: Number(orderData.total || 0)
+            }
+          },
+          { upsert: true }
+        );
+
         // Auto enroll in newsletter
         await Subscriber.findOneAndUpdate(
           { email },
@@ -431,7 +455,7 @@ app.post('/api/orders', validateOrder, async (req, res) => {
           { upsert: true }
         );
       } catch (custErr) {
-        console.warn('⚠️ [MongoDB] Note on customer profile save:', custErr.message);
+        console.warn('⚠️ [MongoDB] Note on customer/user profile save:', custErr.message);
       }
     }
 

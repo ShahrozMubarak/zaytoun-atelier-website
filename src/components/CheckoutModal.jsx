@@ -94,8 +94,8 @@ export default function CheckoutModal({
 
   const handleProceedToPayment = (e) => {
     e.preventDefault();
-    if (!user || !user.verified) {
-      alert("⚠️ Google Verification Required: You must sign in and be verified with Google before you can order.");
+    if (!user || user.authProvider !== 'google' || !user.googleVerified) {
+      alert("⚠️ Google Verification Required: You must sign in with Google before you can order.");
       return;
     }
     if (!formData.phone || !formData.address || !formData.city) {
@@ -107,8 +107,8 @@ export default function CheckoutModal({
 
   const handleFinalizeOrder = () => {
     // 🛑 STRICT VERIFICATION CHECK: Customer CANNOT order without Google verification
-    if (!user || !user.verified) {
-      alert("⚠️ Google Verification Required: You must be verified by Google to place an order.");
+    if (!user || user.authProvider !== 'google' || !user.googleVerified) {
+      alert("⚠️ Google Verification Required: You must be signed in with Google to place an order.");
       return;
     }
 
@@ -116,11 +116,13 @@ export default function CheckoutModal({
     setTimeout(() => {
       setIsSubmitting(false);
       const generatedOrderNumber = `ZYT-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+      const verifiedEmail = user?.email || formData.email;
       const orderPayload = {
         orderNumber: generatedOrderNumber,
         id: generatedOrderNumber,
         customer: {
           ...formData,
+          email: verifiedEmail,
           googleVerified: true,
           googleId: user.googleId || ''
         },
@@ -245,14 +247,19 @@ export default function CheckoutModal({
                   <span className="text-[10px] text-onyx-500">Required for COD verification and rider updates</span>
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-onyx-800 mb-1">Email Address (for Invoice & Tracking)</label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-xs font-semibold text-onyx-800">Email Address (Google Account)</label>
+                    <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-1.5 py-0.5 border border-emerald-200 dark:border-emerald-800">
+                      ✓ Google Verified
+                    </span>
+                  </div>
                   <input
                     type="email"
                     name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
+                    value={user?.email || formData.email}
+                    readOnly
                     required
-                    className="w-full bg-linen-50 border border-linen-300 rounded-none p-2.5 text-xs text-onyx-900 focus:outline-none focus:ring-1 focus:ring-olive-700"
+                    className="w-full bg-neutral-100 dark:bg-onyx-800 border border-linen-300 dark:border-onyx-700 rounded-none p-2.5 text-xs text-onyx-700 dark:text-neutral-300 font-mono cursor-not-allowed"
                   />
                 </div>
               </div>

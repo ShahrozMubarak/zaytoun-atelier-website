@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useCurrency } from '../context/CurrencyContext';
-import { launchGooglePopupLogin, createVerifiedShopperProfile } from '../utils/googleAuth';
+import { launchGooglePopupLogin } from '../utils/googleAuth';
 
 /**
  * GoogleAuthModal - Luxury Sign in with Google modal for Zaytoun Atelier.
- * Supports Google Identity Services (GIS) popup flow with automatic 1-Click
- * verified profile fallback so users are never blocked by OAuth origin or invalid request errors.
+ * Strictly enforces Google Identity Services (GIS) authentication.
+ * No alternate, guest, or unverified login methods are permitted.
  */
 export default function GoogleAuthModal({
   isOpen,
@@ -18,22 +18,16 @@ export default function GoogleAuthModal({
   const { formatPrice } = useCurrency();
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [showCustomEmailForm, setShowCustomEmailForm] = useState(false);
-  const [customName, setCustomName] = useState("");
-  const [customEmail, setCustomEmail] = useState("");
-
-  const [copiedOrigin, setCopiedOrigin] = useState(false);
 
   // Reset states on open/close
   useEffect(() => {
     if (isOpen) {
       setErrorMessage("");
       setLoading(false);
-      setCopiedOrigin(false);
     }
   }, [isOpen]);
 
-  // 1. Official Google Identity Services Popup Sign-In
+  // Official Google Identity Services Popup Sign-In
   const handleGooglePopupClick = () => {
     setLoading(true);
     setErrorMessage("");
@@ -47,40 +41,9 @@ export default function GoogleAuthModal({
       onError: (err) => {
         console.warn("Google Sign-In Notice:", err.message);
         setLoading(false);
-        setErrorMessage("Google popup origin is restricted on this domain. Please enter your name and email below to sign in:");
+        setErrorMessage("Google Sign-In popup could not complete. Please ensure popups are enabled and sign in with your Google account.");
       }
     });
-  };
-
-  // 2. Client Account Sign-In / Registration
-  const handleUserSignIn = (email, name) => {
-    const cleanEmail = (email || "").trim().toLowerCase();
-    if (!cleanEmail || !cleanEmail.includes('@')) {
-      setErrorMessage("Please enter a valid email address.");
-      return;
-    }
-    const cleanName = (name || cleanEmail.split('@')[0] || "Valued Client").trim();
-
-    setLoading(true);
-    setErrorMessage("");
-
-    setTimeout(() => {
-      const verifiedProfile = createVerifiedShopperProfile({
-        name: cleanName,
-        email: cleanEmail,
-        googleId: `user-${Date.now()}`
-      });
-
-      setLoading(false);
-      if (onSuccess) onSuccess(verifiedProfile);
-      if (onClose) onClose();
-    }, 250);
-  };
-
-  // 3. Custom Email Form Submit
-  const handleCustomSubmit = (e) => {
-    e.preventDefault();
-    handleUserSignIn(customEmail, customName);
   };
 
   if (!isOpen) return null;
@@ -120,7 +83,7 @@ export default function GoogleAuthModal({
               <span className="w-2.5 h-2.5 rounded-none bg-camel-500 shadow-sm shadow-camel-500/50" />
             </div>
             <p className="text-[11px] font-bold uppercase tracking-widest text-camel-600 dark:text-camel-400 mb-2">
-              Client Concierge &amp; Account Access
+              Official Google Authentication
             </p>
             <h2 className="text-xl sm:text-2xl font-serif font-bold text-neutral-900 dark:text-white">
               {title}
@@ -148,7 +111,7 @@ export default function GoogleAuthModal({
                 <div className="flex items-center space-x-1.5 mb-0.5">
                   <span className="w-2 h-2 rounded-none bg-emerald-500 animate-pulse" />
                   <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
-                    Will be added upon sign in
+                    Will be added upon Google sign in
                   </span>
                 </div>
                 <h4 className="text-xs sm:text-sm font-bold text-neutral-900 dark:text-white truncate uppercase">
@@ -171,10 +134,10 @@ export default function GoogleAuthModal({
             </div>
           )}
 
-          {/* Action Area */}
+          {/* Action Area: ONLY Google Sign-In */}
           <div className="space-y-4 pt-1">
             
-            {/* 1. Official Google Sign-In Popup */}
+            {/* Official Google Sign-In Button */}
             <button
               type="button"
               onClick={handleGooglePopupClick}
@@ -191,59 +154,12 @@ export default function GoogleAuthModal({
               <span>{loading ? "Connecting to Google..." : "Continue with Google"}</span>
             </button>
 
-            {/* Divider */}
-            <div className="relative flex items-center justify-center my-3">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-neutral-200 dark:border-onyx-800" />
-              </div>
-              <div className="relative bg-white dark:bg-onyx-950 px-3 text-[10px] font-mono uppercase tracking-widest text-neutral-400">
-                Or sign in with email
-              </div>
-            </div>
-
-            {/* Subtle Notice / Message */}
+            {/* Notice / Message */}
             {errorMessage && (
-              <div className="p-3 bg-neutral-100 dark:bg-onyx-900 border border-neutral-300 dark:border-onyx-700 text-xs text-neutral-700 dark:text-neutral-300">
+              <div className="p-3 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/50 text-xs text-red-700 dark:text-red-300">
                 <p>{errorMessage}</p>
               </div>
             )}
-
-            {/* Direct Email & Name Account Form */}
-            <form onSubmit={handleCustomSubmit} className="space-y-3">
-              <div>
-                <label className="block text-[10px] uppercase font-bold text-neutral-500 mb-1">
-                  Full Name *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={customName}
-                  onChange={(e) => setCustomName(e.target.value)}
-                  placeholder="e.g. Hamza Malik"
-                  className="w-full px-3 py-2.5 text-xs rounded-none bg-neutral-50 dark:bg-onyx-900 border border-neutral-300 dark:border-onyx-700 text-black dark:text-white focus:outline-none focus:border-black dark:focus:border-white"
-                />
-              </div>
-              <div>
-                <label className="block text-[10px] uppercase font-bold text-neutral-500 mb-1">
-                  Email Address *
-                </label>
-                <input
-                  type="email"
-                  required
-                  value={customEmail}
-                  onChange={(e) => setCustomEmail(e.target.value)}
-                  placeholder="e.g. hamza@gmail.com"
-                  className="w-full px-3 py-2.5 text-xs rounded-none bg-neutral-50 dark:bg-onyx-900 border border-neutral-300 dark:border-onyx-700 text-black dark:text-white focus:outline-none focus:border-black dark:focus:border-white"
-                />
-              </div>
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full py-3 px-4 rounded-none bg-black dark:bg-white text-white dark:text-black text-xs font-bold uppercase tracking-wider hover:bg-neutral-800 dark:hover:bg-neutral-200 transition cursor-pointer shadow-sm"
-              >
-                {loading ? "Signing In..." : "Sign In & Continue"}
-              </button>
-            </form>
 
           </div>
 

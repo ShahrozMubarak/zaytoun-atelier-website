@@ -77,7 +77,7 @@ export default function CartDrawer({
   const remainingForFree = Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal);
 
   const handleCheckoutClick = () => {
-    if (!user && onOpenAuthModal) {
+    if ((!user || user.authProvider !== 'google' || !user.googleVerified) && onOpenAuthModal) {
       onOpenAuthModal({
         title: "Sign in with Google to Checkout",
         subtitle: "Please sign in with your Google account to proceed to checkout and secure your order."
