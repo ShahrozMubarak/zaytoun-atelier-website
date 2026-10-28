@@ -37,17 +37,17 @@ export default function CheckoutModal({
   // Checkout Steps: 1: 'shipping', 2: 'payment'
   const [step, setStep] = useState('shipping');
   
-  // Shipping Form State (pre-filled with Google user profile if signed in)
+  // Shipping Form State (pre-filled with clean Google user profile if signed in)
   const [formData, setFormData] = useState(() => ({
-    firstName: user?.firstName || (user?.name ? user.name.split(' ')[0] : ""),
-    lastName: user?.lastName || (user?.name ? user.name.split(' ').slice(1).join(' ') : ""),
+    firstName: user?.firstName || (user?.name ? user.name.split(' ')[0].replace(/[^a-zA-Z\s]/g, '') : ""),
+    lastName: user?.lastName || (user?.name ? user.name.split(' ').slice(1).join(' ').replace(/[^a-zA-Z\s]/g, '') : ""),
     email: user?.email || "",
-    phone: user?.phone || "03001234567",
-    address: user?.address || "House 42-B, Street 14, Phase 6, DHA",
-    city: user?.city || "Lahore",
-    province: user?.province || "Punjab",
-    postalCode: user?.postalCode || "54000",
-    orderNotes: "Please deliver between 2 PM and 6 PM."
+    phone: user?.phone ? user.phone.replace(/[^0-9]/g, '').slice(0, 11) : "",
+    address: user?.address ? user.address.replace(/[<>{}$~%^*=;`+?]/g, '') : "",
+    city: user?.city ? user.city.replace(/[^a-zA-Z\s]/g, '') : "Lahore",
+    province: user?.province ? user.province.replace(/[^a-zA-Z\s]/g, '') : "Punjab",
+    postalCode: user?.postalCode ? user.postalCode.replace(/[^0-9]/g, '').slice(0, 6) : "",
+    orderNotes: ""
   }));
 
   // Form Validation Errors
@@ -65,8 +65,8 @@ export default function CheckoutModal({
     if (user) {
       setFormData(prev => ({
         ...prev,
-        firstName: user.firstName || (user.name ? user.name.split(' ')[0] : prev.firstName),
-        lastName: user.lastName || (user.name ? user.name.split(' ').slice(1).join(' ') : prev.lastName),
+        firstName: prev.firstName || user.firstName || (user.name ? user.name.split(' ')[0].replace(/[^a-zA-Z\s]/g, '') : ""),
+        lastName: prev.lastName || user.lastName || (user.name ? user.name.split(' ').slice(1).join(' ').replace(/[^a-zA-Z\s]/g, '') : ""),
         email: user.email || prev.email
       }));
     }
@@ -83,23 +83,43 @@ export default function CheckoutModal({
     cvv: "382"
   });
 
-  // JazzCash state
-  const [jazzcashPhone, setJazzcashPhone] = useState("03001234567");
-  const [jazzcashCnic, setJazzcashCnic] = useState("42101-1234567-1");
+  // JazzCash state (empty initial values, digits only)
+  const [jazzcashPhone, setJazzcashPhone] = useState("");
+  const [jazzcashCnic, setJazzcashCnic] = useState("");
 
-  // EasyPaisa state
-  const [easypaisaPhone, setEasypaisaPhone] = useState("03451234567");
+  // EasyPaisa state (empty initial values, digits only)
+  const [easypaisaPhone, setEasypaisaPhone] = useState("");
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const PAKISTANI_CITIES = [
-    "Karachi", "Lahore", "Islamabad", "Rawalpindi", "Faisalabad", 
+    "Lahore", "Karachi", "Islamabad", "Rawalpindi", "Faisalabad", 
     "Multan", "Peshawar", "Quetta", "Sialkot", "Gujranwala", 
     "Hyderabad", "Abbottabad", "Bahawalpur", "Sargodha"
   ];
 
+  // Active Real-Time Input Filtering: Prevents typing invalid characters into fields
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
+    const { name } = e.target;
+    let value = e.target.value;
+
+    if (name === 'firstName' || name === 'lastName') {
+      // Disallow numbers, signs, and symbols. Letters and spaces only.
+      value = value.replace(/[^a-zA-Z\s]/g, '');
+    } else if (name === 'phone') {
+      // Disallow letters, signs, and symbols. Digits only, max 11 digits.
+      value = value.replace(/[^0-9]/g, '').slice(0, 11);
+    } else if (name === 'city' || name === 'province') {
+      // Disallow numbers and special characters. Letters and spaces only.
+      value = value.replace(/[^a-zA-Z\s]/g, '');
+    } else if (name === 'postalCode') {
+      // Disallow letters and symbols. Digits only, max 6 digits.
+      value = value.replace(/[^0-9]/g, '').slice(0, 6);
+    } else if (name === 'address') {
+      // Strip potentially malicious code characters (<, >, {, }, $, ~, %, ^, *, =, ;, `, +, ?)
+      value = value.replace(/[<>{}$~%^*=;`+?]/g, '');
+    }
+
     setFormData(prev => ({ ...prev, [name]: value }));
     if (formErrors[name]) {
       setFormErrors(prev => ({ ...prev, [name]: "" }));
@@ -150,24 +170,52 @@ export default function CheckoutModal({
     }
 
     const errors = {};
+
+    // 1. First Name: Letters only, min 2 chars
+    const cleanFirstName = (formData.firstName || "").trim();
+    if (!cleanFirstName || cleanFirstName.length < 2) {
+      errors.firstName = "First name is required (min 2 letters, no numbers or signs).";
+    } else if (!/^[a-zA-Z\s]{2,70}$/.test(cleanFirstName)) {
+      errors.firstName = "First name cannot contain numbers or special characters.";
+    }
+
+    // 2. Last Name: Letters only, min 1 char
+    const cleanLastName = (formData.lastName || "").trim();
+    if (!cleanLastName || cleanLastName.length < 1) {
+      errors.lastName = "Last name is required (letters only, no numbers or signs).";
+    } else if (!/^[a-zA-Z\s]{1,70}$/.test(cleanLastName)) {
+      errors.lastName = "Last name cannot contain numbers or special characters.";
+    }
+
+    // 3. Email: Strict email pattern
     const activeEmail = (user?.email || formData.email || "").trim();
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!emailRegex.test(activeEmail)) {
       errors.email = "Please enter a valid, complete email address (e.g. name@domain.com).";
     }
 
-    const phoneClean = (formData.phone || "").replace(/[\s-]/g, "");
-    const pkPhoneRegex = /^(\+92|0)?3[0-9]{9}$/;
+    // 4. Phone: Strictly 11 digits starting with 03
+    const phoneClean = (formData.phone || "").replace(/[^0-9]/g, "");
+    const pkPhoneRegex = /^03[0-9]{9}$/;
     if (!pkPhoneRegex.test(phoneClean)) {
-      errors.phone = "Please enter a valid 11-digit Pakistani mobile number (e.g. 03001234567 or +923001234567).";
+      errors.phone = "Mobile phone must be strictly 11 digits starting with 03 (e.g. 03001234567). No letters or symbols allowed.";
     }
 
+    // 5. Address: Minimum 8 characters
     if (!formData.address || formData.address.trim().length < 8) {
       errors.address = "Complete delivery address must be at least 8 characters long (house, street, sector).";
     }
 
-    if (!formData.city || formData.city.trim() === "") {
-      errors.city = "Please select your delivery city.";
+    // 6. City: Letters and spaces only, min 2 chars
+    if (!formData.city || formData.city.trim().length < 2) {
+      errors.city = "Please select or specify your delivery city.";
+    } else if (!/^[a-zA-Z\s]{2,50}$/.test(formData.city.trim())) {
+      errors.city = "City name can only contain letters and spaces.";
+    }
+
+    // 7. Postal Code: Optional, but if provided, must be digits only
+    if (formData.postalCode && !/^[0-9]{4,6}$/.test(formData.postalCode.trim())) {
+      errors.postalCode = "Postal code must contain 4 to 6 digits only (no letters).";
     }
 
     if (Object.keys(errors).length > 0) {
@@ -184,6 +232,23 @@ export default function CheckoutModal({
     if (!user || user.authProvider !== 'google' || !user.googleVerified) {
       alert("⚠️ Google Verification Required: You must be signed in with Google to place an order.");
       return;
+    }
+
+    // Require valid 11-digit sender phone for JazzCash / EasyPaisa
+    if (paymentMethod === 'jazzcash') {
+      const cleanJc = (jazzcashPhone || '').replace(/[^0-9]/g, '');
+      if (!/^03[0-9]{9}$/.test(cleanJc)) {
+        alert("⚠️ JazzCash Sender Phone Error: Please enter a valid 11-digit mobile number starting with 03 (e.g. 03001234567). Digits only.");
+        return;
+      }
+    }
+
+    if (paymentMethod === 'easypaisa') {
+      const cleanEp = (easypaisaPhone || '').replace(/[^0-9]/g, '');
+      if (!/^03[0-9]{9}$/.test(cleanEp)) {
+        alert("⚠️ EasyPaisa Sender Phone Error: Please enter a valid 11-digit mobile number starting with 03 (e.g. 03451234567). Digits only.");
+        return;
+      }
     }
 
     // Require receipt attachment for JazzCash / EasyPaisa / Bank Transfer
@@ -293,50 +358,60 @@ export default function CheckoutModal({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-onyx-800 mb-1">First Name *</label>
+                  <label className="block text-xs font-semibold text-onyx-800 mb-1">First Name (Letters only) *</label>
                   <input
                     type="text"
                     name="firstName"
                     value={formData.firstName}
                     onChange={handleInputChange}
+                    placeholder="e.g. Shahroz"
                     required
-                    className="w-full bg-linen-50 border border-linen-300 rounded-none p-2.5 text-xs text-onyx-900 focus:outline-none focus:ring-1 focus:ring-olive-700"
+                    className={`w-full bg-linen-50 border rounded-none p-2.5 text-xs text-onyx-900 focus:outline-none focus:ring-1 focus:ring-olive-700 ${
+                      formErrors.firstName ? 'border-red-500 bg-red-50/20' : 'border-linen-300'
+                    }`}
                   />
+                  {formErrors.firstName && (
+                    <p className="text-red-600 text-[11px] font-bold mt-1">⚠️ {formErrors.firstName}</p>
+                  )}
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-onyx-800 mb-1">Last Name *</label>
+                  <label className="block text-xs font-semibold text-onyx-800 mb-1">Last Name (Letters only) *</label>
                   <input
                     type="text"
                     name="lastName"
                     value={formData.lastName}
                     onChange={handleInputChange}
+                    placeholder="e.g. Mubarak"
                     required
-                    className="w-full bg-linen-50 border border-linen-300 rounded-none p-2.5 text-xs text-onyx-900 focus:outline-none focus:ring-1 focus:ring-olive-700"
+                    className={`w-full bg-linen-50 border rounded-none p-2.5 text-xs text-onyx-900 focus:outline-none focus:ring-1 focus:ring-olive-700 ${
+                      formErrors.lastName ? 'border-red-500 bg-red-50/20' : 'border-linen-300'
+                    }`}
                   />
+                  {formErrors.lastName && (
+                    <p className="text-red-600 text-[11px] font-bold mt-1">⚠️ {formErrors.lastName}</p>
+                  )}
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-onyx-800 mb-1">Mobile Phone (for Courier Delivery) *</label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-2.5 text-xs text-onyx-500 font-bold">+92</span>
-                    <input
-                      type="tel"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      placeholder="03001234567"
-                      required
-                      className={`w-full bg-linen-50 border rounded-none p-2.5 pl-11 text-xs text-onyx-900 focus:outline-none focus:ring-1 focus:ring-olive-700 font-medium ${
-                        formErrors.phone ? 'border-red-500 bg-red-50/20' : 'border-linen-300'
-                      }`}
-                    />
-                  </div>
+                  <label className="block text-xs font-semibold text-onyx-800 mb-1">Mobile Phone (11 Digits, e.g. 03001234567) *</label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    placeholder="03001234567"
+                    maxLength={11}
+                    required
+                    className={`w-full bg-linen-50 border rounded-none p-2.5 text-xs text-onyx-900 focus:outline-none focus:ring-1 focus:ring-olive-700 font-mono font-medium ${
+                      formErrors.phone ? 'border-red-500 bg-red-50/20' : 'border-linen-300'
+                    }`}
+                  />
                   {formErrors.phone ? (
                     <p className="text-red-600 text-[11px] font-bold mt-1">⚠️ {formErrors.phone}</p>
                   ) : (
-                    <span className="text-[10px] text-onyx-500">Required for SMS tracking and rider updates</span>
+                    <span className="text-[10px] text-onyx-500">Digits only (03XXXXXXXXX). Required for courier delivery updates</span>
                   )}
                 </div>
                 <div>
@@ -403,14 +478,21 @@ export default function CheckoutModal({
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-onyx-800 mb-1">Postal Code</label>
+                  <label className="block text-xs font-semibold text-onyx-800 mb-1">Postal Code (Digits only)</label>
                   <input
                     type="text"
                     name="postalCode"
                     value={formData.postalCode}
                     onChange={handleInputChange}
-                    className="w-full bg-linen-50 border border-linen-300 rounded-none p-2.5 text-xs text-onyx-900 focus:outline-none focus:ring-1 focus:ring-olive-700"
+                    placeholder="54000"
+                    maxLength={6}
+                    className={`w-full bg-linen-50 border rounded-none p-2.5 text-xs text-onyx-900 focus:outline-none focus:ring-1 focus:ring-olive-700 font-mono ${
+                      formErrors.postalCode ? 'border-red-500 bg-red-50/20' : 'border-linen-300'
+                    }`}
                   />
+                  {formErrors.postalCode && (
+                    <p className="text-red-600 text-[11px] font-bold mt-1">⚠️ {formErrors.postalCode}</p>
+                  )}
                 </div>
               </div>
 
@@ -677,12 +759,13 @@ export default function CheckoutModal({
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                       <div>
-                        <label className="block text-[11px] font-semibold text-onyx-700 mb-0.5">Your Sender Mobile Number *</label>
+                        <label className="block text-[11px] font-semibold text-onyx-700 mb-0.5">Your Sender Mobile Number (11 Digits) *</label>
                         <input
                           type="tel"
                           value={jazzcashPhone}
-                          onChange={(e) => setJazzcashPhone(e.target.value)}
+                          onChange={(e) => setJazzcashPhone(e.target.value.replace(/[^0-9]/g, '').slice(0, 11))}
                           placeholder="03001234567"
+                          maxLength={11}
                           className="w-full bg-white border border-linen-300 rounded-none p-2 text-xs font-mono"
                         />
                       </div>
@@ -691,8 +774,9 @@ export default function CheckoutModal({
                         <input
                           type="text"
                           value={jazzcashCnic}
-                          onChange={(e) => setJazzcashCnic(e.target.value)}
+                          onChange={(e) => setJazzcashCnic(e.target.value.replace(/[^a-zA-Z0-9]/g, '').slice(0, 20))}
                           placeholder="e.g. 19283746592"
+                          maxLength={20}
                           className="w-full bg-white border border-linen-300 rounded-none p-2 text-xs font-mono"
                         />
                       </div>
@@ -723,12 +807,13 @@ export default function CheckoutModal({
                     </div>
 
                     <div className="pt-1">
-                      <label className="block text-[11px] font-semibold text-onyx-700 mb-0.5">Your Sender EasyPaisa Number *</label>
+                      <label className="block text-[11px] font-semibold text-onyx-700 mb-0.5">Your Sender EasyPaisa Number (11 Digits) *</label>
                       <input
                         type="tel"
                         value={easypaisaPhone}
-                        onChange={(e) => setEasypaisaPhone(e.target.value)}
+                        onChange={(e) => setEasypaisaPhone(e.target.value.replace(/[^0-9]/g, '').slice(0, 11))}
                         placeholder="03451234567"
+                        maxLength={11}
                         className="w-full bg-white border border-linen-300 rounded-none p-2 text-xs font-mono"
                       />
                     </div>

@@ -207,13 +207,20 @@ export async function saveOrderToDB(order) {
       console.log('✅ Order saved directly to MongoDB Atlas:', savedDoc.orderNumber);
       return savedDoc;
     } else {
-      const errText = await res.text();
-      console.warn('⚠️ MongoDB order save rejected:', res.status, errText);
+      let errorMsg = `Server returned ${res.status}`;
+      try {
+        const errJson = await res.json();
+        errorMsg = errJson.error || errorMsg;
+      } catch {
+        errorMsg = await res.text();
+      }
+      console.warn('⚠️ MongoDB order save rejected:', res.status, errorMsg);
+      return { error: errorMsg, status: res.status };
     }
   } catch (err) {
     console.warn('Order saved locally (MongoDB offline):', err.message);
+    return { error: err.message, offline: true };
   }
-  return order;
 }
 
 export async function updateOrderStatusInDB(orderId, status) {

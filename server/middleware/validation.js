@@ -52,24 +52,34 @@ export const validateInquiry = (req, res, next) => {
 /**
  * 3. Order Checkout Schema Validation
  */
+const nameRegex = /^[a-zA-Z\s]{1,70}$/;
 const phoneRegex = /^(\+92|0)?3[0-9]{9}$/;
+const cityRegex = /^[a-zA-Z\s]{2,50}$/;
 
 const orderSchema = Joi.object({
   orderNumber: Joi.string().trim().max(60).optional(),
   customer: Joi.object({
-    firstName: Joi.string().trim().min(1).max(70).required(),
-    lastName: Joi.string().trim().max(70).allow('', null),
+    firstName: Joi.string().trim().pattern(nameRegex).min(1).max(70).required().messages({
+      'string.pattern.base': 'First name can only contain letters and spaces. No numbers, symbols, or special characters allowed.'
+    }),
+    lastName: Joi.string().trim().pattern(nameRegex).max(70).allow('', null).messages({
+      'string.pattern.base': 'Last name can only contain letters and spaces. No numbers, symbols, or special characters allowed.'
+    }),
     name: Joi.string().trim().max(140).allow('', null),
     email: Joi.string().trim().lowercase().email({ tlds: { allow: false } }).required(),
     phone: Joi.string().trim().pattern(phoneRegex).required().messages({
-      'string.pattern.base': 'Please enter a valid 11-digit Pakistani mobile number (e.g., 03001234567 or +923001234567).'
+      'string.pattern.base': 'Phone number must contain only digits (strictly 11 digits, e.g., 03001234567) without letters, symbols, or spaces.'
     }),
     address: Joi.string().trim().min(8).max(300).required().messages({
       'string.min': 'Complete delivery address must be at least 8 characters long (house, street, sector).'
     }),
-    city: Joi.string().trim().min(2).max(100).required(),
+    city: Joi.string().trim().pattern(cityRegex).min(2).max(100).required().messages({
+      'string.pattern.base': 'City name can only contain letters and spaces. No numbers or special characters.'
+    }),
     province: Joi.string().trim().allow('', null),
-    postalCode: Joi.string().trim().allow('', null),
+    postalCode: Joi.string().trim().pattern(/^[0-9]{0,8}$/).allow('', null).messages({
+      'string.pattern.base': 'Postal code can only contain digits. No letters or symbols.'
+    }),
     orderNotes: Joi.string().trim().max(1000).allow('', null)
   }).unknown(true).required(),
   items: Joi.array().min(1).required(),

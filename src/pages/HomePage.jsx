@@ -30,47 +30,6 @@ export default function HomePage({
   const [homeLoading, setHomeLoading] = useState(false);
   const videoRef = useRef(null);
 
-  // Sequential Multi-Model White Cyclorama Hero Videos
-  const heroVideoClips = [
-    {
-      id: 'clip-01',
-      title: 'LOOK 01 • OVERSIZED TEE & BARREL DENIM',
-      shortTitle: 'LOOK 01',
-      src: '/videos/hero_white_model.mp4',
-      poster: '/images/hero_white_model_poster.jpg',
-      label: 'Editorial Fit • Studio Cyclorama'
-    },
-    {
-      id: 'clip-02',
-      title: 'LOOK 02 • WHITE STUDIO PHOTOGRAPHER SHOOT',
-      shortTitle: 'LOOK 02',
-      src: '/videos/hero_white_model_2.mp4',
-      poster: '/images/catalog/men_model_white_tee_jeans.jpg',
-      label: 'Movement & Form • Studio Cyclorama'
-    },
-    {
-      id: 'clip-03',
-      title: 'LOOK 03 • MODERN DRAPE & TAILORED SILHOUETTES',
-      shortTitle: 'LOOK 03',
-      src: '/videos/hero_white_model_3.mp4',
-      poster: '/images/catalog/women_model_jeans_shirt.jpg',
-      label: 'Pret Silhouette • Studio Cyclorama'
-    }
-  ];
-
-  const [currentVideoIdx, setCurrentVideoIdx] = useState(0);
-
-  const handleVideoEnded = () => {
-    setCurrentVideoIdx((prev) => (prev + 1) % heroVideoClips.length);
-  };
-
-  useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.load();
-      videoRef.current.play().catch(e => console.log("Hero auto-advance error:", e));
-    }
-  }, [currentVideoIdx]);
-
   // Panoramic Banner Carousel State
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isSlidePaused, setIsSlidePaused] = useState(false);
@@ -91,7 +50,7 @@ export default function HomePage({
     {
       id: 'carpenter-utility',
       headline: 'UTILITY',
-      subtitle: 'STRAIGHT FIT CARPENTER JEANS & OVERSIZED TEES',
+      subtitle: 'STRAIGHT FIT CARPENTER JEANS & HEAVYWEIGHT TEES',
       description: 'Functional hammer loops, triple-needle chain stitching, and heavyweight 280 GSM combed organic cotton t-shirts.',
       image: '/images/catalog/men_model_carpenter.jpg',
       ctaText: 'SHOP WORKWEAR',
@@ -254,59 +213,26 @@ export default function HomePage({
       
       {/* =========================================================================
           1. CLEAN STUDIO MODEL VIDEO HERO (ROUNDED-NONE, SHARP ARCHITECTURAL BLOCK)
-          Sequential Multi-Model Loop on Pure White Cyclorama
+          Pure White Seamless Cyclorama Model Video
       ========================================================================= */}
       <section className="relative w-full max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12 pt-4 sm:pt-6">
-        <div className="relative w-full h-[65vh] sm:h-[80vh] overflow-hidden rounded-none bg-neutral-100 dark:bg-onyx-900 border border-neutral-300 dark:border-onyx-800 shadow-sm group">
+        <div className="relative w-full h-[65vh] sm:h-[80vh] overflow-hidden rounded-none bg-neutral-100 dark:bg-onyx-900 border border-neutral-300 dark:border-onyx-800 shadow-sm">
           <video
             ref={videoRef}
             autoPlay
+            loop
             muted
             playsInline
-            onEnded={handleVideoEnded}
-            poster={heroVideoClips[currentVideoIdx].poster}
-            className="w-full h-full object-cover object-center animate-video-fade"
-            key={heroVideoClips[currentVideoIdx].src}
+            poster="/images/catalog/men_model_white_tee_jeans.jpg"
+            className="w-full h-full object-cover object-center"
           >
-            <source src={heroVideoClips[currentVideoIdx].src} type="video/mp4" />
+            <source src="/videos/hero_white_model_2.mp4" type="video/mp4" />
             <img
               src="/images/catalog/men_model_white_tee_jeans.jpg"
               alt="Zaytoun Atelier Model"
               className="w-full h-full object-cover object-center"
             />
           </video>
-
-          {/* Top Left: Editorial Look Specification Indicator */}
-          <div className="absolute top-4 left-4 sm:top-6 sm:left-6 z-20 pointer-events-none">
-            <span className="inline-block px-3 py-1 bg-white/95 dark:bg-black/95 backdrop-blur-md text-[10px] font-mono uppercase tracking-[0.2em] font-bold text-neutral-900 dark:text-neutral-100 border border-neutral-300 dark:border-neutral-800 shadow-sm">
-              {heroVideoClips[currentVideoIdx].title}
-            </span>
-          </div>
-
-          {/* Bottom Right: Clean Rectangular Lookbook Switchers */}
-          <div className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 z-20 flex items-center space-x-2">
-            {heroVideoClips.map((clip, idx) => (
-              <button
-                key={clip.id}
-                onClick={() => setCurrentVideoIdx(idx)}
-                className={`px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider font-bold transition-all rounded-none ${
-                  idx === currentVideoIdx
-                    ? 'bg-black text-white dark:bg-camel-500 dark:text-onyx-950 shadow-md ring-1 ring-white/50'
-                    : 'bg-white/85 dark:bg-black/85 text-neutral-700 dark:text-neutral-300 hover:bg-white dark:hover:bg-neutral-900 border border-neutral-300 dark:border-neutral-700'
-                }`}
-                title={`Switch to ${clip.shortTitle}`}
-              >
-                0{idx + 1}
-              </button>
-            ))}
-            <button
-              onClick={handleVideoEnded}
-              className="px-3 py-1.5 bg-black/85 hover:bg-black text-white text-[10px] font-mono uppercase tracking-wider font-bold transition border border-white/20 hidden sm:inline-block rounded-none"
-              title="Advance to Next Model Look"
-            >
-              NEXT →
-            </button>
-          </div>
         </div>
       </section>
 

@@ -580,9 +580,10 @@ export default function App() {
   };
 
   // Order Handlers
-  const handleConfirmOrder = (orderData) => {
+  const handleConfirmOrder = async (orderData) => {
     const orderNumber = orderData.orderNumber || orderData.id || `ZYT-2026-${Math.floor(1000 + Math.random() * 9000)}`;
     const newOrder = {
+      ...orderData,
       id: orderNumber,
       orderNumber: orderNumber,
       customer: orderData.customer,
@@ -590,9 +591,12 @@ export default function App() {
       total: orderData.total,
       pricing: orderData.pricing,
       paymentMethod: orderData.paymentMethod,
-      status: "processing",
-      courier: "TCS Express",
-      trackingNumber: `TCS-${Math.floor(10000000 + Math.random() * 90000000)}-PK`,
+      paymentReceipt: orderData.paymentReceipt || null,
+      receiptFileName: orderData.receiptFileName || null,
+      receiptUploadedAt: orderData.receiptUploadedAt || null,
+      status: orderData.status || "pending",
+      courier: orderData.status === 'approved' ? "TCS Express" : "Assigned upon Studio Approval",
+      trackingNumber: orderData.trackingNumber || null,
       date: new Date().toISOString(),
       createdAt: new Date().toISOString()
     };
@@ -607,7 +611,7 @@ export default function App() {
     if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
       try {
         new Notification(`🛍️ Order Placed: #${orderNumber}`, {
-          body: `Your order of ${newOrder.items.length} item(s) (Rs. ${newOrder.total?.toLocaleString()}) has been received and dispatched to our Lahore Atelier fulfillment center.`,
+          body: `Your order of ${newOrder.items.length} item(s) (Rs. ${newOrder.total?.toLocaleString()}) has been received (Status: Pending Studio Verification).`,
           icon: "/images/catalog/men_barrel_jeans_flat.jpg"
         });
       } catch (e) {
@@ -616,12 +620,22 @@ export default function App() {
     }
 
     setToastNotification({
-      title: `Order #${orderNumber} Confirmed`,
-      message: `Automated confirmation sent! Courier TCS Express assigned tracking #${newOrder.trackingNumber}.`
+      title: `Order #${orderNumber} Submitted`,
+      message: `Order received! Status: Pending Studio Verification.`
     });
 
-    // Save directly to MongoDB Atlas
-    API.saveOrderToDB(newOrder);
+    // Save directly to MongoDB Atlas with full unhashed customer details & proof screenshot
+    try {
+      const savedDoc = await API.saveOrderToDB(newOrder);
+      if (savedDoc && savedDoc._id) {
+        console.log("✅ [MongoDB] Order and unhashed customer profile successfully written to Atlas:", savedDoc.orderNumber);
+      } else if (savedDoc && savedDoc.error) {
+        console.warn("⚠️ [MongoDB] Order save warning:", savedDoc.error);
+        alert("⚠️ Notice from Atelier DB: " + savedDoc.error);
+      }
+    } catch (dbErr) {
+      console.warn("⚠️ [MongoDB] Order sync note:", dbErr.message);
+    }
 
     // Deduct purchased quantities from product inventory
     const purchasedItems = orderData.items && orderData.items.length > 0 ? orderData.items : cart;

@@ -20,7 +20,7 @@ dotenv.config();
  */
 
 // >>>>> PASTE YOUR MONGODB LINK BETWEEN THE QUOTES BELOW (OR IN .env) <<<<<
-const MONGODB_LINK = ""; 
+const MONGODB_LINK = "mongodb+srv://ShahrozMubarak:shahzor0101@cluster1.pagfciy.mongodb.net/"; 
 
 export const getMongoURI = () => {
   return (
