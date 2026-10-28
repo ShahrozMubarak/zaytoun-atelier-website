@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
 import ScrollReveal from '../components/ScrollReveal';
+import TypewriterHeadline from '../components/TypewriterHeadline';
 import { subscribeNewsletter } from '../services/api';
 
 /**
@@ -29,6 +30,68 @@ export default function HomePage({
   const [homeSubscribed, setHomeSubscribed] = useState(false);
   const [homeLoading, setHomeLoading] = useState(false);
   const videoRef = useRef(null);
+
+  // Cinema Video Campaign Ad Overlay State
+  const [adVisible, setAdVisible] = useState(false);
+  const [adIndex, setAdIndex] = useState(0);
+
+  const adCards = [
+    {
+      kicker: 'ZAYTOUN ATELIER',
+      title: 'WEAR LESS, WEAR LONGER',
+      domain: 'zaytounatelier.com',
+      subtitle: 'CAMPAIGN 2026'
+    },
+    {
+      kicker: 'SLOW ATELIER',
+      title: 'TIMELESS SILHOUETTES',
+      domain: 'zaytounatelier.com',
+      subtitle: 'PURE RAW COTTON & LINEN'
+    },
+    {
+      kicker: 'HAUTE COUTURE',
+      title: 'WEAR LESS, WEAR LONGER',
+      domain: 'zaytounatelier.com',
+      subtitle: 'HANDCRAFTED IN PAKISTAN'
+    }
+  ];
+
+  useEffect(() => {
+    let showTimer;
+    let hideTimer;
+    let waitTimer;
+    let isMounted = true;
+
+    const cycleAd = () => {
+      // 1. Appear after 900ms
+      showTimer = setTimeout(() => {
+        if (!isMounted) return;
+        setAdVisible(true);
+
+        // 2. Stay visible for 4.5s
+        hideTimer = setTimeout(() => {
+          if (!isMounted) return;
+          setAdVisible(false);
+
+          // 3. Stay hidden for 3.5s, advance ad card, then repeat
+          waitTimer = setTimeout(() => {
+            if (!isMounted) return;
+            setAdIndex(prev => (prev + 1) % adCards.length);
+            cycleAd();
+          }, 3500);
+        }, 4500);
+      }, 900);
+    };
+
+    cycleAd();
+
+    return () => {
+      isMounted = false;
+      clearTimeout(showTimer);
+      clearTimeout(hideTimer);
+      clearTimeout(waitTimer);
+    };
+  }, [adCards.length]);
 
   // Panoramic Banner Carousel State
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -234,6 +297,31 @@ export default function HomePage({
               className="w-full h-full object-cover object-top sm:object-center"
             />
           </video>
+
+          {/* Luxury Video Campaign Ad Lower-Third Overlay */}
+          <div
+            className={`absolute bottom-6 sm:bottom-10 left-4 sm:left-10 lg:left-14 z-20 pointer-events-none transition-all duration-1000 ease-out transform ${
+              adVisible
+                ? 'opacity-100 translate-y-0 scale-100 filter-none'
+                : 'opacity-0 translate-y-4 scale-95 blur-[2px]'
+            }`}
+          >
+            <div className="bg-white/90 dark:bg-black/85 backdrop-blur-md px-5 py-3.5 border border-black/10 dark:border-white/15 shadow-xl max-w-xs sm:max-w-sm rounded-none">
+              <div className="flex items-center space-x-2 mb-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#A6865A] dark:bg-[#E6D3B3] animate-pulse" />
+                <span className="text-[10px] uppercase font-mono tracking-[0.25em] text-[#A6865A] dark:text-[#E6D3B3] font-bold">
+                  {adCards[adIndex].kicker}
+                </span>
+              </div>
+              <p className="text-sm sm:text-base font-black tracking-tight text-black dark:text-white uppercase leading-none font-sans">
+                {adCards[adIndex].title}
+              </p>
+              <div className="flex items-center justify-between pt-2 mt-2 border-t border-black/5 dark:border-white/10 text-[10px] text-neutral-500 dark:text-neutral-400 font-mono tracking-widest uppercase">
+                <span>{adCards[adIndex].domain}</span>
+                <span>{adCards[adIndex].subtitle}</span>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -242,8 +330,18 @@ export default function HomePage({
       ========================================================================= */}
       <section className="w-full max-w-4xl mx-auto text-center py-10 sm:py-14 px-4 space-y-4">
         <ScrollReveal distance={20}>
-          <h1 className="text-3xl sm:text-5xl md:text-6xl font-black uppercase tracking-tight text-black dark:text-white leading-tight">
-            Minimalist Form. Pure Function.
+          <h1 className="text-3xl sm:text-5xl md:text-6xl font-black uppercase tracking-tight text-black dark:text-white leading-tight min-h-[1.25em] flex items-center justify-center">
+            <TypewriterHeadline
+              words={[
+                "WEAR LESS, WEAR LONGER.",
+                "SLOW LUXURY.",
+                "WEAR LESS, WEAR LONGER."
+              ]}
+              typingSpeed={75}
+              deletingSpeed={35}
+              pauseTime={3200}
+              cursorClassName="bg-[#A6865A] dark:bg-[#E6D3B3]"
+            />
           </h1>
           <p className="text-xs sm:text-sm font-medium text-neutral-600 dark:text-neutral-300 max-w-lg mx-auto pt-1">
             Authentic ring-spun cotton denim, 280 GSM heavyweight tees, and breathable European linen shirts.

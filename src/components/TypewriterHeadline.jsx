@@ -4,17 +4,19 @@ import React, { useState, useEffect } from 'react';
  * TypewriterHeadline - Clean luxury character-by-character typing & word-cycling animation
  */
 export default function TypewriterHeadline({
-  words = ["CALM.", "PERMANENCE.", "SILENCE.", "STRUCTURE.", "SERENITY."],
-  typingSpeed = 85,
-  deletingSpeed = 45,
-  pauseTime = 2200,
-  className = ""
+  words = ["WEAR LESS, WEAR LONGER."],
+  typingSpeed = 80,
+  deletingSpeed = 40,
+  pauseTime = 3000,
+  className = "",
+  cursorClassName = "bg-[#A6865A] dark:bg-[#E6D3B3]"
 }) {
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [displayText, setDisplayText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
+    if (!words || words.length === 0) return;
     const currentWord = words[currentWordIndex % words.length];
     let timer;
 
@@ -51,8 +53,8 @@ export default function TypewriterHeadline({
       <span>{displayText}</span>
       {/* Sleek luxury vertical blinking cursor */}
       <span
-        className="inline-block w-[2.5px] h-[0.9em] ml-1 bg-camel-600 dark:bg-camel-400 rounded-full animate-pulse transition-opacity"
-        style={{ animationDuration: '0.9s' }}
+        className={`inline-block w-[2.5px] h-[0.9em] ml-1.5 rounded-full animate-pulse transition-opacity ${cursorClassName}`}
+        style={{ animationDuration: '0.85s' }}
         aria-hidden="true"
       />
     </span>
