@@ -15,7 +15,7 @@ import CartDrawer from './components/CartDrawer';
 import CheckoutModal from './components/CheckoutModal';
 import OrderConfirmationModal from './components/OrderConfirmationModal';
 import AutomatedOrderNoticeModal from './components/AutomatedOrderNoticeModal';
-import NotificationPromptModal from './components/NotificationPromptModal';
+import { requestSystemNotificationPermission, notifyOrderPlaced, notifyGazetteSubscribed } from './services/notificationService';
 import ProductModal from './components/ProductModal';
 import BrandPaletteGuide from './components/BrandPaletteGuide';
 import SizeGuideModal from './components/SizeGuideModal';
@@ -89,6 +89,30 @@ export default function App() {
       console.warn("Theme config storage error:", e);
     }
   }, [themeConfig]);
+
+  // Request native system/browser notification permission on site open (NO in-house HTML popups)
+  useEffect(() => {
+    // Attempt real browser prompt immediately
+    requestSystemNotificationPermission();
+
+    // Attach single-fire listener on first user interaction for browsers requiring gesture
+    const handleFirstGesture = () => {
+      requestSystemNotificationPermission();
+      window.removeEventListener('click', handleFirstGesture);
+      window.removeEventListener('keydown', handleFirstGesture);
+      window.removeEventListener('touchstart', handleFirstGesture);
+    };
+
+    window.addEventListener('click', handleFirstGesture, { passive: true });
+    window.addEventListener('keydown', handleFirstGesture, { passive: true });
+    window.addEventListener('touchstart', handleFirstGesture, { passive: true });
+
+    return () => {
+      window.removeEventListener('click', handleFirstGesture);
+      window.removeEventListener('keydown', handleFirstGesture);
+      window.removeEventListener('touchstart', handleFirstGesture);
+    };
+  }, []);
 
   const handleToggleTheme = () => {
     setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
@@ -394,16 +418,7 @@ export default function App() {
 
   // Automated notification handler for subscriptions
   const handleSubscriptionNotification = (email) => {
-    if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
-      try {
-        new Notification("🎉 Zaytoun Atelier Gazette", {
-          body: `Welcome ${email}! You're subscribed for automated drop notifications and order updates.`,
-          icon: "/images/catalog/men_barrel_jeans_flat.jpg"
-        });
-      } catch (e) {
-        console.log("Sub notif note:", e);
-      }
-    }
+    notifyGazetteSubscribed(email);
     setToastNotification({
       title: "Gazette Subscription Active",
       message: `Thank you for subscribing! Drop alerts and receipts will be delivered to ${email}.`
@@ -608,17 +623,8 @@ export default function App() {
     setConfirmedOrder(newOrder);
     setIsAutomatedOrderModalOpen(true);
 
-    // Browser Push Notification on Buy
-    if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
-      try {
-        new Notification(`🛍️ Order Placed: #${orderNumber}`, {
-          body: `Your order of ${newOrder.items.length} item(s) (Rs. ${newOrder.total?.toLocaleString()}) has been received (Status: Pending Studio Verification).`,
-          icon: "/images/catalog/men_barrel_jeans_flat.jpg"
-        });
-      } catch (e) {
-        console.log("Push notif note:", e);
-      }
-    }
+    // Real System/Browser Push Notification on Buy
+    notifyOrderPlaced(newOrder);
 
     setToastNotification({
       title: `Order #${orderNumber} Submitted`,
@@ -922,7 +928,6 @@ export default function App() {
           onConfirmOrder={handleConfirmOrder}
         />
 
-        <NotificationPromptModal />
 
         <AutomatedOrderNoticeModal
           order={confirmedOrder}

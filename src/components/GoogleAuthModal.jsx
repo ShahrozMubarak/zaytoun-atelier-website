@@ -3,17 +3,17 @@ import { useCurrency } from '../context/CurrencyContext';
 import { launchGooglePopupLogin } from '../utils/googleAuth';
 
 /**
- * GoogleAuthModal - Luxury Sign in with Google modal for Zaytoun Atelier.
- * Strictly enforces Google Identity Services (GIS) authentication.
- * No alternate, guest, or unverified login methods are permitted.
+ * GoogleAuthModal - Luxury Editorial Authentication Portal for Zaytoun Atelier
+ * High-end slow fashion aesthetic with desert camel accents, obsidian glassmorphism,
+ * brand monogram crest, and official Google Identity Services SSO.
  */
 export default function GoogleAuthModal({
   isOpen,
   onClose,
   onSuccess,
   pendingItem = null,
-  title = "Sign in with Google to Add to Bag",
-  subtitle = "To curate your luxury wardrobe and place orders, please sign in with your Google account."
+  title = "Client Privilege Access",
+  subtitle = "Sign in with your Google account to curate your wardrobe, place bespoke orders, and receive private drop allocations."
 }) {
   const { formatPrice } = useCurrency();
   const [loading, setLoading] = useState(false);
@@ -52,51 +52,58 @@ export default function GoogleAuthModal({
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-onyx-950/75 backdrop-blur-md transition-all duration-300 animate-fadeIn"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md transition-all duration-300 animate-fadeIn"
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-md bg-white dark:bg-onyx-950 rounded-none border border-neutral-200 dark:border-onyx-800 shadow-2xl overflow-hidden transition-all duration-300 transform scale-100"
+        className="relative w-full max-w-lg bg-[#121110] text-white rounded-none border-2 border-[#C69F6F]/60 shadow-[0_25px_90px_-15px_rgba(198,159,111,0.35)] overflow-hidden transition-all duration-300 transform scale-100"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Top Decorative Accent Bar (Olive & Desert Camel) */}
-        <div className="h-1.5 w-full bg-gradient-to-r from-olive-800 via-camel-500 to-olive-900" />
+        {/* Top Gold Shimmer Bar */}
+        <div className="h-1.5 w-full bg-gradient-to-r from-[#8C6D45] via-[#E6D3B3] to-[#C69F6F]" />
 
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 p-2 rounded-none text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-onyx-900 transition-colors z-10"
-          aria-label="Close Sign In Dialog"
+          className="absolute top-5 right-5 p-2 rounded-none text-[#C69F6F]/70 hover:text-white hover:bg-white/10 transition-colors z-10 cursor-pointer"
+          aria-label="Close Authentication Portal"
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
 
-        <div className="p-6 sm:p-8">
-          {/* Brand Header */}
-          <div className="text-center mb-6">
-            <div className="inline-flex items-center space-x-1.5 mb-2">
-              <span className="text-xl sm:text-2xl font-black tracking-tight text-onyx-950 dark:text-white uppercase font-sans">
-                ZAYTOUN ATELIER
-              </span>
-              <span className="w-2.5 h-2.5 rounded-none bg-camel-500 shadow-sm shadow-camel-500/50" />
+        <div className="p-6 sm:p-10 relative">
+          {/* Subtle Ambient Radial Camel Glow in Background */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-32 bg-[#C69F6F]/10 blur-3xl pointer-events-none rounded-full" />
+
+          {/* Luxury Brand Crest & Monogram */}
+          <div className="text-center mb-7 relative z-10">
+            <div className="inline-flex items-center justify-center w-14 h-14 mb-4 rounded-none border border-[#C69F6F] bg-gradient-to-br from-[#E6D3B3] via-[#C69F6F] to-[#8C6D45] text-black shadow-lg shadow-[#C69F6F]/20">
+              <span className="font-serif font-black text-xl tracking-widest pl-0.5">ZA</span>
             </div>
-            <p className="text-[11px] font-bold uppercase tracking-widest text-camel-600 dark:text-camel-400 mb-2">
-              Official Google Authentication
-            </p>
-            <h2 className="text-xl sm:text-2xl font-serif font-bold text-neutral-900 dark:text-white">
+
+            <div className="flex items-center justify-center space-x-2 mb-1.5">
+              <span className="h-px w-6 bg-[#C69F6F]/40" />
+              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#E6D3B3]">
+                Zaytoun Atelier • Private Portal
+              </span>
+              <span className="h-px w-6 bg-[#C69F6F]/40" />
+            </div>
+
+            <h2 className="text-2xl sm:text-3xl font-serif font-bold text-white tracking-tight mt-1">
               {title}
             </h2>
-            <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-300 mt-1.5 max-w-sm mx-auto leading-relaxed">
+
+            <p className="text-xs sm:text-sm text-neutral-300 mt-2 max-w-sm mx-auto leading-relaxed font-sans">
               {subtitle}
             </p>
           </div>
 
-          {/* Pending Item Preview Card (If triggered by Add to Cart) */}
+          {/* Pending Item Luxury Preview Card (If triggered by Add to Bag) */}
           {pendingItem && (
-            <div className="mb-6 p-3.5 rounded-none bg-neutral-50 dark:bg-onyx-900 border border-neutral-200 dark:border-onyx-800 flex items-center space-x-3.5">
-              <div className="w-14 h-16 rounded-none overflow-hidden bg-white dark:bg-onyx-800 flex-shrink-0 border border-neutral-300 dark:border-onyx-700">
+            <div className="mb-6 p-4 rounded-none bg-[#1C1814] border border-[#C69F6F]/40 flex items-center space-x-4 shadow-inner">
+              <div className="w-14 h-18 rounded-none overflow-hidden bg-black flex-shrink-0 border border-[#C69F6F]/30">
                 <img
                   src={
                     pendingItem.images?.[0] ||
@@ -108,25 +115,25 @@ export default function GoogleAuthModal({
                 />
               </div>
               <div className="flex-1 min-w-0">
-                <div className="flex items-center space-x-1.5 mb-0.5">
-                  <span className="w-2 h-2 rounded-none bg-emerald-500 animate-pulse" />
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
-                    Will be added upon Google sign in
+                <div className="flex items-center space-x-1.5 mb-1">
+                  <span className="w-1.5 h-1.5 rounded-none bg-[#C69F6F] animate-pulse" />
+                  <span className="text-[9px] font-black uppercase tracking-widest text-[#E6D3B3]">
+                    Reserved for your bag
                   </span>
                 </div>
-                <h4 className="text-xs sm:text-sm font-bold text-neutral-900 dark:text-white truncate uppercase">
+                <h4 className="text-xs sm:text-sm font-black text-white truncate uppercase tracking-wider font-sans">
                   {pendingItem.name}
                 </h4>
-                <div className="flex items-center space-x-2 text-[11px] text-neutral-500 dark:text-neutral-400 mt-0.5">
-                  <span>Size: <strong className="text-neutral-800 dark:text-neutral-200">{pendingItem.selectedSize || 'M'}</strong></span>
+                <div className="flex items-center space-x-2 text-[11px] text-neutral-400 mt-1 font-mono">
+                  <span>Size: <strong className="text-[#E6D3B3]">{pendingItem.selectedSize || 'M'}</strong></span>
                   {pendingItem.selectedColor && (
                     <>
                       <span>•</span>
-                      <span>Color: <strong className="text-neutral-800 dark:text-neutral-200">{pendingItem.selectedColor}</strong></span>
+                      <span>Color: <strong className="text-[#E6D3B3]">{pendingItem.selectedColor}</strong></span>
                     </>
                   )}
                   <span>•</span>
-                  <span className="font-bold text-black dark:text-white">
+                  <span className="font-black text-white">
                     {formatPrice(pendingItem.price || 0)}
                   </span>
                 </div>
@@ -134,42 +141,65 @@ export default function GoogleAuthModal({
             </div>
           )}
 
-          {/* Action Area: ONLY Google Sign-In */}
+          {/* Attractive Google Sign-In Action Area */}
           <div className="space-y-4 pt-1">
-            
-            {/* Official Google Sign-In Button */}
             <button
               type="button"
               onClick={handleGooglePopupClick}
               disabled={loading}
-              className="w-full flex items-center justify-center space-x-3 py-3.5 px-5 rounded-none bg-white dark:bg-onyx-900 border-2 border-neutral-300 dark:border-onyx-700 hover:border-black dark:hover:border-white text-neutral-900 dark:text-white font-bold text-xs uppercase tracking-wider shadow-sm hover:shadow transition disabled:opacity-60 cursor-pointer group"
+              className="w-full flex items-center justify-center space-x-3.5 py-4 px-6 rounded-none bg-white hover:bg-[#FAF4EB] text-black font-black text-xs uppercase tracking-[0.15em] border-2 border-[#C69F6F] hover:border-white shadow-[0_10px_30px_-5px_rgba(198,159,111,0.4)] transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-60 cursor-pointer group"
             >
-              {/* Official Google 'G' SVG Logo */}
-              <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24">
+              {/* Official Google 4-Color 'G' Vector */}
+              <svg className="w-4 h-4 flex-shrink-0 group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
                 <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
                 <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
                 <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
               </svg>
-              <span>{loading ? "Connecting to Google..." : "Continue with Google"}</span>
+              <span>{loading ? "Authenticating Client..." : "Continue with Google"}</span>
             </button>
 
-            {/* Notice / Message */}
+            {/* Error Message */}
             {errorMessage && (
-              <div className="p-3 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/50 text-xs text-red-700 dark:text-red-300">
+              <div className="p-3 bg-red-950/60 border border-red-500/50 text-xs text-red-200">
                 <p>{errorMessage}</p>
               </div>
             )}
-
           </div>
 
-          {/* Privacy & Trust Footer */}
-          <div className="mt-6 pt-4 border-t border-neutral-200 dark:border-onyx-800 flex items-center justify-between text-[11px] text-neutral-400 dark:text-neutral-500">
-            <span className="flex items-center space-x-1">
-              <svg className="w-3.5 h-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-              </svg>
-              <span>MongoDB Atlas Secure Authentication</span>
+          {/* Luxury Atelier Client Pillars */}
+          <div className="mt-8 pt-6 border-t border-[#C69F6F]/25 grid grid-cols-3 gap-2 text-center">
+            <div className="space-y-1">
+              <span className="block text-[10px] font-black uppercase tracking-wider text-[#E6D3B3]">
+                Drops &amp; Vault
+              </span>
+              <span className="block text-[10px] text-neutral-400">
+                Private release allocations
+              </span>
+            </div>
+            <div className="space-y-1 border-x border-[#C69F6F]/20 px-1">
+              <span className="block text-[10px] font-black uppercase tracking-wider text-[#E6D3B3]">
+                Express Courier
+              </span>
+              <span className="block text-[10px] text-neutral-400">
+                TCS live tracking
+              </span>
+            </div>
+            <div className="space-y-1">
+              <span className="block text-[10px] font-black uppercase tracking-wider text-[#E6D3B3]">
+                Concierge
+              </span>
+              <span className="block text-[10px] text-neutral-400">
+                Priority order verification
+              </span>
+            </div>
+          </div>
+
+          {/* Secure Protocol Seal */}
+          <div className="mt-6 pt-3 text-center">
+            <span className="inline-flex items-center space-x-1.5 text-[10px] font-mono font-bold tracking-wider text-[#C69F6F]/70">
+              <span className="w-1.5 h-1.5 rounded-none bg-[#C69F6F]" />
+              <span>Zaytoun Atelier Protocol • Encrypted Client Session</span>
             </span>
           </div>
 

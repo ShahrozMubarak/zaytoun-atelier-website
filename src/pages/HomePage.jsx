@@ -251,18 +251,6 @@ export default function HomePage({
         setHomeSubscribed(true);
         if (onSubscribe) onSubscribe(clean);
 
-        // Direct browser notification if permission is granted
-        if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
-          try {
-            new Notification("🎉 Zaytoun Atelier Gazette", {
-              body: `Welcome ${clean}! You're subscribed for automated drop notifications and order updates.`,
-              icon: "/images/catalog/men_barrel_jeans_flat.jpg"
-            });
-          } catch (notifErr) {
-            console.log("Push notif note:", notifErr);
-          }
-        }
-
         setTimeout(() => {
           setHomeEmail('');
           setHomeSubscribed(false);
