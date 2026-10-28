@@ -222,13 +222,13 @@ export default function GoogleAuthModal({
               type="button"
               onClick={() => handleInstantVerifiedLogin("shaahrozdogar@gmail.com", "Shahroz Dogar")}
               disabled={loading}
-              className="w-full flex items-center justify-between py-3.5 px-5 rounded-none bg-black dark:bg-white text-white dark:text-black font-bold text-xs uppercase tracking-wider hover:bg-neutral-800 dark:hover:bg-neutral-200 transition shadow cursor-pointer group"
+              className="w-full flex flex-col sm:flex-row items-center justify-center sm:justify-between py-3.5 px-5 rounded-none bg-black dark:bg-white text-white dark:text-black font-bold text-xs uppercase tracking-wider hover:bg-neutral-800 dark:hover:bg-neutral-200 transition shadow cursor-pointer group gap-1"
             >
               <div className="flex items-center space-x-2">
                 <span className="w-2 h-2 rounded-none bg-emerald-400 dark:bg-emerald-600 inline-block" />
                 <span>1-Click Verified Sign In</span>
               </div>
-              <span className="text-[10px] text-neutral-400 dark:text-neutral-600 font-mono">
+              <span className="text-[11px] text-emerald-400 dark:text-emerald-700 font-mono font-semibold">
                 shaahrozdogar@gmail.com &rarr;
               </span>
             </button>
