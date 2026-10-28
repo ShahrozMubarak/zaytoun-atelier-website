@@ -23,9 +23,24 @@ export default function AdminDashboard({
   onDeleteProduct,
   themeConfig,
   onUpdateTheme,
-  onCloseAdmin
+  onCloseAdmin,
+  user = null
 }) {
-  const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'products' | 'orders' | 'customers' | 'subscribers' | 'appearance'
+  const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'approvals' | 'orders' | 'products' | 'customers' | 'subscribers' | 'security' | 'appearance'
+
+  const currentUserEmail = (() => {
+    if (user?.email) return user.email;
+    try {
+      const stored = localStorage.getItem('zaytoun_client_user');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed?.email) return parsed.email;
+      }
+      return localStorage.getItem('zaytoun_admin_email') || 'shaahrozdogar@gmail.com';
+    } catch {
+      return 'shaahrozdogar@gmail.com';
+    }
+  })();
   
   // Live MongoDB States
   const [liveProducts, setLiveProducts] = useState(propProducts);
@@ -406,23 +421,23 @@ export default function AdminDashboard({
     }
 
     setIsProductModalOpen(false);
-    alert(`Product "${productForm.name}" successfully saved to MongoDB Atlas.`);
+    alert(`Garment "${productForm.name}" saved successfully.`);
   };
 
-  // Delete Product from MongoDB
+  // Delete Garment
   const handleDeleteProductClick = async (productId, productName) => {
-    if (!window.confirm(`Are you sure you want to delete "${productName}" from MongoDB Atlas?`)) return;
+    if (!window.confirm(`Are you sure you want to remove "${productName}" from the atelier catalog?`)) return;
     
     const success = await deleteProductFromDB(productId);
     setLiveProducts(prev => prev.filter(p => p.id !== productId));
     if (onDeleteProduct) onDeleteProduct(productId);
 
     if (success) {
-      alert("Product removed from database.");
+      alert("Garment removed from catalog.");
     }
   };
 
-  // Update Order Status in MongoDB
+  // Update Order Status
   const handleStatusChange = async (orderId, newStatus) => {
     setLiveOrders(prev =>
       prev.map(ord => (ord.id === orderId || ord.orderNumber === orderId ? { ...ord, status: newStatus } : ord))
@@ -489,9 +504,9 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
     setTimeout(() => setCopiedEmails(false), 3000);
   };
 
-  // Delete Subscriber from MongoDB
+  // Delete Subscriber
   const handleDeleteSub = async (id) => {
-    if (!window.confirm("Remove this subscriber from MongoDB?")) return;
+    if (!window.confirm("Remove this subscriber from the gazette list?")) return;
     const ok = await deleteSubscriberFromDB(id);
     if (ok) {
       setSubscribers(prev => prev.filter(s => s._id !== id));
@@ -538,15 +553,15 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                 className={`py-3.5 whitespace-nowrap transition-all border-b-2 flex items-center space-x-2 ${
                   activeTab === tab.id
                     ? 'border-black dark:border-[#E6D3B3] text-black dark:text-[#E6D3B3] font-black'
-                    : 'border-transparent text-neutral-400 hover:text-black dark:hover:text-white font-medium'
+                    : 'border-transparent text-neutral-500 hover:text-black dark:hover:text-white font-bold'
                 }`}
               >
                 <span>{tab.label}</span>
                 {tab.count !== undefined && tab.count > 0 && (
-                  <span className={`px-1.5 py-0.5 rounded-none text-[10px] font-mono ${
+                  <span className={`px-2 py-0.5 rounded-none text-[10px] font-mono font-black ${
                     tab.highlight && tab.count > 0
                       ? 'bg-amber-500 text-black font-black'
-                      : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300'
+                      : 'bg-neutral-200 dark:bg-neutral-800 text-black dark:text-white'
                   }`}>
                     {tab.count}
                   </span>
@@ -559,20 +574,20 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
           <div className="flex items-center space-x-3 shrink-0 pb-2 md:pb-0">
             <button
               onClick={handleOpenCreateProduct}
-              className="px-4 py-2 bg-black hover:bg-neutral-800 text-white dark:bg-[#E6D3B3] dark:hover:bg-[#d9c19b] dark:text-black text-xs font-bold uppercase tracking-wider rounded-none transition"
+              className="px-4 py-2 bg-black hover:bg-neutral-800 text-white dark:bg-[#E6D3B3] dark:hover:bg-[#d9c19b] dark:text-black text-xs font-black uppercase tracking-wider rounded-none transition shadow-sm"
             >
               + New Garment
             </button>
             <button
               onClick={loadAllDataFromMongoDB}
               disabled={loading}
-              className="hidden sm:inline-block px-3 py-2 border border-neutral-300 dark:border-neutral-700 hover:border-black dark:hover:border-white text-neutral-700 dark:text-neutral-300 text-xs font-bold uppercase tracking-wider rounded-none transition"
+              className="hidden sm:inline-block px-3.5 py-2 border border-neutral-300 dark:border-neutral-700 hover:border-black dark:hover:border-white text-black dark:text-white text-xs font-black uppercase tracking-wider rounded-none transition"
             >
               {loading ? 'Syncing...' : 'Refresh'}
             </button>
             <button
               onClick={onCloseAdmin}
-              className="px-3 py-2 border border-neutral-300 dark:border-neutral-700 hover:border-black dark:hover:border-white text-neutral-700 dark:text-neutral-300 text-xs font-bold uppercase tracking-wider rounded-none transition"
+              className="px-3.5 py-2 border border-neutral-300 dark:border-neutral-700 hover:border-black dark:hover:border-white text-black dark:text-white text-xs font-black uppercase tracking-wider rounded-none transition"
             >
               Storefront →
             </button>
@@ -591,77 +606,77 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
           <div className="space-y-8 animate-fadeIn">
             {/* 6 Key Metrics Cards */}
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
-              <div className="p-4 sm:p-5 rounded-none bg-white dark:bg-onyx-900 border border-neutral-200 dark:border-neutral-800">
-                <span className="text-xs uppercase font-bold text-neutral-400 tracking-widest block">
+              <div className="p-5 rounded-none bg-white dark:bg-onyx-900 border border-neutral-300 dark:border-neutral-800 shadow-xs">
+                <span className="text-xs uppercase font-black text-neutral-500 dark:text-neutral-400 tracking-widest block font-mono">
                   Total Sales
                 </span>
-                <p className="text-lg sm:text-2xl font-black text-black dark:text-[#E6D3B3] mt-2 font-mono">
+                <p className="text-xl sm:text-2xl font-black text-black dark:text-[#E6D3B3] mt-2 font-mono tracking-tight">
                   Rs. {totalRevenue.toLocaleString()}
                 </p>
               </div>
 
-              <div className="p-4 sm:p-5 rounded-none bg-white dark:bg-onyx-900 border border-neutral-200 dark:border-neutral-800">
-                <span className="text-xs uppercase font-bold text-neutral-400 tracking-widest block">
+              <div className="p-5 rounded-none bg-white dark:bg-onyx-900 border border-neutral-300 dark:border-neutral-800 shadow-xs">
+                <span className="text-xs uppercase font-black text-neutral-500 dark:text-neutral-400 tracking-widest block font-mono">
                   Approvals
                 </span>
-                <p className="text-lg sm:text-2xl font-black text-black dark:text-white mt-2 font-mono">
+                <p className="text-xl sm:text-2xl font-black text-black dark:text-white mt-2 font-mono tracking-tight">
                   {pendingOrders.length}
                 </p>
               </div>
 
-              <div className="p-4 sm:p-5 rounded-none bg-white dark:bg-onyx-900 border border-neutral-200 dark:border-neutral-800">
-                <span className="text-xs uppercase font-bold text-neutral-400 tracking-widest block">
+              <div className="p-5 rounded-none bg-white dark:bg-onyx-900 border border-neutral-300 dark:border-neutral-800 shadow-xs">
+                <span className="text-xs uppercase font-black text-neutral-500 dark:text-neutral-400 tracking-widest block font-mono">
                   Orders
                 </span>
-                <p className="text-lg sm:text-2xl font-black text-black dark:text-white mt-2 font-mono">
+                <p className="text-xl sm:text-2xl font-black text-black dark:text-white mt-2 font-mono tracking-tight">
                   {liveOrders.length}
                 </p>
               </div>
 
-              <div className="p-4 sm:p-5 rounded-none bg-white dark:bg-onyx-900 border border-neutral-200 dark:border-neutral-800">
-                <span className="text-xs uppercase font-bold text-neutral-400 tracking-widest block">
+              <div className="p-5 rounded-none bg-white dark:bg-onyx-900 border border-neutral-300 dark:border-neutral-800 shadow-xs">
+                <span className="text-xs uppercase font-black text-neutral-500 dark:text-neutral-400 tracking-widest block font-mono">
                   Catalog
                 </span>
-                <p className="text-lg sm:text-2xl font-black text-black dark:text-white mt-2 font-mono">
+                <p className="text-xl sm:text-2xl font-black text-black dark:text-white mt-2 font-mono tracking-tight">
                   {liveProducts.length}
                 </p>
               </div>
 
-              <div className="p-4 sm:p-5 rounded-none bg-white dark:bg-onyx-900 border border-neutral-200 dark:border-neutral-800">
-                <span className="text-xs uppercase font-bold text-neutral-400 tracking-widest block">
+              <div className="p-5 rounded-none bg-white dark:bg-onyx-900 border border-neutral-300 dark:border-neutral-800 shadow-xs">
+                <span className="text-xs uppercase font-black text-neutral-500 dark:text-neutral-400 tracking-widest block font-mono">
                   Clients
                 </span>
-                <p className="text-lg sm:text-2xl font-black text-black dark:text-white mt-2 font-mono">
+                <p className="text-xl sm:text-2xl font-black text-black dark:text-white mt-2 font-mono tracking-tight">
                   {customers.length}
                 </p>
               </div>
 
-              <div className="p-4 sm:p-5 rounded-none bg-white dark:bg-onyx-900 border border-neutral-200 dark:border-neutral-800">
-                <span className="text-xs uppercase font-bold text-neutral-400 tracking-widest block">
+              <div className="p-5 rounded-none bg-white dark:bg-onyx-900 border border-neutral-300 dark:border-neutral-800 shadow-xs">
+                <span className="text-xs uppercase font-black text-neutral-500 dark:text-neutral-400 tracking-widest block font-mono">
                   Gazette
                 </span>
-                <p className="text-lg sm:text-2xl font-black text-black dark:text-white mt-2 font-mono">
+                <p className="text-xl sm:text-2xl font-black text-black dark:text-white mt-2 font-mono tracking-tight">
                   {subscribers.length}
                 </p>
               </div>
             </div>
 
             {/* Revenue Trajectory Graph (7 Days) */}
-            <div className="p-5 sm:p-8 rounded-none bg-white dark:bg-onyx-900 border border-neutral-200 dark:border-neutral-800 space-y-6">
+            <div className="p-5 sm:p-8 rounded-none bg-white dark:bg-onyx-900 border border-neutral-300 dark:border-neutral-800 space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-neutral-200 dark:border-neutral-800 pb-4">
                 <div>
-                  <h3 className="text-sm font-bold uppercase tracking-wider text-black dark:text-white">
+                  <h3 className="text-xs sm:text-sm font-black uppercase tracking-widest text-black dark:text-white">
                     Revenue (Past 7 Days)
                   </h3>
                 </div>
                 <div className="flex items-center space-x-6 text-xs font-mono">
                   <div>
-                    <span className="text-neutral-400">Peak: </span>
-                    <strong className="text-black dark:text-[#E6D3B3]">Rs. {maxChartRevenue.toLocaleString()}</strong>
+                    <span className="text-neutral-500 font-bold uppercase text-[11px] tracking-wider">Peak: </span>
+                    <strong className="text-black dark:text-[#E6D3B3] font-black font-mono text-sm">Rs. {maxChartRevenue.toLocaleString()}</strong>
                   </div>
                   <div>
-                    <span className="text-neutral-400">Average: </span>
-                    <strong className="text-black dark:text-[#E6D3B3]">
+                    <span className="text-neutral-500 font-bold uppercase text-[11px] tracking-wider">Average: </span>
+                    <strong className="text-black dark:text-[#E6D3B3] font-black font-mono text-sm">
                       Rs. {Math.round(totalRevenue / 7).toLocaleString()}
                     </strong>
                   </div>
@@ -704,6 +719,7 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                           fontSize="9"
                           fill="#9CA3AF"
                           fontFamily="monospace"
+                          fontWeight="700"
                         >
                           {val >= 1000 ? `${(val / 1000).toFixed(0)}k` : val}
                         </text>
@@ -754,7 +770,7 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                         fontSize="10"
                         fill="#6B7280"
                         fontFamily="sans-serif"
-                        fontWeight="600"
+                        fontWeight="700"
                       >
                         {pt.label}
                       </text>
@@ -783,8 +799,8 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               
               {/* Card 1: Fulfillment Status Distribution */}
-              <div className="p-4 sm:p-6 rounded-none bg-white dark:bg-onyx-900 border border-neutral-300 dark:border-onyx-800 shadow-sm space-y-4">
-                <h4 className="font-editorial text-lg font-bold text-black dark:text-white">
+              <div className="p-5 sm:p-6 rounded-none bg-white dark:bg-onyx-900 border border-neutral-300 dark:border-neutral-800 shadow-sm space-y-4">
+                <h4 className="text-xs sm:text-sm font-black uppercase tracking-widest text-black dark:text-white">
                   Order Status Breakdown
                 </h4>
                 <div className="space-y-3">
@@ -798,9 +814,9 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                     const pct = Math.round((st.count / total) * 100);
                     return (
                       <div key={idx} className="space-y-1">
-                        <div className="flex justify-between text-xs font-semibold">
+                        <div className="flex justify-between text-xs font-bold text-black dark:text-white">
                           <span>{st.label}</span>
-                          <span className="font-mono">{st.count} orders ({pct}%)</span>
+                          <span className="font-mono font-black">{st.count} orders ({pct}%)</span>
                         </div>
                         <div className="w-full h-2.5 bg-neutral-100 dark:bg-onyx-800 rounded-none overflow-hidden">
                           <div
@@ -815,8 +831,8 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
               </div>
 
               {/* Card 2: Payment Gateways Breakdown */}
-              <div className="p-4 sm:p-6 rounded-none bg-white dark:bg-onyx-900 border border-neutral-300 dark:border-onyx-800 shadow-sm space-y-4">
-                <h4 className="font-editorial text-lg font-bold text-black dark:text-white">
+              <div className="p-5 sm:p-6 rounded-none bg-white dark:bg-onyx-900 border border-neutral-300 dark:border-neutral-800 shadow-sm space-y-4">
+                <h4 className="text-xs sm:text-sm font-black uppercase tracking-widest text-black dark:text-white">
                   Payment Channels Breakdown
                 </h4>
                 <div className="space-y-3">
@@ -830,9 +846,9 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                     const pct = Math.round((pm.count / total) * 100);
                     return (
                       <div key={idx} className="space-y-1">
-                        <div className="flex justify-between text-xs font-semibold">
+                        <div className="flex justify-between text-xs font-bold text-black dark:text-white">
                           <span>{pm.label}</span>
-                          <span className="font-mono">{pm.count} transactions ({pct}%)</span>
+                          <span className="font-mono font-black">{pm.count} transactions ({pct}%)</span>
                         </div>
                         <div className="w-full h-2.5 bg-neutral-100 dark:bg-onyx-800 rounded-none overflow-hidden">
                           <div
@@ -851,13 +867,13 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
             {/* Low Inventory Alert Banner */}
             {lowStockProducts.length > 0 && (
               <div className="p-4 rounded-none bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-                <div className="text-amber-900 dark:text-amber-200">
-                  <strong className="uppercase tracking-wider">Low Stock Notice: </strong>
+                <div className="text-amber-900 dark:text-amber-200 font-bold">
+                  <strong className="uppercase tracking-wider font-black">Low Stock Notice: </strong>
                   <span>{lowStockProducts.length} pieces have 4 or fewer remaining.</span>
                 </div>
                 <button
                   onClick={() => setActiveTab('products')}
-                  className="font-bold text-amber-800 dark:text-amber-300 underline text-xs"
+                  className="font-black text-amber-900 dark:text-amber-300 underline text-xs uppercase tracking-wider"
                 >
                   View in Catalog →
                 </button>
@@ -865,54 +881,54 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
             )}
 
             {/* Recent Orders Section */}
-            <div className="bg-white dark:bg-onyx-900 rounded-none border border-neutral-200 dark:border-neutral-800 shadow-sm overflow-hidden">
+            <div className="bg-white dark:bg-onyx-900 rounded-none border border-neutral-300 dark:border-neutral-800 shadow-sm overflow-hidden">
               <div className="p-5 border-b border-neutral-200 dark:border-neutral-800 flex items-center justify-between">
                 <div>
-                  <h3 className="text-sm font-bold uppercase tracking-wider text-black dark:text-white">
+                  <h3 className="text-xs sm:text-sm font-black uppercase tracking-widest text-black dark:text-white">
                     Recent Orders
                   </h3>
                 </div>
                 <button
                   onClick={() => setActiveTab('orders')}
-                  className="text-xs font-bold text-black dark:text-[#E6D3B3] hover:underline"
+                  className="text-xs font-black uppercase tracking-wider text-black dark:text-[#E6D3B3] hover:underline"
                 >
                   View All Orders ({liveOrders.length}) →
                 </button>
               </div>
 
               {liveOrders.length === 0 ? (
-                <div className="p-8 text-center text-xs text-neutral-500">
+                <div className="p-8 text-center text-xs font-bold text-neutral-500">
                   No customer orders received yet.
                 </div>
               ) : (
                 <div className="overflow-x-auto w-full">
                   <table className="w-full min-w-[650px] text-left text-xs">
-                    <thead className="bg-neutral-100 dark:bg-onyx-950 text-neutral-600 dark:text-neutral-400 text-xs font-bold uppercase tracking-wider border-b border-neutral-200 dark:border-neutral-800">
+                    <thead className="bg-neutral-100 dark:bg-black text-black dark:text-white text-[11px] font-black uppercase tracking-widest border-b border-neutral-300 dark:border-neutral-800 font-mono shadow-xs">
                       <tr>
-                        <th className="py-3 px-4">Order #</th>
-                        <th className="py-3 px-4">Customer</th>
-                        <th className="py-3 px-4">City</th>
-                        <th className="py-3 px-4">Payment</th>
-                        <th className="py-3 px-4">Total Amount</th>
-                        <th className="py-3 px-4">Status</th>
+                        <th className="py-3.5 px-4">Order #</th>
+                        <th className="py-3.5 px-4">Customer</th>
+                        <th className="py-3.5 px-4">City</th>
+                        <th className="py-3.5 px-4">Payment</th>
+                        <th className="py-3.5 px-4">Total Amount</th>
+                        <th className="py-3.5 px-4">Status</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-neutral-200 dark:divide-onyx-800">
+                    <tbody className="divide-y divide-neutral-200 dark:divide-onyx-800 font-medium">
                       {liveOrders.slice(0, 5).map((ord) => (
                         <tr key={ord.id || ord.orderNumber} className="hover:bg-neutral-50 dark:hover:bg-onyx-800/40 transition">
-                          <td className="py-3 px-4 font-mono font-bold text-black dark:text-[#E6D3B3]">
+                          <td className="py-3.5 px-4 font-mono font-black text-black dark:text-[#E6D3B3] text-xs">
                             {ord.orderNumber || ord.id}
                           </td>
-                          <td className="py-3 px-4">
-                            <span className="font-bold text-black dark:text-white">
+                          <td className="py-3.5 px-4">
+                            <span className="font-black text-black dark:text-white text-xs block">
                               {ord.customer?.firstName} {ord.customer?.lastName}
                             </span>
-                            <span className="block text-xs text-neutral-500 font-mono">{ord.customer?.phone}</span>
+                            <span className="block text-[11px] text-neutral-600 dark:text-neutral-400 font-mono font-bold mt-0.5">{ord.customer?.phone}</span>
                           </td>
-                          <td className="py-3 px-4 text-neutral-700 dark:text-neutral-300 font-medium">
+                          <td className="py-3.5 px-4 text-black dark:text-white font-bold text-xs">
                             {ord.customer?.city || 'Lahore'}
                           </td>
-                          <td className="py-3 px-4 font-mono uppercase text-xs">
+                          <td className="py-3.5 px-4 font-mono uppercase text-xs font-black text-black dark:text-white">
                             <div className="flex items-center space-x-1.5">
                               <span>{ord.paymentMethod === 'cod' ? 'COD' : ord.paymentMethod?.toUpperCase()}</span>
                               {ord.paymentReceipt && (
@@ -925,7 +941,7 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                                       fileName: ord.receiptFileName || `Receipt #${ord.orderNumber || ord.id}`
                                     });
                                   }}
-                                  className="px-2 py-0.5 bg-[#E6D3B3] hover:bg-[#d9c19b] text-black font-bold text-[10px] uppercase tracking-wider transition cursor-pointer"
+                                  className="px-2.5 py-1 bg-[#E6D3B3] hover:bg-[#d9c19b] text-black font-black text-[10px] uppercase tracking-wider transition cursor-pointer"
                                   title="Click to view payment receipt screenshot"
                                 >
                                   Screenshot ↗
@@ -933,14 +949,14 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                               )}
                             </div>
                           </td>
-                          <td className="py-3 px-4 font-bold text-black dark:text-white font-mono">
+                          <td className="py-3 px-4 font-black text-black dark:text-[#E6D3B3] font-mono text-xs">
                             Rs. {Number(ord.total || 0).toLocaleString()}
                           </td>
                           <td className="py-3 px-4">
                             <select
                               value={ord.status || 'processing'}
                               onChange={(e) => handleStatusChange(ord.id || ord.orderNumber, e.target.value)}
-                              className="px-2.5 py-1 rounded-none text-xs font-bold border border-neutral-300 dark:border-onyx-700 bg-neutral-50 dark:bg-onyx-800 cursor-pointer"
+                              className="px-2.5 py-1.5 rounded-none text-xs font-black uppercase border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-black text-black dark:text-white cursor-pointer"
                             >
                               <option value="pending">Pending</option>
                               <option value="approved">Approved</option>
@@ -967,47 +983,59 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
           <div className="space-y-6 animate-fadeIn">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-200 dark:border-neutral-800 pb-4">
               <div>
-                <h3 className="text-sm font-bold uppercase tracking-wider text-black dark:text-white">
+                <h3 className="text-xs sm:text-sm font-black uppercase tracking-widest text-black dark:text-white">
                   Approvals Queue
                 </h3>
               </div>
-              <span className="px-3 py-1 bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-200 text-xs font-bold uppercase tracking-wider">
+              <span className="px-3 py-1 bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-200 text-xs font-black uppercase tracking-wider">
                 {pendingOrders.length} Pending
               </span>
             </div>
 
             {pendingOrders.length === 0 ? (
-              <div className="p-12 text-center border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-onyx-900 rounded-none space-y-1">
-                <h4 className="font-bold text-sm text-black dark:text-white uppercase tracking-wider">Queue Clear</h4>
-                <p className="text-xs text-neutral-500">No pending orders awaiting verification.</p>
+              <div className="p-12 text-center border border-neutral-300 dark:border-neutral-800 bg-white dark:bg-onyx-900 rounded-none space-y-1">
+                <h4 className="font-black text-sm text-black dark:text-white uppercase tracking-wider">Queue Clear</h4>
+                <p className="text-xs font-bold text-neutral-500">No pending orders awaiting verification.</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {pendingOrders.map(order => (
                   <div
                     key={order.orderNumber || order.id}
-                    className="p-5 rounded-none bg-white dark:bg-onyx-900 border border-neutral-200 dark:border-neutral-800 space-y-4 shadow-sm"
+                    className="p-5 rounded-none bg-white dark:bg-onyx-900 border border-neutral-300 dark:border-neutral-800 space-y-4 shadow-sm"
                   >
                     <div className="flex justify-between items-start border-b border-neutral-200 dark:border-neutral-800 pb-3">
                       <div>
-                        <span className="font-mono text-xs font-black text-black dark:text-[#E6D3B3] block">
+                        <span className="font-mono text-sm font-black text-black dark:text-[#E6D3B3] block">
                           #{order.orderNumber || order.id}
                         </span>
-                        <span className="text-xs text-neutral-500 font-mono">
+                        <span className="text-xs text-neutral-500 font-mono font-bold">
                           {order.createdAt ? new Date(order.createdAt).toLocaleDateString() : 'Today'}
                         </span>
                       </div>
-                      <span className="px-2 py-0.5 bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-300 font-bold text-xs uppercase">
+                      <span className="px-2 py-0.5 bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-300 font-black text-xs uppercase">
                         Pending
                       </span>
                     </div>
 
                     {/* Customer Info */}
-                    <div className="text-xs space-y-1 font-mono">
-                      <div><strong className="font-sans text-neutral-700 dark:text-neutral-300">Client:</strong> {order.customer?.firstName} {order.customer?.lastName}</div>
-                      <div><strong className="font-sans text-neutral-700 dark:text-neutral-300">Phone:</strong> {order.customer?.phone}</div>
-                      <div><strong className="font-sans text-neutral-700 dark:text-neutral-300">City:</strong> {order.customer?.city}</div>
-                      <div><strong className="font-sans text-neutral-700 dark:text-neutral-300">Total:</strong> Rs. {Number(order.total || 0).toLocaleString()}</div>
+                    <div className="text-xs space-y-1.5 font-mono">
+                      <div className="flex justify-between items-center">
+                        <span className="font-sans font-black text-neutral-500 uppercase tracking-wider text-[11px]">Client:</span>
+                        <span className="font-black text-black dark:text-white text-xs">{order.customer?.firstName} {order.customer?.lastName}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="font-sans font-black text-neutral-500 uppercase tracking-wider text-[11px]">Phone:</span>
+                        <span className="font-bold text-black dark:text-white text-xs">{order.customer?.phone}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="font-sans font-black text-neutral-500 uppercase tracking-wider text-[11px]">City:</span>
+                        <span className="font-bold text-black dark:text-white text-xs">{order.customer?.city || 'Lahore'}</span>
+                      </div>
+                      <div className="flex justify-between items-center pt-1.5 border-t border-neutral-100 dark:border-neutral-800">
+                        <span className="font-sans font-black text-neutral-500 uppercase tracking-wider text-[11px]">Total:</span>
+                        <span className="font-black text-black dark:text-[#E6D3B3] text-sm font-mono">Rs. {Number(order.total || 0).toLocaleString()}</span>
+                      </div>
                     </div>
 
                     {/* Receipt Screenshot Preview */}
@@ -1015,7 +1043,7 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                       <div className="space-y-2">
                         <div
                           onClick={() => setEnlargedReceipt({ src: order.paymentReceipt, fileName: order.receiptFileName || `Receipt #${order.orderNumber}` })}
-                          className="p-2 bg-neutral-100 dark:bg-onyx-950 border border-neutral-300 dark:border-neutral-700 cursor-pointer text-center group hover:border-black dark:hover:border-white transition"
+                          className="p-2 bg-neutral-100 dark:bg-black border border-neutral-300 dark:border-neutral-700 cursor-pointer text-center group hover:border-black dark:hover:border-white transition"
                           title="Click to open full screenshot"
                         >
                           <img
@@ -1027,13 +1055,13 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                         <button
                           type="button"
                           onClick={() => setEnlargedReceipt({ src: order.paymentReceipt, fileName: order.receiptFileName || `Receipt #${order.orderNumber}` })}
-                          className="w-full py-1.5 bg-[#E6D3B3] hover:bg-[#d9c19b] text-black text-xs font-bold uppercase tracking-wider transition cursor-pointer"
+                          className="w-full py-2 bg-[#E6D3B3] hover:bg-[#d9c19b] text-black text-xs font-black uppercase tracking-wider transition cursor-pointer"
                         >
                           View Full Screenshot ↗
                         </button>
                       </div>
                     ) : (
-                      <div className="p-3 bg-neutral-100 dark:bg-onyx-950 text-neutral-500 text-xs text-center font-mono">
+                      <div className="p-3 bg-neutral-100 dark:bg-black text-neutral-500 text-xs text-center font-mono font-bold">
                         No receipt attached (COD or Direct)
                       </div>
                     )}
@@ -1044,7 +1072,7 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                         type="button"
                         disabled={approvalLoading}
                         onClick={() => handleApproveOrder(order)}
-                        className="w-full py-2.5 bg-black hover:bg-neutral-800 text-white dark:bg-[#E6D3B3] dark:hover:bg-[#d9c19b] dark:text-black font-bold uppercase tracking-wider text-xs transition active:scale-95 shadow-sm"
+                        className="w-full py-3 bg-black hover:bg-neutral-800 text-white dark:bg-[#E6D3B3] dark:hover:bg-[#d9c19b] dark:text-black font-black uppercase tracking-wider text-xs transition active:scale-95 shadow-sm"
                       >
                         {approvalLoading ? 'Approving...' : 'Approve & Assign Tracking'}
                       </button>
@@ -1056,7 +1084,7 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                           const msg = `Assalam-o-Alaikum ${order.customer?.firstName || 'Valued Client'},\nYour Zaytoun order #${order.orderNumber || order.id} is verified and booked for delivery.`;
                           window.open(`https://wa.me/${formattedPhone}?text=${encodeURIComponent(msg)}`, '_blank');
                         }}
-                        className="w-full py-2 bg-emerald-700 hover:bg-emerald-800 text-white font-bold uppercase tracking-wider text-xs transition flex items-center justify-center space-x-1"
+                        className="w-full py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-black uppercase tracking-wider text-xs transition flex items-center justify-center space-x-1"
                       >
                         <span>WhatsApp Customer</span>
                       </button>
@@ -1073,12 +1101,12 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
             TAB: SECURITY & ACCESS CONTROL (OWNER CONFIGURATION)
         ========================================================================= */}
         {activeTab === 'security' && (
-          <div className="max-w-2xl mx-auto space-y-6 animate-fadeIn p-6 bg-white dark:bg-onyx-900 border border-neutral-300 dark:border-onyx-800 shadow-sm">
+          <div className="max-w-2xl mx-auto space-y-6 animate-fadeIn p-6 sm:p-8 bg-white dark:bg-onyx-900 border border-neutral-300 dark:border-neutral-800 shadow-sm">
             <div className="border-b border-neutral-200 dark:border-neutral-800 pb-4">
-              <h3 className="text-sm font-bold uppercase tracking-wider text-black dark:text-white">
+              <h3 className="text-xs sm:text-sm font-black uppercase tracking-widest text-black dark:text-white">
                 Studio Security &amp; Owner Email
               </h3>
-              <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+              <p className="text-xs font-medium text-neutral-600 dark:text-neutral-400 mt-1">
                 Configure the authorized Google account allowed to access Studio. All other visitors automatically see 404 Page Not Found.
               </p>
             </div>
@@ -1086,7 +1114,7 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
             {/* Change Owner Email Form */}
             <form onSubmit={handleSaveAdminEmail} className="space-y-4 pt-2">
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-black dark:text-white mb-1.5">
+                <label className="block text-xs font-black uppercase tracking-wider text-black dark:text-white mb-1.5">
                   Authorized Owner Google Email Address *
                 </label>
                 <input
@@ -1095,9 +1123,9 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                   onChange={(e) => setAdminEmailInput(e.target.value)}
                   placeholder="e.g. shaahrozdogar@gmail.com"
                   required
-                  className="w-full bg-neutral-50 dark:bg-onyx-800 border border-neutral-300 dark:border-onyx-700 p-3 text-xs font-mono text-black dark:text-white outline-none focus:border-black dark:focus:border-[#E6D3B3]"
+                  className="w-full bg-neutral-50 dark:bg-black border border-neutral-300 dark:border-neutral-700 p-3 text-xs font-mono font-bold text-black dark:text-white outline-none focus:border-black dark:focus:border-[#E6D3B3]"
                 />
-                <span className="text-xs text-neutral-500 mt-1 block">
+                <span className="text-xs font-bold text-neutral-500 mt-1.5 block">
                   Only this verified Google account can access Studio. If you ever want to change it, update it here.
                 </span>
               </div>
@@ -1110,14 +1138,14 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
 
               <button
                 type="submit"
-                className="px-6 py-3 bg-black hover:bg-neutral-800 text-white dark:bg-[#E6D3B3] dark:hover:bg-[#d9c19b] dark:text-black font-bold uppercase tracking-wider text-xs transition shadow-sm"
+                className="px-6 py-3 bg-black hover:bg-neutral-800 text-white dark:bg-[#E6D3B3] dark:hover:bg-[#d9c19b] dark:text-black font-black uppercase tracking-wider text-xs transition shadow-sm"
               >
                 Save &amp; Update Authorized Email
               </button>
             </form>
 
-            <div className="pt-4 border-t border-neutral-200 dark:border-onyx-800 text-xs text-neutral-500 font-mono">
-              Current Session: {user?.email || 'Logged In'} • Role: Master Atelier Owner
+            <div className="pt-4 border-t border-neutral-200 dark:border-neutral-800 text-xs text-neutral-600 dark:text-neutral-400 font-mono font-bold">
+              Current Session: {currentUserEmail} • Role: Master Atelier Owner
             </div>
           </div>
         )}
@@ -1140,15 +1168,15 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                   <button
                     key={dept.id}
                     onClick={() => setProductDepartmentFilter(dept.id)}
-                    className={`px-3.5 py-2 rounded-none text-xs font-bold uppercase tracking-wider transition whitespace-nowrap flex items-center space-x-1.5 ${
+                    className={`px-4 py-2.5 rounded-none text-xs font-black uppercase tracking-wider transition whitespace-nowrap flex items-center space-x-2 ${
                       productDepartmentFilter === dept.id
                         ? 'bg-black dark:bg-[#E6D3B3] text-white dark:text-black shadow-sm'
-                        : 'bg-white dark:bg-onyx-900 border border-neutral-300 dark:border-onyx-800 text-neutral-700 dark:text-neutral-300 hover:border-black dark:hover:border-white'
+                        : 'bg-white dark:bg-onyx-900 border border-neutral-300 dark:border-neutral-800 text-black dark:text-white hover:border-black dark:hover:border-white'
                     }`}
                   >
                     <span>{dept.label}</span>
-                    <span className={`px-1.5 py-0.5 rounded-none text-[10px] font-mono ${
-                      productDepartmentFilter === dept.id ? 'bg-neutral-800 dark:bg-[#d9c19b] text-white dark:text-black' : 'bg-neutral-100 dark:bg-onyx-800'
+                    <span className={`px-2 py-0.5 rounded-none text-[10px] font-mono font-black ${
+                      productDepartmentFilter === dept.id ? 'bg-neutral-800 dark:bg-[#d9c19b] text-white dark:text-black' : 'bg-neutral-200 dark:bg-neutral-800 text-black dark:text-white'
                     }`}>
                       {dept.count}
                     </span>
@@ -1157,30 +1185,30 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
               </div>
 
               {/* Search Bar */}
-              <div className="relative w-full md:w-72">
+              <div className="relative w-full md:w-80">
                 <input
                   type="text"
-                  placeholder="Search products by title, category..."
+                  placeholder="Search garments by title, category..."
                   value={productSearchQuery}
                   onChange={(e) => setProductSearchQuery(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-none text-xs bg-white dark:bg-onyx-900 border border-neutral-300 dark:border-onyx-800 text-black dark:text-white outline-none focus:border-black dark:focus:border-[#E6D3B3]"
+                  className="w-full px-4 py-2.5 rounded-none text-xs bg-white dark:bg-black border border-neutral-300 dark:border-neutral-700 text-black dark:text-white font-bold outline-none focus:border-black dark:focus:border-[#E6D3B3]"
                 />
               </div>
             </div>
 
             {/* Products Table */}
-            <div className="bg-white dark:bg-onyx-900 rounded-none border border-neutral-300 dark:border-onyx-800 overflow-hidden shadow-sm">
+            <div className="bg-white dark:bg-onyx-900 rounded-none border border-neutral-300 dark:border-neutral-800 overflow-hidden shadow-sm">
               <div className="overflow-x-auto w-full max-h-[70vh] overflow-y-auto">
                 <table className="w-full min-w-[750px] text-left text-xs">
-                  <thead className="sticky top-0 z-10 bg-neutral-100 dark:bg-onyx-950 text-neutral-600 dark:text-neutral-400 text-[10px] font-bold uppercase tracking-wider border-b border-neutral-200 dark:border-onyx-800 shadow-sm">
+                  <thead className="sticky top-0 z-10 bg-neutral-100 dark:bg-black text-black dark:text-white text-[11px] font-black uppercase tracking-widest border-b border-neutral-300 dark:border-neutral-800 font-mono shadow-sm">
                     <tr>
-                      <th className="py-3 px-4">Photo</th>
-                      <th className="py-3 px-4">Garment Title</th>
-                      <th className="py-3 px-4">Department</th>
-                      <th className="py-3 px-4">Category</th>
-                      <th className="py-3 px-4">Price (PKR)</th>
-                      <th className="py-3 px-4">Stock Breakdown</th>
-                      <th className="py-3 px-4 text-right">Actions</th>
+                      <th className="py-3.5 px-4">Photo</th>
+                      <th className="py-3.5 px-4">Garment Title</th>
+                      <th className="py-3.5 px-4">Department</th>
+                      <th className="py-3.5 px-4">Category</th>
+                      <th className="py-3.5 px-4">Price (PKR)</th>
+                      <th className="py-3.5 px-4">Stock Breakdown</th>
+                      <th className="py-3.5 px-4 text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-neutral-200 dark:divide-onyx-800">
@@ -1196,8 +1224,8 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                       return (
                         <tr key={p.id} className="hover:bg-neutral-50 dark:hover:bg-onyx-800/40 transition">
                           {/* Photo */}
-                          <td className="py-3 px-4">
-                            <div className="w-12 h-14 rounded-none overflow-hidden bg-neutral-100 dark:bg-onyx-800 border border-neutral-200 dark:border-onyx-700 flex-shrink-0">
+                          <td className="py-3.5 px-4">
+                            <div className="w-12 h-14 rounded-none overflow-hidden bg-neutral-100 dark:bg-onyx-800 border border-neutral-300 dark:border-neutral-700 flex-shrink-0">
                               <img
                                 src={p.images?.[0] || p.image || "https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=200&q=80"}
                                 alt={p.name}
@@ -1207,38 +1235,38 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                           </td>
 
                           {/* Title & SKU */}
-                          <td className="py-3 px-4 font-bold text-black dark:text-white">
+                          <td className="py-3.5 px-4 font-black text-black dark:text-white text-xs">
                             <div>{p.name}</div>
-                            <span className="text-[10px] font-mono font-normal text-neutral-400">
+                            <span className="text-[10px] font-mono font-bold text-neutral-500">
                               SKU: {p.id}
                             </span>
                           </td>
 
                           {/* Department (Men / Women / Kids) */}
-                          <td className="py-3 px-4">
-                            <span className="px-2 py-0.5 rounded-none text-xs font-bold uppercase tracking-wider bg-neutral-100 dark:bg-onyx-800 text-neutral-800 dark:text-neutral-200 border border-neutral-300 dark:border-onyx-700">
+                          <td className="py-3.5 px-4">
+                            <span className="px-2.5 py-1 rounded-none text-xs font-black uppercase tracking-wider bg-neutral-100 dark:bg-black text-black dark:text-white border border-neutral-300 dark:border-neutral-700">
                               {dept === 'men' ? 'Men' : dept === 'women' ? 'Women' : 'Kids'}
                             </span>
                           </td>
 
                           {/* Category */}
-                          <td className="py-3 px-4 font-medium text-neutral-700 dark:text-neutral-300 uppercase text-[11px]">
+                          <td className="py-3.5 px-4 font-bold uppercase text-xs text-neutral-800 dark:text-neutral-200">
                             {p.category || p.slot || 'Apparel'}
                           </td>
 
                           {/* Price */}
-                          <td className="py-3 px-4 font-mono font-bold text-black dark:text-[#E6D3B3]">
+                          <td className="py-3.5 px-4 font-mono font-black text-black dark:text-[#E6D3B3] text-xs">
                             Rs. {Number(p.price || 0).toLocaleString()}
                           </td>
 
                           {/* Stock Breakdown */}
-                          <td className="py-3 px-4">
+                          <td className="py-3.5 px-4">
                             <div className="flex items-center space-x-2">
-                              <span className={`font-bold ${totalStock <= 4 ? 'text-amber-600' : 'text-emerald-700 dark:text-emerald-400'}`}>
+                              <span className={`font-black text-xs ${totalStock <= 4 ? 'text-amber-600' : 'text-emerald-700 dark:text-emerald-400'}`}>
                                 {totalStock} total
                               </span>
                               {p.stockPerSize && (
-                                <span className="text-[10px] text-neutral-400 font-mono">
+                                <span className="text-[10px] text-neutral-500 font-mono font-bold">
                                   ({Object.entries(p.stockPerSize).map(([sz, count]) => `${sz}:${count}`).join(' ')})
                                 </span>
                               )}
@@ -1246,16 +1274,16 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                           </td>
 
                           {/* Actions */}
-                          <td className="py-3 px-4 text-right space-x-2">
+                          <td className="py-3.5 px-4 text-right space-x-2">
                             <button
                               onClick={() => handleOpenEditProduct(p)}
-                              className="px-2.5 py-1 rounded-none bg-neutral-100 dark:bg-onyx-800 text-black dark:text-white font-bold hover:bg-neutral-200 text-xs uppercase"
+                              className="px-3 py-1.5 rounded-none bg-neutral-100 dark:bg-neutral-800 text-black dark:text-white font-black hover:bg-neutral-200 dark:hover:bg-neutral-700 text-xs uppercase tracking-wider"
                             >
                               Edit
                             </button>
                             <button
                               onClick={() => handleDeleteProductClick(p.id, p.name)}
-                              className="px-2.5 py-1 rounded-none bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 font-bold hover:bg-red-100 text-xs uppercase"
+                              className="px-3 py-1.5 rounded-none bg-red-100 dark:bg-red-950/60 text-red-700 dark:text-red-400 font-black hover:bg-red-200 text-xs uppercase tracking-wider"
                             >
                               Delete
                             </button>
@@ -1271,7 +1299,7 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
         )}
 
         {/* =========================================================================
-            TAB 3: CUSTOMER ORDERS (FULL MONGODB LIST & SEARCH)
+            TAB 3: CUSTOMER ORDERS (LIST & SEARCH)
         ========================================================================= */}
         {activeTab === 'orders' && (
           <div className="space-y-6 animate-fadeIn">
@@ -1282,7 +1310,7 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                 <select
                   value={orderFilterStatus}
                   onChange={(e) => setOrderFilterStatus(e.target.value)}
-                  className="px-3 py-2 rounded-none text-xs bg-white dark:bg-onyx-900 border border-neutral-300 dark:border-onyx-800 font-bold text-neutral-800 dark:text-white cursor-pointer"
+                  className="px-3.5 py-2.5 rounded-none text-xs bg-white dark:bg-black border border-neutral-300 dark:border-neutral-700 font-black uppercase tracking-wider text-black dark:text-white cursor-pointer"
                 >
                   <option value="all">All Statuses ({liveOrders.length})</option>
                   <option value="pending">Pending</option>
@@ -1297,7 +1325,7 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                 <select
                   value={orderFilterPayment}
                   onChange={(e) => setOrderFilterPayment(e.target.value)}
-                  className="px-3 py-2 rounded-none text-xs bg-white dark:bg-onyx-900 border border-neutral-300 dark:border-onyx-800 font-bold text-neutral-800 dark:text-white cursor-pointer"
+                  className="px-3.5 py-2.5 rounded-none text-xs bg-white dark:bg-black border border-neutral-300 dark:border-neutral-700 font-black uppercase tracking-wider text-black dark:text-white cursor-pointer"
                 >
                   <option value="all">All Payment Gateways</option>
                   <option value="cod">Cash on Delivery (COD)</option>
@@ -1314,53 +1342,53 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                   placeholder="Search by order #, phone, city, client..."
                   value={orderSearchQuery}
                   onChange={(e) => setOrderSearchQuery(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-none text-xs bg-white dark:bg-onyx-900 border border-neutral-300 dark:border-onyx-800 text-black dark:text-white outline-none focus:border-black dark:focus:border-[#E6D3B3]"
+                  className="w-full px-4 py-2.5 rounded-none text-xs bg-white dark:bg-black border border-neutral-300 dark:border-neutral-700 text-black dark:text-white font-bold outline-none focus:border-black dark:focus:border-[#E6D3B3]"
                 />
               </div>
             </div>
 
             {/* Orders Table */}
-            <div className="bg-white dark:bg-onyx-900 rounded-none border border-neutral-300 dark:border-onyx-800 overflow-hidden shadow-sm">
+            <div className="bg-white dark:bg-onyx-900 rounded-none border border-neutral-300 dark:border-neutral-800 overflow-hidden shadow-sm">
               {filteredOrders.length === 0 ? (
-                <div className="p-12 text-center text-xs text-neutral-500">
-                  No orders matching the active search or filters in MongoDB Atlas.
+                <div className="p-12 text-center text-xs font-bold text-neutral-500">
+                  No customer orders matching the active search or filters.
                 </div>
               ) : (
                 <div className="overflow-x-auto w-full max-h-[70vh] overflow-y-auto">
                   <table className="w-full min-w-[950px] text-left text-xs">
-                    <thead className="sticky top-0 z-10 bg-neutral-100 dark:bg-onyx-950 text-neutral-600 dark:text-neutral-400 text-[10px] font-bold uppercase tracking-wider border-b border-neutral-200 dark:border-onyx-800 shadow-sm">
+                    <thead className="sticky top-0 z-10 bg-neutral-100 dark:bg-black text-black dark:text-white text-[11px] font-black uppercase tracking-widest border-b border-neutral-300 dark:border-neutral-800 font-mono shadow-sm">
                       <tr>
-                        <th className="py-3 px-4">Order #</th>
-                        <th className="py-3 px-4">Date</th>
-                        <th className="py-3 px-4">Client Name</th>
-                        <th className="py-3 px-4">Contact Phone</th>
-                        <th className="py-3 px-4">Delivery City</th>
-                        <th className="py-3 px-4">Payment</th>
-                        <th className="py-3 px-4">Items</th>
-                        <th className="py-3 px-4">Total Amount</th>
-                        <th className="py-3 px-4">Status</th>
-                        <th className="py-3 px-4 text-right">Details</th>
+                        <th className="py-3.5 px-4">Order #</th>
+                        <th className="py-3.5 px-4">Date</th>
+                        <th className="py-3.5 px-4">Client Name</th>
+                        <th className="py-3.5 px-4">Contact Phone</th>
+                        <th className="py-3.5 px-4">Delivery City</th>
+                        <th className="py-3.5 px-4">Payment</th>
+                        <th className="py-3.5 px-4">Items</th>
+                        <th className="py-3.5 px-4">Total Amount</th>
+                        <th className="py-3.5 px-4">Status</th>
+                        <th className="py-3.5 px-4 text-right">Details</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-neutral-200 dark:divide-onyx-800">
+                    <tbody className="divide-y divide-neutral-200 dark:divide-onyx-800 font-medium">
                       {filteredOrders.map((ord) => (
                         <tr key={ord.id || ord.orderNumber} className="hover:bg-neutral-50 dark:hover:bg-onyx-800/40 transition">
-                          <td className="py-3 px-4 font-mono font-bold text-black dark:text-[#E6D3B3]">
+                          <td className="py-3.5 px-4 font-mono font-black text-black dark:text-[#E6D3B3] text-xs">
                             {ord.orderNumber || ord.id}
                           </td>
-                          <td className="py-3 px-4 text-neutral-500 text-[11px] font-mono">
+                          <td className="py-3.5 px-4 text-neutral-700 dark:text-neutral-300 text-xs font-mono font-bold">
                             {ord.createdAt ? new Date(ord.createdAt).toLocaleDateString('en-PK', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Recent'}
                           </td>
-                          <td className="py-3 px-4 font-bold text-black dark:text-white">
+                          <td className="py-3.5 px-4 font-black text-black dark:text-white text-xs">
                             {ord.customer?.firstName} {ord.customer?.lastName}
                           </td>
-                          <td className="py-3 px-4 font-mono text-[11px] text-neutral-700 dark:text-neutral-300">
+                          <td className="py-3.5 px-4 font-mono font-bold text-xs text-black dark:text-white">
                             {ord.customer?.phone}
                           </td>
-                          <td className="py-3 px-4 font-medium text-neutral-700 dark:text-neutral-300">
+                          <td className="py-3.5 px-4 font-bold text-black dark:text-white text-xs">
                             {ord.customer?.city || 'Lahore'}
                           </td>
-                          <td className="py-3 px-4 font-mono uppercase text-[10px]">
+                          <td className="py-3.5 px-4 font-mono uppercase text-xs font-black text-black dark:text-white">
                             <div className="flex items-center space-x-1.5">
                               <span>{ord.paymentMethod === 'cod' ? 'COD' : ord.paymentMethod?.toUpperCase()}</span>
                               {ord.paymentReceipt && (
@@ -1373,7 +1401,7 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                                       fileName: ord.receiptFileName || `Receipt #${ord.orderNumber || ord.id}`
                                     });
                                   }}
-                                  className="px-2 py-0.5 bg-[#E6D3B3] hover:bg-[#d9c19b] text-black font-bold text-[9px] uppercase tracking-wider transition cursor-pointer"
+                                  className="px-2.5 py-1 bg-[#E6D3B3] hover:bg-[#d9c19b] text-black font-black text-[10px] uppercase tracking-wider transition cursor-pointer"
                                   title="Click to view payment receipt screenshot"
                                 >
                                   Screenshot ↗
@@ -1381,17 +1409,17 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                               )}
                             </div>
                           </td>
-                          <td className="py-3 px-4 text-neutral-600 dark:text-neutral-400 font-mono">
+                          <td className="py-3.5 px-4 text-neutral-700 dark:text-neutral-300 font-mono font-bold text-xs">
                             {ord.items?.length || 1} pcs
                           </td>
-                          <td className="py-3 px-4 font-mono font-bold text-black dark:text-white">
+                          <td className="py-3.5 px-4 font-mono font-black text-black dark:text-[#E6D3B3] text-xs">
                             Rs. {Number(ord.total || 0).toLocaleString()}
                           </td>
-                          <td className="py-3 px-4">
+                          <td className="py-3.5 px-4">
                             <select
                               value={ord.status || 'processing'}
                               onChange={(e) => handleStatusChange(ord.id || ord.orderNumber, e.target.value)}
-                              className="px-2.5 py-1 rounded-none text-xs font-bold border border-neutral-300 dark:border-onyx-700 bg-neutral-50 dark:bg-onyx-800 cursor-pointer"
+                              className="px-2.5 py-1.5 rounded-none text-xs font-black uppercase border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-black text-black dark:text-white cursor-pointer"
                             >
                               <option value="pending">Pending</option>
                               <option value="approved">Approved</option>
@@ -1401,10 +1429,10 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                               <option value="cancelled">Cancelled</option>
                             </select>
                           </td>
-                          <td className="py-3 px-4 text-right">
+                          <td className="py-3.5 px-4 text-right">
                             <button
                               onClick={() => setSelectedOrderDetails(ord)}
-                              className="px-2.5 py-1 rounded-none bg-neutral-100 dark:bg-onyx-800 text-black dark:text-white font-bold hover:bg-neutral-200 text-xs uppercase"
+                              className="px-3 py-1.5 rounded-none bg-neutral-100 dark:bg-neutral-800 text-black dark:text-white font-black hover:bg-neutral-200 dark:hover:bg-neutral-700 text-xs uppercase tracking-wider"
                             >
                               Inspect
                             </button>
@@ -1420,62 +1448,59 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
         )}
 
         {/* =========================================================================
-            TAB 4: CUSTOMERS DIRECTORY (STORED IN MONGODB)
+            TAB 4: CLIENT DIRECTORY
         ========================================================================= */}
         {activeTab === 'customers' && (
           <div className="space-y-6 animate-fadeIn">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between pb-4 border-b border-neutral-200 dark:border-neutral-800">
               <div>
-                <h3 className="font-editorial text-2xl font-bold text-black dark:text-white">
-                  Customer Directory ({customers.length})
+                <h3 className="text-xs sm:text-sm font-black uppercase tracking-widest text-black dark:text-white">
+                  Client Directory ({customers.length})
                 </h3>
-                <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                  Registered shopper accounts and customer profiles in MongoDB Atlas `customers` collection
-                </p>
               </div>
             </div>
 
-            <div className="bg-white dark:bg-onyx-900 rounded-none border border-neutral-300 dark:border-onyx-800 overflow-hidden shadow-sm">
+            <div className="bg-white dark:bg-onyx-900 rounded-none border border-neutral-300 dark:border-neutral-800 overflow-hidden shadow-sm">
               {customers.length === 0 ? (
-                <div className="p-12 text-center text-xs text-neutral-500">
-                  No customers registered yet. Customer profiles are automatically created when shoppers place an order or sign in with Google.
+                <div className="p-12 text-center text-xs font-bold text-neutral-500">
+                  No registered client profiles recorded yet.
                 </div>
               ) : (
                 <div className="overflow-x-auto w-full max-h-[70vh] overflow-y-auto">
                   <table className="w-full min-w-[750px] text-left text-xs">
-                    <thead className="sticky top-0 z-10 bg-neutral-100 dark:bg-onyx-950 text-neutral-600 dark:text-neutral-400 text-[10px] font-bold uppercase tracking-wider border-b border-neutral-200 dark:border-onyx-800 shadow-sm">
+                    <thead className="sticky top-0 z-10 bg-neutral-100 dark:bg-black text-black dark:text-white text-[11px] font-black uppercase tracking-widest border-b border-neutral-300 dark:border-neutral-800 font-mono shadow-sm">
                       <tr>
-                        <th className="py-3 px-4">Client Name</th>
-                        <th className="py-3 px-4">Email</th>
-                        <th className="py-3 px-4">Phone</th>
-                        <th className="py-3 px-4">City & Province</th>
-                        <th className="py-3 px-4">Delivery Address</th>
-                        <th className="py-3 px-4">Orders Count</th>
-                        <th className="py-3 px-4">Total Spent</th>
+                        <th className="py-3.5 px-4">Client Name</th>
+                        <th className="py-3.5 px-4">Email</th>
+                        <th className="py-3.5 px-4">Phone</th>
+                        <th className="py-3.5 px-4">City & Province</th>
+                        <th className="py-3.5 px-4">Delivery Address</th>
+                        <th className="py-3.5 px-4">Orders Count</th>
+                        <th className="py-3.5 px-4">Total Spent</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-neutral-200 dark:divide-onyx-800">
+                    <tbody className="divide-y divide-neutral-200 dark:divide-onyx-800 font-medium">
                       {customers.map((c) => (
                         <tr key={c._id || c.email} className="hover:bg-neutral-50 dark:hover:bg-onyx-800/40 transition">
-                          <td className="py-3 px-4 font-bold text-black dark:text-white">
+                          <td className="py-3.5 px-4 font-black text-black dark:text-white text-xs">
                             {c.name || `${c.firstName || ''} ${c.lastName || ''}`.trim() || 'Client'}
                           </td>
-                          <td className="py-3 px-4 font-mono text-[11px] text-neutral-700 dark:text-neutral-300">
+                          <td className="py-3 px-4 font-mono text-xs font-bold text-black dark:text-white">
                             {c.email}
                           </td>
-                          <td className="py-3 px-4 font-mono text-[11px] text-neutral-700 dark:text-neutral-300">
+                          <td className="py-3 px-4 font-mono text-xs font-bold text-black dark:text-white">
                             {c.phone || '—'}
                           </td>
-                          <td className="py-3 px-4 text-neutral-800 dark:text-neutral-200">
+                          <td className="py-3 px-4 text-black dark:text-white font-bold text-xs">
                             {c.city || '—'}, {c.province || ''}
                           </td>
-                          <td className="py-3 px-4 text-neutral-600 dark:text-neutral-400 max-w-xs truncate">
+                          <td className="py-3 px-4 text-neutral-700 dark:text-neutral-300 font-medium text-xs max-w-xs truncate">
                             {c.address || '—'}
                           </td>
-                          <td className="py-3 px-4 font-mono font-bold text-black dark:text-[#E6D3B3]">
+                          <td className="py-3 px-4 font-mono font-black text-black dark:text-[#E6D3B3] text-xs">
                             {c.ordersCount || 0}
                           </td>
-                          <td className="py-3 px-4 font-mono font-bold text-black dark:text-white">
+                          <td className="py-3 px-4 font-mono font-black text-black dark:text-white text-xs">
                             Rs. {Number(c.totalSpent || 0).toLocaleString()}
                           </td>
                         </tr>
@@ -1489,37 +1514,34 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
         )}
 
         {/* =========================================================================
-            TAB 5: SUBSCRIBERS & CONCIERGE INQUIRIES (STORED IN MONGODB)
+            TAB 5: GAZETTE SUBSCRIBERS & CONCIERGE INQUIRIES
         ========================================================================= */}
         {activeTab === 'subscribers' && (
           <div className="space-y-8 animate-fadeIn">
             {/* Newsletter Subscribers Box */}
-            <div className="bg-white dark:bg-onyx-900 rounded-none border border-neutral-300 dark:border-onyx-800 shadow-sm overflow-hidden">
-              <div className="p-5 border-b border-neutral-200 dark:border-onyx-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="bg-white dark:bg-onyx-900 rounded-none border border-neutral-300 dark:border-neutral-800 shadow-sm overflow-hidden">
+              <div className="p-5 border-b border-neutral-200 dark:border-neutral-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
-                  <h3 className="font-editorial text-xl font-bold text-black dark:text-white">
-                    Newsletter Subscribers ({subscribers.length})
+                  <h3 className="text-xs sm:text-sm font-black uppercase tracking-widest text-black dark:text-white">
+                    Gazette Subscribers ({subscribers.length})
                   </h3>
-                  <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                    Direct from MongoDB Atlas `subscribers` collection
-                  </p>
                 </div>
                 <button
                   onClick={handleCopySubscriberEmails}
-                  className="px-4 py-2 bg-black hover:bg-neutral-800 text-white dark:bg-[#E6D3B3] dark:hover:bg-[#d9c19b] dark:text-black text-xs font-bold uppercase tracking-wider rounded-none transition active:scale-95 whitespace-nowrap shadow-sm"
+                  className="px-4 py-2 bg-black hover:bg-neutral-800 text-white dark:bg-[#E6D3B3] dark:hover:bg-[#d9c19b] dark:text-black text-xs font-black uppercase tracking-wider rounded-none transition active:scale-95 whitespace-nowrap shadow-sm"
                 >
-                  {copiedEmails ? 'Copied to Clipboard' : 'Copy All Emails (CSV)'}
+                  {copiedEmails ? 'Copied' : 'Copy All Emails'}
                 </button>
               </div>
 
               {subscribers.length === 0 ? (
-                <div className="p-8 text-center text-xs text-neutral-500">
-                  No subscribers recorded in MongoDB yet. Try subscribing from the homepage footer!
+                <div className="p-8 text-center text-xs font-bold text-neutral-500">
+                  No newsletter subscribers recorded yet.
                 </div>
               ) : (
                 <div className="overflow-x-auto w-full max-h-[50vh] overflow-y-auto">
                   <table className="w-full min-w-[650px] text-left text-xs">
-                    <thead className="sticky top-0 z-10 bg-neutral-100 dark:bg-onyx-950 text-neutral-600 dark:text-neutral-400 text-[10px] font-bold uppercase tracking-wider border-b border-neutral-200 dark:border-onyx-800 shadow-sm">
+                    <thead className="sticky top-0 z-10 bg-neutral-100 dark:bg-black text-black dark:text-white text-[11px] font-black uppercase tracking-widest border-b border-neutral-300 dark:border-neutral-800 font-mono shadow-sm">
                       <tr>
                         <th className="py-3 px-4">Email Address</th>
                         <th className="py-3 px-4">Source</th>
@@ -1528,29 +1550,29 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                         <th className="py-3 px-4 text-right">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-neutral-200 dark:divide-onyx-800">
+                    <tbody className="divide-y divide-neutral-200 dark:divide-onyx-800 font-medium">
                       {subscribers.map((sub) => (
                         <tr key={sub._id || sub.email} className="hover:bg-neutral-50 dark:hover:bg-onyx-800/40 transition">
-                          <td className="py-3 px-4 font-mono font-bold text-black dark:text-white">
+                          <td className="py-3 px-4 font-mono font-black text-xs text-black dark:text-white">
                             {sub.email}
                           </td>
                           <td className="py-3 px-4">
-                            <span className="px-2 py-0.5 rounded-none text-[10px] bg-neutral-100 dark:bg-onyx-800 text-neutral-700 dark:text-neutral-300 font-mono">
+                            <span className="px-2 py-0.5 rounded-none text-xs bg-neutral-100 dark:bg-black border border-neutral-300 dark:border-neutral-700 text-black dark:text-white font-mono font-bold">
                               {sub.source || 'website'}
                             </span>
                           </td>
                           <td className="py-3 px-4">
-                            <span className="px-2 py-0.5 rounded-none text-[10px] bg-emerald-100 text-emerald-800 font-semibold uppercase">
+                            <span className="px-2 py-0.5 rounded-none text-xs bg-emerald-100 text-emerald-800 font-black uppercase">
                               {sub.status || 'active'}
                             </span>
                           </td>
-                          <td className="py-3 px-4 text-neutral-500 font-mono">
+                          <td className="py-3 px-4 text-neutral-600 dark:text-neutral-400 font-mono font-bold text-xs">
                             {sub.createdAt ? new Date(sub.createdAt).toLocaleDateString('en-PK', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Recent'}
                           </td>
                           <td className="py-3 px-4 text-right">
                             <button
                               onClick={() => handleDeleteSub(sub._id)}
-                              className="text-red-500 hover:text-red-700 text-xs font-semibold"
+                              className="text-red-600 dark:text-red-400 hover:text-red-800 text-xs font-black uppercase tracking-wider"
                             >
                               Delete
                             </button>
@@ -1564,24 +1586,21 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
             </div>
 
             {/* Concierge Desk Inquiries Box */}
-            <div className="bg-white dark:bg-onyx-900 rounded-none border border-neutral-300 dark:border-onyx-800 shadow-sm overflow-hidden">
-              <div className="p-5 border-b border-neutral-200 dark:border-onyx-800">
-                <h3 className="font-editorial text-xl font-bold text-black dark:text-white">
-                  Concierge & Client Inquiries ({inquiries.length})
+            <div className="bg-white dark:bg-onyx-900 rounded-none border border-neutral-300 dark:border-neutral-800 shadow-sm overflow-hidden">
+              <div className="p-5 border-b border-neutral-200 dark:border-neutral-800">
+                <h3 className="text-xs sm:text-sm font-black uppercase tracking-widest text-black dark:text-white">
+                  Concierge Inquiries ({inquiries.length})
                 </h3>
-                <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                  Messages submitted through the Concierge / Contact page stored in MongoDB Atlas `inquiries`
-                </p>
               </div>
 
               {inquiries.length === 0 ? (
-                <div className="p-8 text-center text-xs text-neutral-500">
-                  No inquiries in MongoDB yet.
+                <div className="p-8 text-center text-xs font-bold text-neutral-500">
+                  No concierge inquiries recorded yet.
                 </div>
               ) : (
                 <div className="overflow-x-auto w-full max-h-[50vh] overflow-y-auto">
                   <table className="w-full min-w-[650px] text-left text-xs">
-                    <thead className="sticky top-0 z-10 bg-neutral-100 dark:bg-onyx-950 text-neutral-600 dark:text-neutral-400 text-[10px] font-bold uppercase tracking-wider border-b border-neutral-200 dark:border-onyx-800 shadow-sm">
+                    <thead className="sticky top-0 z-10 bg-neutral-100 dark:bg-black text-black dark:text-white text-[11px] font-black uppercase tracking-widest border-b border-neutral-300 dark:border-neutral-800 font-mono shadow-sm">
                       <tr>
                         <th className="py-3 px-4">Name</th>
                         <th className="py-3 px-4">Email</th>
@@ -1590,22 +1609,22 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                         <th className="py-3 px-4">Received At</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-neutral-200 dark:divide-onyx-800">
+                    <tbody className="divide-y divide-neutral-200 dark:divide-onyx-800 font-medium">
                       {inquiries.map((inq) => (
                         <tr key={inq._id || inq.createdAt} className="hover:bg-neutral-50 dark:hover:bg-onyx-800/40 transition">
-                          <td className="py-3 px-4 font-bold text-black dark:text-white">
+                          <td className="py-3 px-4 font-black text-xs text-black dark:text-white">
                             {inq.name}
                           </td>
-                          <td className="py-3 px-4 font-mono text-[11px] text-neutral-700 dark:text-neutral-300">
+                          <td className="py-3 px-4 font-mono text-xs font-bold text-black dark:text-white">
                             {inq.email}
                           </td>
-                          <td className="py-3 px-4 font-mono text-[11px] text-[#A6865A] dark:text-[#E6D3B3] font-bold">
+                          <td className="py-3 px-4 font-mono text-xs text-[#A6865A] dark:text-[#E6D3B3] font-black">
                             {inq.orderNumber || '—'}
                           </td>
-                          <td className="py-3 px-4 text-neutral-700 dark:text-neutral-300 max-w-md">
+                          <td className="py-3 px-4 text-neutral-800 dark:text-neutral-200 text-xs font-medium max-w-md">
                             {inq.message}
                           </td>
-                          <td className="py-3 px-4 text-neutral-500 text-[11px] font-mono">
+                          <td className="py-3 px-4 text-neutral-600 dark:text-neutral-400 text-xs font-mono font-bold">
                             {inq.createdAt ? new Date(inq.createdAt).toLocaleDateString('en-PK', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Recent'}
                           </td>
                         </tr>
@@ -1622,32 +1641,32 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
             TAB 6: PALETTE & BRAND APPEARANCE
         ========================================================================= */}
         {activeTab === 'appearance' && (
-          <div className="max-w-2xl bg-white dark:bg-onyx-900 p-6 sm:p-8 rounded-none border border-neutral-300 dark:border-onyx-800 shadow-sm space-y-6 animate-fadeIn">
+          <div className="max-w-2xl bg-white dark:bg-onyx-900 p-6 sm:p-8 rounded-none border border-neutral-300 dark:border-neutral-800 shadow-sm space-y-6 animate-fadeIn">
             <div>
-              <h3 className="font-editorial text-2xl font-bold text-black dark:text-white">
-                Store Branding & Palette Settings
+              <h3 className="text-base font-black uppercase tracking-widest text-black dark:text-white">
+                Store Branding &amp; Palette
               </h3>
-              <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
+              <p className="text-xs font-medium text-neutral-500 dark:text-neutral-400 mt-1">
                 Customize brand headline and the four heritage colors
               </p>
             </div>
 
             <form onSubmit={handleSaveAppearance} className="space-y-4 text-xs">
               <div>
-                <label className="block font-bold text-neutral-800 dark:text-neutral-200 mb-1">
+                <label className="block font-black uppercase tracking-wider text-xs text-black dark:text-white mb-1.5">
                   Brand Name
                 </label>
                 <input
                   type="text"
                   value={brandName}
                   onChange={(e) => setBrandName(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-none border border-neutral-300 dark:border-onyx-700 bg-neutral-50 dark:bg-onyx-800 text-xs font-bold text-black dark:text-white"
+                  className="w-full px-4 py-2.5 rounded-none border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-black text-xs font-bold text-black dark:text-white outline-none focus:border-black dark:focus:border-[#E6D3B3]"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block font-bold text-neutral-800 dark:text-neutral-200 mb-1">
+                  <label className="block font-black uppercase tracking-wider text-xs text-black dark:text-white mb-1.5">
                     Sand Tone (Primary)
                   </label>
                   <div className="flex items-center space-x-2">
@@ -1661,13 +1680,13 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                       type="text"
                       value={oliveColor}
                       onChange={(e) => setOliveColor(e.target.value)}
-                      className="flex-1 px-3 py-2 rounded-none border border-neutral-300 dark:border-onyx-700 font-mono text-xs bg-neutral-50 dark:bg-onyx-800"
+                      className="flex-1 px-3 py-2 rounded-none border border-neutral-300 dark:border-neutral-700 font-mono font-bold text-xs bg-neutral-50 dark:bg-black text-black dark:text-white"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block font-bold text-neutral-800 dark:text-neutral-200 mb-1">
+                  <label className="block font-black uppercase tracking-wider text-xs text-black dark:text-white mb-1.5">
                     Camel Tone (Secondary Accent)
                   </label>
                   <div className="flex items-center space-x-2">
@@ -1681,7 +1700,7 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                       type="text"
                       value={camelColor}
                       onChange={(e) => setCamelColor(e.target.value)}
-                      className="flex-1 px-3 py-2 rounded-none border border-neutral-300 dark:border-onyx-700 font-mono text-xs bg-neutral-50 dark:bg-onyx-800"
+                      className="flex-1 px-3 py-2 rounded-none border border-neutral-300 dark:border-neutral-700 font-mono font-bold text-xs bg-neutral-50 dark:bg-black text-black dark:text-white"
                     />
                   </div>
                 </div>
@@ -1689,7 +1708,7 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
 
               <button
                 type="submit"
-                className="w-full py-3 rounded-none bg-black hover:bg-neutral-800 text-white dark:bg-[#E6D3B3] dark:hover:bg-[#d9c19b] dark:text-black font-bold text-xs uppercase tracking-wider transition shadow-md"
+                className="w-full py-3.5 rounded-none bg-black hover:bg-neutral-800 text-white dark:bg-[#E6D3B3] dark:hover:bg-[#d9c19b] dark:text-black font-black text-xs uppercase tracking-wider transition shadow-md"
               >
                 Save Brand Palette
               </button>
@@ -1700,23 +1719,23 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
       </main>
 
       {/* =========================================================================
-          ADD / EDIT GARMENT MODAL (SAVES TO MONGODB ATLAS)
+          ADD / EDIT GARMENT MODAL
       ========================================================================= */}
       {isProductModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
           <div className="bg-white dark:bg-onyx-900 rounded-none border-2 border-black dark:border-[#E6D3B3] max-w-xl w-full max-h-[92vh] overflow-y-auto shadow-2xl p-5 sm:p-8 animate-fadeIn">
-            <div className="flex items-center justify-between pb-4 border-b border-neutral-200 dark:border-onyx-800 mb-5">
+            <div className="flex items-center justify-between pb-4 border-b border-neutral-200 dark:border-neutral-800 mb-5">
               <div>
-                <span className="text-[10px] uppercase font-bold tracking-widest text-[#A6865A] dark:text-[#E6D3B3]">
+                <span className="text-[10px] uppercase font-black tracking-widest text-[#A6865A] dark:text-[#E6D3B3] font-mono">
                   ATELIER CATALOG
                 </span>
-                <h3 className="font-editorial text-2xl font-bold text-black dark:text-white">
-                  {editingProductId ? "Edit Garment" : "Add New Garment to MongoDB"}
+                <h3 className="font-editorial text-2xl font-black text-black dark:text-white">
+                  {editingProductId ? "Edit Garment" : "New Garment"}
                 </h3>
               </div>
               <button
                 onClick={() => setIsProductModalOpen(false)}
-                className="text-neutral-400 hover:text-black dark:hover:text-white text-xl p-1"
+                className="text-neutral-400 hover:text-black dark:hover:text-white text-xl p-1 font-bold"
               >
                 ✕
               </button>
@@ -1724,7 +1743,7 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
 
             <form onSubmit={handleSaveProduct} className="space-y-4 text-xs">
               <div>
-                <label className="block font-bold text-black dark:text-white mb-1">
+                <label className="block font-black uppercase tracking-wider text-xs text-black dark:text-white mb-1.5">
                   Garment Title *
                 </label>
                 <input
@@ -1733,20 +1752,20 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                   placeholder="e.g. The Heritage Double-Breasted Overcoat"
                   value={productForm.name}
                   onChange={(e) => setProductForm({ ...productForm, name: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-none border border-neutral-300 dark:border-onyx-700 bg-neutral-50 dark:bg-onyx-800 text-xs font-bold text-black dark:text-white"
+                  className="w-full px-3.5 py-2.5 rounded-none border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-black text-xs font-bold text-black dark:text-white outline-none focus:border-black dark:focus:border-[#E6D3B3]"
                 />
               </div>
 
               {/* Department & Category */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-bold text-black dark:text-white mb-1">
+                  <label className="block font-black uppercase tracking-wider text-xs text-black dark:text-white mb-1.5">
                     Department (Gender) *
                   </label>
                   <select
                     value={productForm.person}
                     onChange={(e) => setProductForm({ ...productForm, person: e.target.value })}
-                    className="w-full px-3 py-2 rounded-none border border-neutral-300 dark:border-onyx-700 bg-neutral-50 dark:bg-onyx-800 font-bold text-xs text-black dark:text-white"
+                    className="w-full px-3 py-2 rounded-none border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-black font-bold text-xs text-black dark:text-white outline-none focus:border-black dark:focus:border-[#E6D3B3]"
                   >
                     <option value="women">Women's Collection</option>
                     <option value="men">Men's Collection</option>
@@ -1755,13 +1774,13 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                 </div>
 
                 <div>
-                  <label className="block font-bold text-black dark:text-white mb-1">
+                  <label className="block font-black uppercase tracking-wider text-xs text-black dark:text-white mb-1.5">
                     Category *
                   </label>
                   <select
                     value={productForm.category}
                     onChange={(e) => setProductForm({ ...productForm, category: e.target.value })}
-                    className="w-full px-3 py-2 rounded-none border border-neutral-300 dark:border-onyx-700 bg-neutral-50 dark:bg-onyx-800 font-bold text-xs text-black dark:text-white"
+                    className="w-full px-3 py-2 rounded-none border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-black font-bold text-xs text-black dark:text-white outline-none focus:border-black dark:focus:border-[#E6D3B3]"
                   >
                     <option value="Outerwear">Outerwear</option>
                     <option value="Knitwear">Knitwear</option>
@@ -1777,7 +1796,7 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
               {/* Pricing in PKR */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-bold text-black dark:text-white mb-1">
+                  <label className="block font-black uppercase tracking-wider text-xs text-black dark:text-white mb-1.5">
                     Price in PKR (₨) *
                   </label>
                   <input
@@ -1786,19 +1805,19 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                     min="100"
                     value={productForm.price}
                     onChange={(e) => setProductForm({ ...productForm, price: e.target.value })}
-                    className="w-full px-3 py-2 rounded-none border border-neutral-300 dark:border-onyx-700 bg-neutral-50 dark:bg-onyx-800 font-bold text-xs text-black dark:text-white"
+                    className="w-full px-3 py-2 rounded-none border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-black font-bold text-xs text-black dark:text-white outline-none focus:border-black dark:focus:border-[#E6D3B3]"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-bold text-black dark:text-white mb-1">
-                    Original / Strikethrough Price (₨)
+                  <label className="block font-black uppercase tracking-wider text-xs text-black dark:text-white mb-1.5">
+                    Original Price (₨)
                   </label>
                   <input
                     type="number"
                     value={productForm.originalPrice}
                     onChange={(e) => setProductForm({ ...productForm, originalPrice: e.target.value })}
-                    className="w-full px-3 py-2 rounded-none border border-neutral-300 dark:border-onyx-700 bg-neutral-50 dark:bg-onyx-800 font-bold text-xs text-black dark:text-white"
+                    className="w-full px-3 py-2 rounded-none border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-black font-bold text-xs text-black dark:text-white outline-none focus:border-black dark:focus:border-[#E6D3B3]"
                   />
                 </div>
               </div>
@@ -1806,7 +1825,7 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
               {/* Color Details */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-bold text-black dark:text-white mb-1">
+                  <label className="block font-black uppercase tracking-wider text-xs text-black dark:text-white mb-1.5">
                     Color Name
                   </label>
                   <input
@@ -1814,12 +1833,12 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                     value={productForm.primaryColor}
                     onChange={(e) => setProductForm({ ...productForm, primaryColor: e.target.value })}
                     placeholder="e.g. Desert Sand"
-                    className="w-full px-3 py-2 rounded-none border border-neutral-300 dark:border-onyx-700 bg-neutral-50 dark:bg-onyx-800 text-xs text-black dark:text-white"
+                    className="w-full px-3 py-2 rounded-none border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-black font-bold text-xs text-black dark:text-white outline-none focus:border-black dark:focus:border-[#E6D3B3]"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-bold text-black dark:text-white mb-1">
+                  <label className="block font-black uppercase tracking-wider text-xs text-black dark:text-white mb-1.5">
                     Color Hex Code
                   </label>
                   <div className="flex items-center space-x-2">
@@ -1833,7 +1852,7 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                       type="text"
                       value={productForm.colorHex}
                       onChange={(e) => setProductForm({ ...productForm, colorHex: e.target.value })}
-                      className="flex-1 px-3 py-2 rounded-none border border-neutral-300 dark:border-onyx-700 font-mono text-xs bg-neutral-50 dark:bg-onyx-800 text-black dark:text-white"
+                      className="flex-1 px-3 py-2 rounded-none border border-neutral-300 dark:border-neutral-700 font-mono font-bold text-xs bg-neutral-50 dark:bg-black text-black dark:text-white outline-none focus:border-black dark:focus:border-[#E6D3B3]"
                     />
                   </div>
                 </div>
@@ -1841,7 +1860,7 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
 
               {/* Image URL */}
               <div>
-                <label className="block font-bold text-black dark:text-white mb-1">
+                <label className="block font-black uppercase tracking-wider text-xs text-black dark:text-white mb-1.5">
                   Product Image URL *
                 </label>
                 <input
@@ -1850,10 +1869,10 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                   placeholder="https://images.unsplash.com/photo-..."
                   value={productForm.imageUrl}
                   onChange={(e) => setProductForm({ ...productForm, imageUrl: e.target.value })}
-                  className="w-full px-3 py-2 rounded-none border border-neutral-300 dark:border-onyx-700 bg-neutral-50 dark:bg-onyx-800 text-xs font-mono text-black dark:text-white"
+                  className="w-full px-3 py-2 rounded-none border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-black text-xs font-mono font-bold text-black dark:text-white outline-none focus:border-black dark:focus:border-[#E6D3B3]"
                 />
                 {productForm.imageUrl && (
-                  <div className="mt-2 w-16 h-20 rounded-none overflow-hidden border border-neutral-300 dark:border-onyx-700">
+                  <div className="mt-2 w-16 h-20 rounded-none overflow-hidden border border-neutral-300 dark:border-neutral-700">
                     <img src={productForm.imageUrl} alt="Preview" className="w-full h-full object-cover" />
                   </div>
                 )}
@@ -1861,19 +1880,19 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
 
               {/* Stock Quantity Per Size */}
               <div>
-                <label className="block font-bold text-black dark:text-white mb-1">
+                <label className="block font-black uppercase tracking-wider text-xs text-black dark:text-white mb-1.5">
                   Available Stock per Size:
                 </label>
                 <div className="grid grid-cols-5 gap-2 text-center">
                   {['XS', 'S', 'M', 'L', 'XL'].map((size) => (
                     <div key={size}>
-                      <span className="block font-mono text-[10px] text-neutral-500 mb-1">{size}</span>
+                      <span className="block font-mono font-bold text-[10px] text-neutral-500 mb-1">{size}</span>
                       <input
                         type="number"
                         min="0"
                         value={productForm[`stock${size}`]}
                         onChange={(e) => setProductForm({ ...productForm, [`stock${size}`]: e.target.value })}
-                        className="w-full text-center px-1 py-1.5 rounded-none border border-neutral-300 dark:border-onyx-700 bg-neutral-50 dark:bg-onyx-800 font-bold text-xs text-black dark:text-white"
+                        className="w-full text-center px-1 py-1.5 rounded-none border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-black font-black text-xs text-black dark:text-white"
                       />
                     </div>
                   ))}
@@ -1882,14 +1901,14 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
 
               {/* Short Description */}
               <div>
-                <label className="block font-bold text-black dark:text-white mb-1">
+                <label className="block font-black uppercase tracking-wider text-xs text-black dark:text-white mb-1.5">
                   Description
                 </label>
                 <textarea
                   rows={2}
                   value={productForm.description}
                   onChange={(e) => setProductForm({ ...productForm, description: e.target.value })}
-                  className="w-full px-3 py-2 rounded-none border border-neutral-300 dark:border-onyx-700 bg-neutral-50 dark:bg-onyx-800 text-xs text-black dark:text-white"
+                  className="w-full px-3 py-2 rounded-none border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-black text-xs font-medium text-black dark:text-white outline-none focus:border-black dark:focus:border-[#E6D3B3]"
                 />
               </div>
 
@@ -1897,15 +1916,15 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                 <button
                   type="button"
                   onClick={() => setIsProductModalOpen(false)}
-                  className="px-4 py-2.5 rounded-none border border-neutral-300 dark:border-onyx-700 text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider"
+                  className="px-4 py-2.5 rounded-none border border-neutral-300 dark:border-neutral-700 text-xs font-black text-neutral-700 dark:text-neutral-300 uppercase tracking-wider"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2.5 rounded-none bg-black hover:bg-neutral-800 text-white dark:bg-[#E6D3B3] dark:hover:bg-[#d9c19b] dark:text-black text-xs font-bold uppercase tracking-wider shadow-md"
+                  className="px-6 py-2.5 rounded-none bg-black hover:bg-neutral-800 text-white dark:bg-[#E6D3B3] dark:hover:bg-[#d9c19b] dark:text-black text-xs font-black uppercase tracking-wider shadow-md"
                 >
-                  Save Garment to Database
+                  Save Garment
                 </button>
               </div>
             </form>
@@ -1919,18 +1938,18 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
       {selectedOrderDetails && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
           <div className="bg-white dark:bg-onyx-900 rounded-none border-2 border-black dark:border-[#E6D3B3] max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl p-5 sm:p-8 animate-fadeIn">
-            <div className="flex items-center justify-between pb-4 border-b border-neutral-200 dark:border-onyx-800 mb-4">
+            <div className="flex items-center justify-between pb-4 border-b border-neutral-200 dark:border-neutral-800 mb-4">
               <div>
-                <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#A6865A] dark:text-[#E6D3B3]">
+                <span className="text-[10px] font-mono font-black uppercase tracking-widest text-[#A6865A] dark:text-[#E6D3B3]">
                   ORDER SPECIFICATION
                 </span>
-                <h3 className="font-editorial text-2xl font-bold text-black dark:text-white">
-                  {selectedOrderDetails.orderNumber || selectedOrderDetails.id}
+                <h3 className="font-mono text-2xl font-black text-black dark:text-[#E6D3B3]">
+                  #{selectedOrderDetails.orderNumber || selectedOrderDetails.id}
                 </h3>
               </div>
               <button
                 onClick={() => setSelectedOrderDetails(null)}
-                className="text-neutral-400 hover:text-black dark:hover:text-white text-xl p-1"
+                className="text-neutral-400 hover:text-black dark:hover:text-white text-xl p-1 font-bold"
               >
                 ✕
               </button>
@@ -1938,33 +1957,33 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
 
             <div className="space-y-4 text-xs">
               {/* Customer Info Card */}
-              <div className="p-3.5 rounded-none bg-neutral-100 dark:bg-onyx-850 border border-neutral-200 dark:border-onyx-800 space-y-1">
-                <div className="font-bold text-black dark:text-white">
+              <div className="p-4 rounded-none bg-neutral-100 dark:bg-black border border-neutral-300 dark:border-neutral-800 space-y-1.5">
+                <div className="font-black text-black dark:text-white text-xs">
                   Client: {selectedOrderDetails.customer?.firstName} {selectedOrderDetails.customer?.lastName}
                 </div>
-                <div>Email: <span className="font-mono">{selectedOrderDetails.customer?.email}</span></div>
-                <div>Phone: <span className="font-mono font-bold text-black dark:text-[#E6D3B3]">{selectedOrderDetails.customer?.phone}</span></div>
-                <div>Address: {selectedOrderDetails.customer?.address}, {selectedOrderDetails.customer?.city}</div>
+                <div className="text-black dark:text-white font-medium">Email: <span className="font-mono font-bold">{selectedOrderDetails.customer?.email}</span></div>
+                <div className="text-black dark:text-white font-medium">Phone: <span className="font-mono font-black text-black dark:text-[#E6D3B3]">{selectedOrderDetails.customer?.phone}</span></div>
+                <div className="text-black dark:text-white font-medium">Address: <span className="font-bold">{selectedOrderDetails.customer?.address}, {selectedOrderDetails.customer?.city}</span></div>
                 {selectedOrderDetails.customer?.orderNotes && (
-                  <div className="pt-1 text-neutral-500 italic">Notes: "{selectedOrderDetails.customer?.orderNotes}"</div>
+                  <div className="pt-1 text-neutral-500 italic font-medium">Notes: "{selectedOrderDetails.customer?.orderNotes}"</div>
                 )}
               </div>
 
               {/* Items List */}
               <div>
-                <span className="font-bold uppercase tracking-wider text-xs text-neutral-500">
+                <span className="font-black uppercase tracking-wider text-xs text-black dark:text-white">
                   Ordered Items:
                 </span>
-                <div className="mt-2 divide-y divide-neutral-200 dark:divide-onyx-800 border border-neutral-200 dark:border-onyx-800 rounded-none overflow-hidden">
+                <div className="mt-2 divide-y divide-neutral-200 dark:divide-onyx-800 border border-neutral-300 dark:border-neutral-800 rounded-none overflow-hidden">
                   {(selectedOrderDetails.items || []).map((item, idx) => (
-                    <div key={idx} className="p-3 flex items-center justify-between">
+                    <div key={idx} className="p-3.5 flex items-center justify-between">
                       <div>
-                        <strong className="block text-black dark:text-white">{item.name}</strong>
-                        <span className="text-xs text-neutral-500">
+                        <strong className="block text-black dark:text-white font-black text-xs">{item.name}</strong>
+                        <span className="text-xs font-bold text-neutral-500 mt-0.5 block">
                           Size: {item.size || item.selectedSize} • Color: {item.color || item.selectedColor} • Qty: {item.quantity || 1}
                         </span>
                       </div>
-                      <span className="font-bold font-mono text-black dark:text-[#E6D3B3]">
+                      <span className="font-black font-mono text-black dark:text-[#E6D3B3] text-xs">
                         Rs. {(item.price * (item.quantity || 1)).toLocaleString()}
                       </span>
                     </div>
@@ -1973,14 +1992,14 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
               </div>
 
               {/* Order Pricing Summary */}
-              <div className="p-3.5 rounded-none bg-neutral-50 dark:bg-onyx-800 border border-neutral-200 dark:border-onyx-700 flex items-center justify-between">
+              <div className="p-4 rounded-none bg-neutral-50 dark:bg-black border border-neutral-300 dark:border-neutral-700 flex items-center justify-between">
                 <div>
-                  <span className="text-xs uppercase font-bold text-neutral-500">Payment Gateway</span>
-                  <div className="font-bold uppercase font-mono">{selectedOrderDetails.paymentMethod}</div>
+                  <span className="text-xs uppercase font-black text-neutral-500">Payment Gateway</span>
+                  <div className="font-black uppercase font-mono text-black dark:text-white">{selectedOrderDetails.paymentMethod}</div>
                 </div>
                 <div className="text-right">
-                  <span className="text-xs uppercase font-bold text-neutral-500">Payable Total</span>
-                  <div className="text-base font-black font-mono text-black dark:text-[#E6D3B3]">
+                  <span className="text-xs uppercase font-black text-neutral-500">Payable Total</span>
+                  <div className="text-lg font-black font-mono text-black dark:text-[#E6D3B3]">
                     Rs. {Number(selectedOrderDetails.total || selectedOrderDetails.pricing?.finalTotal || 0).toLocaleString()}
                   </div>
                 </div>
@@ -1988,12 +2007,12 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
 
               {/* Payment Proof Screenshot Inspection */}
               {selectedOrderDetails.paymentReceipt ? (
-                <div className="p-3.5 rounded-none bg-neutral-100 dark:bg-onyx-800 border border-neutral-300 dark:border-onyx-700 space-y-2">
+                <div className="p-4 rounded-none bg-neutral-100 dark:bg-black border border-neutral-300 dark:border-neutral-700 space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="font-bold uppercase tracking-wider text-xs text-[#A6865A] dark:text-[#E6D3B3]">
+                    <span className="font-black uppercase tracking-wider text-xs text-[#A6865A] dark:text-[#E6D3B3]">
                       Payment Proof Screenshot:
                     </span>
-                    <span className="text-xs font-mono text-neutral-500 dark:text-neutral-400">
+                    <span className="text-xs font-mono font-bold text-neutral-500 dark:text-neutral-400">
                       {selectedOrderDetails.receiptFileName || 'payment_proof.jpg'}
                     </span>
                   </div>
@@ -2003,7 +2022,7 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                         src: selectedOrderDetails.paymentReceipt,
                         fileName: selectedOrderDetails.receiptFileName || `Receipt #${selectedOrderDetails.orderNumber}`
                       })}
-                      className="relative group cursor-pointer border border-neutral-300 dark:border-onyx-700 bg-white dark:bg-black overflow-hidden flex items-center justify-center p-2"
+                      className="relative group cursor-pointer border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-black overflow-hidden flex items-center justify-center p-2"
                     >
                       <img
                         src={selectedOrderDetails.paymentReceipt}
@@ -2017,21 +2036,21 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                         src: selectedOrderDetails.paymentReceipt,
                         fileName: selectedOrderDetails.receiptFileName || `Receipt #${selectedOrderDetails.orderNumber}`
                       })}
-                      className="w-full py-1.5 bg-[#E6D3B3] hover:bg-[#d9c19b] text-black text-xs font-bold uppercase tracking-wider transition cursor-pointer"
+                      className="w-full py-2 bg-[#E6D3B3] hover:bg-[#d9c19b] text-black text-xs font-black uppercase tracking-wider transition cursor-pointer"
                     >
                       Open Full Screenshot ↗
                     </button>
                   </div>
                 </div>
               ) : ['jazzcash', 'easypaisa', 'bank'].includes((selectedOrderDetails.paymentMethod || '').toLowerCase()) ? (
-                <div className="p-3 rounded-none bg-amber-50 dark:bg-amber-950/30 border border-amber-300 text-amber-800 dark:text-amber-300 text-xs">
+                <div className="p-3 rounded-none bg-amber-50 dark:bg-amber-950/30 border border-amber-300 text-amber-900 dark:text-amber-300 text-xs font-bold">
                   Manual gateway order (no receipt attached).
                 </div>
               ) : null}
 
               {/* Order Status & Verification Approval Actions */}
               <div className="pt-2 space-y-2.5">
-                <label className="block font-bold text-black dark:text-white mb-1">
+                <label className="block font-black uppercase tracking-wider text-xs text-black dark:text-white mb-1.5">
                   Change Fulfillment Status:
                 </label>
                 <select
@@ -2040,7 +2059,7 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                     handleStatusChange(selectedOrderDetails.id || selectedOrderDetails.orderNumber, e.target.value);
                     setSelectedOrderDetails({ ...selectedOrderDetails, status: e.target.value });
                   }}
-                  className="w-full px-3 py-2.5 rounded-none border border-neutral-300 dark:border-onyx-700 bg-neutral-50 dark:bg-onyx-800 font-bold text-xs text-black dark:text-white"
+                  className="w-full px-3.5 py-2.5 rounded-none border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-black font-black text-xs text-black dark:text-white uppercase tracking-wider"
                 >
                   <option value="pending">Pending</option>
                   <option value="approved">Approved</option>
@@ -2056,7 +2075,7 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                     type="button"
                     disabled={approvalLoading}
                     onClick={() => handleApproveOrder(selectedOrderDetails)}
-                    className="w-full py-3 bg-black hover:bg-neutral-800 text-white dark:bg-[#E6D3B3] dark:hover:bg-[#d9c19b] dark:text-black font-bold uppercase tracking-widest text-xs transition active:scale-95 shadow-sm rounded-none"
+                    className="w-full py-3 bg-black hover:bg-neutral-800 text-white dark:bg-[#E6D3B3] dark:hover:bg-[#d9c19b] dark:text-black font-black uppercase tracking-widest text-xs transition active:scale-95 shadow-sm rounded-none"
                   >
                     {approvalLoading ? 'Approving Consignment...' : 'Approve Order & Activate Live Tracking'}
                   </button>
@@ -2073,7 +2092,7 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                     const msg = `Assalam-o-Alaikum ${selectedOrderDetails.customer?.firstName || 'Valued Client'},\n\nYour Zaytoun Atelier order #${selectedOrderDetails.orderNumber || selectedOrderDetails.id} is ${selectedOrderDetails.status === 'approved' ? 'APPROVED' : 'CONFIRMED'}.\n\nCourier: TCS Express (Tracking #: ${selectedOrderDetails.trackingNumber || 'TCS-99482104-PK'})\nLive Track: ${window.location.origin}/track/${selectedOrderDetails.orderNumber || selectedOrderDetails.id}\n\nThank you for choosing Zaytoun Atelier slow-fashion craftsmanship.`;
                     window.open(`https://wa.me/${formattedPhone}?text=${encodeURIComponent(msg)}`, '_blank');
                   }}
-                  className="w-full py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold uppercase tracking-wider text-xs transition flex items-center justify-center space-x-2 rounded-none shadow-sm"
+                  className="w-full py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-black uppercase tracking-wider text-xs transition flex items-center justify-center space-x-2 rounded-none shadow-sm"
                 >
                   <span>Send Customer WhatsApp Notification</span>
                 </button>
@@ -2095,10 +2114,10 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
           >
             <div className="flex flex-wrap justify-between items-center pb-3 mb-3 border-b border-neutral-200 dark:border-neutral-800 gap-2">
               <div>
-                <span className="text-[10px] uppercase font-bold tracking-widest text-[#A6865A] dark:text-[#E6D3B3] block font-mono">
+                <span className="text-[10px] uppercase font-black tracking-widest text-[#A6865A] dark:text-[#E6D3B3] block font-mono">
                   CUSTOMER PAYMENT PROOF
                 </span>
-                <span className="font-mono text-xs font-bold text-black dark:text-white">
+                <span className="font-mono text-xs font-black text-black dark:text-white">
                   {enlargedReceipt.fileName || 'Payment Proof Screenshot'}
                 </span>
               </div>
@@ -2108,7 +2127,7 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                     href={enlargedReceipt.src}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs font-bold px-3 py-1.5 bg-[#E6D3B3] hover:bg-[#d9c19b] text-black uppercase tracking-wider transition"
+                    className="text-xs font-black px-3.5 py-2 bg-[#E6D3B3] hover:bg-[#d9c19b] text-black uppercase tracking-wider transition"
                   >
                     Open in New Tab ↗
                   </a>
@@ -2116,14 +2135,14 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                 <button
                   type="button"
                   onClick={() => setEnlargedReceipt(null)}
-                  className="text-xs font-bold px-3 py-1.5 bg-black hover:bg-neutral-800 text-white rounded-none uppercase tracking-wider transition"
+                  className="text-xs font-black px-3.5 py-2 bg-black hover:bg-neutral-800 text-white rounded-none uppercase tracking-wider transition"
                 >
                   Close ✕
                 </button>
               </div>
             </div>
 
-            <div className="overflow-auto max-h-[78vh] flex items-center justify-center bg-neutral-100 dark:bg-black/60 p-4 border border-neutral-200 dark:border-neutral-800">
+            <div className="overflow-auto max-h-[78vh] flex items-center justify-center bg-neutral-100 dark:bg-black/60 p-4 border border-neutral-300 dark:border-neutral-800">
               {enlargedReceipt.src?.startsWith('data:application/pdf') || enlargedReceipt.fileName?.toLowerCase().endsWith('.pdf') ? (
                 <iframe
                   src={enlargedReceipt.src}
