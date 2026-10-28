@@ -39,9 +39,9 @@ export default function CheckoutModal({
   
   // Shipping Form State (pre-filled with Google user profile if signed in)
   const [formData, setFormData] = useState(() => ({
-    firstName: user?.firstName || (user?.name ? user.name.split(' ')[0] : "Huzaifa"),
-    lastName: user?.lastName || (user?.name ? user.name.split(' ').slice(1).join(' ') : "Khan"),
-    email: user?.email || "shaahrozdogar@gmail.com",
+    firstName: user?.firstName || (user?.name ? user.name.split(' ')[0] : ""),
+    lastName: user?.lastName || (user?.name ? user.name.split(' ').slice(1).join(' ') : ""),
+    email: user?.email || "",
     phone: user?.phone || "03001234567",
     address: user?.address || "House 42-B, Street 14, Phase 6, DHA",
     city: user?.city || "Lahore",

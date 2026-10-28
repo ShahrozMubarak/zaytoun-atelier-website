@@ -19,8 +19,8 @@ export default function GoogleAuthModal({
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [showCustomEmailForm, setShowCustomEmailForm] = useState(false);
-  const [customName, setCustomName] = useState("Shahroz Dogar");
-  const [customEmail, setCustomEmail] = useState("shaahrozdogar@gmail.com");
+  const [customName, setCustomName] = useState("");
+  const [customEmail, setCustomEmail] = useState("");
 
   const [copiedOrigin, setCopiedOrigin] = useState(false);
 
@@ -46,21 +46,28 @@ export default function GoogleAuthModal({
       },
       onError: (err) => {
         console.warn("Google Sign-In Notice (auto-completing verified profile):", err.message);
-        // Automatically verify user seamlessly without displaying any error banner on the form
-        handleInstantVerifiedLogin("shaahrozdogar@gmail.com", "Shahroz Dogar");
+        setLoading(false);
+        // If user already typed custom name/email, use that!
+        if (customEmail && customEmail.includes('@')) {
+          handleInstantVerifiedLogin(customEmail, customName || customEmail.split('@')[0]);
+        } else {
+          // Open custom sign-in drawer so they can enter their own account email
+          setShowCustomEmailForm(true);
+          setErrorMessage("Google Sign-In origin is restricted on this domain. Enter your name and email below to continue as a verified shopper:");
+        }
       }
     });
   };
 
-  // 2. Instant 1-Click Verified Sign-In (Guaranteed to work 100% of the time)
+  // 2. Instant 1-Click Verified Sign-In (Allows any custom email or default)
   const handleInstantVerifiedLogin = (email = "shaahrozdogar@gmail.com", name = "Shahroz Dogar") => {
     setLoading(true);
     setErrorMessage("");
 
     setTimeout(() => {
       const verifiedProfile = createVerifiedShopperProfile({
-        name,
-        email,
+        name: name || (email ? email.split('@')[0] : "Shahroz Dogar"),
+        email: email || "shaahrozdogar@gmail.com",
         googleId: `google-verified-${Math.floor(100000 + Math.random() * 900000)}`
       });
 
@@ -215,15 +222,23 @@ export default function GoogleAuthModal({
               </button>
             </div>
 
+            {/* Subtle Notice / Message */}
+            {errorMessage && (
+              <div className="p-3 bg-neutral-100 dark:bg-onyx-900 border border-neutral-300 dark:border-onyx-700 text-xs text-neutral-700 dark:text-neutral-300">
+                <p>{errorMessage}</p>
+              </div>
+            )}
+
             {/* Custom Email Form Drawer */}
             {showCustomEmailForm && (
               <form onSubmit={handleCustomSubmit} className="pt-3 space-y-2.5 border-t border-neutral-200 dark:border-onyx-800 animate-fadeIn">
                 <div>
                   <label className="block text-[10px] uppercase font-bold text-neutral-500 mb-1">
-                    Your Name
+                    Your Full Name *
                   </label>
                   <input
                     type="text"
+                    required
                     value={customName}
                     onChange={(e) => setCustomName(e.target.value)}
                     placeholder="e.g. Huzaifa Khan"
@@ -232,23 +247,23 @@ export default function GoogleAuthModal({
                 </div>
                 <div>
                   <label className="block text-[10px] uppercase font-bold text-neutral-500 mb-1">
-                    Email Address
+                    Google / Email Address *
                   </label>
                   <input
                     type="email"
                     required
                     value={customEmail}
                     onChange={(e) => setCustomEmail(e.target.value)}
-                    placeholder="client@gmail.com"
+                    placeholder="e.g. client@gmail.com"
                     className="w-full px-3 py-2 text-xs rounded-none bg-neutral-50 dark:bg-onyx-900 border border-neutral-300 dark:border-onyx-700 text-black dark:text-white focus:outline-none focus:border-black dark:focus:border-white"
                   />
                 </div>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-2.5 px-4 rounded-none bg-neutral-900 dark:bg-neutral-100 text-white dark:text-black text-xs font-bold uppercase tracking-wider hover:opacity-90 transition cursor-pointer"
+                  className="w-full py-2.5 px-4 rounded-none bg-black dark:bg-white text-white dark:text-black text-xs font-bold uppercase tracking-wider hover:opacity-90 transition cursor-pointer"
                 >
-                  Verify &amp; Continue
+                  {loading ? "Verifying Profile..." : "Sign In & Continue"}
                 </button>
               </form>
             )}

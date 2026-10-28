@@ -15,13 +15,13 @@ export function getGoogleClientId() {
  * Creates a standardized, verified shopper profile recognized across Zaytoun Atelier.
  */
 export function createVerifiedShopperProfile({
-  name = "Shahroz Dogar",
-  email = "shaahrozdogar@gmail.com",
+  name = "Client",
+  email = "client@zaytoun.pk",
   avatar = null,
   googleId = null
 } = {}) {
-  const cleanEmail = (email || "shaahrozdogar@gmail.com").toLowerCase().trim();
-  const parts = (name || "Shahroz Dogar").trim().split(" ");
+  const cleanEmail = (email || "client@zaytoun.pk").toLowerCase().trim();
+  const parts = (name || "Client").trim().split(" ");
   const firstName = parts[0] || "Valued";
   const lastName = parts.slice(1).join(" ") || "Client";
 
