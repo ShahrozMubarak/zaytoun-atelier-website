@@ -230,6 +230,21 @@ export async function updateOrderStatusInDB(orderId, status) {
   return null;
 }
 
+export async function approveOrderInDB(orderId) {
+  try {
+    const res = await fetch(`${API_BASE}/orders/${encodeURIComponent(orderId)}/approve`, {
+      method: 'POST',
+      headers: getAuthHeaders()
+    });
+    if (res.ok) return await res.json();
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || 'Failed to approve order');
+  } catch (err) {
+    console.warn('Could not approve order in MongoDB:', err.message);
+    throw err;
+  }
+}
+
 /**
  * THEME / APPEARANCE
  */

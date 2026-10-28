@@ -52,15 +52,21 @@ export const validateInquiry = (req, res, next) => {
 /**
  * 3. Order Checkout Schema Validation
  */
+const phoneRegex = /^(\+92|0)?3[0-9]{9}$/;
+
 const orderSchema = Joi.object({
   orderNumber: Joi.string().trim().max(60).optional(),
   customer: Joi.object({
     firstName: Joi.string().trim().min(1).max(70).required(),
     lastName: Joi.string().trim().max(70).allow('', null),
     name: Joi.string().trim().max(140).allow('', null),
-    email: Joi.string().trim().lowercase().email().required(),
-    phone: Joi.string().trim().min(8).max(25).required(),
-    address: Joi.string().trim().min(5).max(300).required(),
+    email: Joi.string().trim().lowercase().email({ tlds: { allow: false } }).required(),
+    phone: Joi.string().trim().pattern(phoneRegex).required().messages({
+      'string.pattern.base': 'Please enter a valid 11-digit Pakistani mobile number (e.g., 03001234567 or +923001234567).'
+    }),
+    address: Joi.string().trim().min(8).max(300).required().messages({
+      'string.min': 'Complete delivery address must be at least 8 characters long (house, street, sector).'
+    }),
     city: Joi.string().trim().min(2).max(100).required(),
     province: Joi.string().trim().allow('', null),
     postalCode: Joi.string().trim().allow('', null),
@@ -69,7 +75,9 @@ const orderSchema = Joi.object({
   items: Joi.array().min(1).required(),
   total: Joi.number().min(0).required(),
   pricing: Joi.object().optional(),
-  paymentMethod: Joi.string().valid('cod', 'card', 'jazzcash', 'easypaisa').default('cod')
+  paymentMethod: Joi.string().valid('cod', 'card', 'jazzcash', 'easypaisa', 'bank').default('cod'),
+  paymentReceipt: Joi.string().allow('', null).optional(),
+  receiptFileName: Joi.string().allow('', null).optional()
 }).unknown(true);
 
 export const validateOrder = (req, res, next) => {
@@ -78,6 +86,16 @@ export const validateOrder = (req, res, next) => {
     const errorDetails = error.details.map((d) => d.message).join(', ');
     return res.status(400).json({ error: errorDetails });
   }
+
+  // Strict check: If payment method is JazzCash, EasyPaisa, or Bank, proof receipt is mandatory
+  if (['jazzcash', 'easypaisa', 'bank'].includes(value.paymentMethod)) {
+    if (!value.paymentReceipt || value.paymentReceipt.trim() === '') {
+      return res.status(400).json({
+        error: `Payment proof attachment is required for ${value.paymentMethod.toUpperCase()} transactions. Please upload your payment screenshot/receipt.`
+      });
+    }
+  }
+
   req.body = value;
   next();
 };

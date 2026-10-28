@@ -20,11 +20,17 @@ const OrderSchema = new mongoose.Schema(
     total: { type: Number, required: true },
     pricing: { type: Object, default: {} },
     paymentMethod: { type: String, default: 'cod' }, // 'cod' | 'card' | 'jazzcash' | 'easypaisa'
+    paymentReceipt: { type: String }, // Base64 proof or receipt image URL
+    receiptFileName: { type: String },
+    receiptUploadedAt: { type: Date },
     status: {
       type: String,
-      default: 'processing',
-      enum: ['processing', 'confirmed', 'dispatched', 'shipped', 'delivered', 'cancelled']
+      default: 'pending',
+      enum: ['pending', 'approved', 'processing', 'dispatched', 'shipped', 'delivered', 'cancelled']
     },
+    approvedAt: { type: Date },
+    approvedBy: { type: String },
+    whatsappNotificationSent: { type: Boolean, default: false },
     courier: { type: String, default: 'TCS Express' },
     trackingNumber: { type: String },
     createdAt: { type: Date, default: Date.now },

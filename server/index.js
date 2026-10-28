@@ -3,6 +3,7 @@ import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
+import mongoose from 'mongoose';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -394,8 +395,11 @@ app.post('/api/orders', validateOrder, async (req, res) => {
     if (!orderData.orderNumber) {
       orderData.orderNumber = `ZYT-2026-${Math.floor(1000 + Math.random() * 9000)}`;
     }
+    if (!orderData.status) {
+      orderData.status = 'pending';
+    }
     const newOrder = await Order.create(orderData);
-    console.log(`📦 [MongoDB] Order created successfully: ${newOrder.orderNumber}`);
+    console.log(`📦 [MongoDB] Order created successfully: ${newOrder.orderNumber} (Status: ${newOrder.status})`);
 
     // Update Customer Profile and User Profile in MongoDB Atlas
     if (orderData.customer?.email) {
@@ -482,9 +486,12 @@ app.patch('/api/orders/:id/status', requireAdminAuth, async (req, res) => {
     if (!isDBConnected()) {
       return res.status(503).json({ error: 'MongoDB not connected' });
     }
-    const { status } = req.body;
+    const orderParam = req.params.id;
+    const filter = mongoose.Types.ObjectId.isValid(orderParam)
+      ? { $or: [{ _id: orderParam }, { id: orderParam }, { orderNumber: orderParam }] }
+      : { $or: [{ id: orderParam }, { orderNumber: orderParam }] };
     const updated = await Order.findOneAndUpdate(
-      { $or: [{ id: req.params.id }, { orderNumber: req.params.id }] },
+      filter,
       { status },
       { returnDocument: 'after' }
     );
@@ -498,6 +505,56 @@ app.patch('/api/orders/:id/status', requireAdminAuth, async (req, res) => {
     res.json(updated);
   } catch (err) {
     res.status(400).json({ error: err.message });
+  }
+});
+
+// Protected: Approve Order from Studio (Sets status='approved', assigns tracking, triggers notification)
+app.post('/api/orders/:id/approve', requireAdminAuth, async (req, res) => {
+  try {
+    if (!isDBConnected()) {
+      await connectDB();
+    }
+    if (!isDBConnected()) {
+      return res.status(503).json({ error: 'MongoDB not connected' });
+    }
+
+    const orderId = req.params.id;
+    const generatedTracking = `TCS-${Math.floor(10000000 + Math.random() * 90000000)}-PK`;
+
+    const filter = mongoose.Types.ObjectId.isValid(orderId)
+      ? { $or: [{ _id: orderId }, { id: orderId }, { orderNumber: orderId }] }
+      : { $or: [{ id: orderId }, { orderNumber: orderId }] };
+
+    const updated = await Order.findOneAndUpdate(
+      filter,
+      {
+        $set: {
+          status: 'approved',
+          approvedAt: new Date(),
+          approvedBy: req.user?.username || 'shahroz',
+          trackingNumber: generatedTracking,
+          courier: 'TCS Express'
+        }
+      },
+      { returnDocument: 'after' }
+    );
+
+    if (!updated) return res.status(404).json({ error: 'Order not found' });
+
+    // Trigger Automated Order Approved Email to Customer
+    sendOrderStatusEmail(updated, 'approved').catch((err) => {
+      console.warn('⚠️ [Email Service] Order approval email note:', err.message);
+    });
+
+    console.log(`✅ [Studio] Order #${updated.orderNumber} APPROVED. Tracking assigned: ${generatedTracking}`);
+    res.json({
+      success: true,
+      order: updated,
+      trackingNumber: generatedTracking,
+      message: `Order #${updated.orderNumber} successfully approved and tracking activated!`
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 

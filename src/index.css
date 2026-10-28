@@ -95,24 +95,45 @@
   background: #191B1F;
 }
 ::-webkit-scrollbar-thumb {
-  background: #C69F6F;
-  border-radius: 3px;
+  background: #BD9057;
+  border-radius: 0px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #364634;
+  background: #A47942;
 }
 
 /* ---- Added motion utilities ---- */
 @keyframes pop { from { opacity: 0; transform: translateY(12px) scale(.97); } to { opacity: 1; transform: none; } }
 @keyframes pageIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes subtlePulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.88; transform: scale(1.015); }
+}
+@keyframes camelGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(189, 144, 87, 0); }
+  50% { box-shadow: 0 0 16px 2px rgba(189, 144, 87, 0.22); }
+}
+@keyframes videoFade {
+  0% { opacity: 0.4; }
+  100% { opacity: 1; }
+}
+
 .animate-pop { animation: pop .35s cubic-bezier(.2,.8,.2,1) both; }
 .page-enter { animation: pageIn .55s cubic-bezier(.2,.8,.2,1) both; }
-.card-lift { transition: transform .45s cubic-bezier(.2,.8,.2,1), box-shadow .45s; }
-.card-lift:hover { transform: translateY(-6px); box-shadow: 0 24px 48px -20px rgba(0,0,0,.35); }
-.btn-press { transition: transform .2s, box-shadow .3s; }
-.btn-press:hover { transform: translateY(-2px); }
-.btn-press:active { transform: scale(.95); }
-a img, .card-lift img { transition: transform .8s cubic-bezier(.2,.8,.2,1); }
-.card-lift:hover img { transform: scale(1.06); }
-@media (prefers-reduced-motion: reduce) { .page-enter, .animate-pop, .card-lift, .btn-press { animation: none !important; transition: none !important; } }
+.animate-video-fade { animation: videoFade 0.6s ease-in-out both; }
+.subtle-pulse { animation: subtlePulse 3s ease-in-out infinite; }
+.camel-glow:hover { animation: camelGlow 2.5s ease-in-out infinite; }
+
+.card-lift { transition: transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s; }
+.card-lift:hover { transform: translateY(-4px); box-shadow: 0 16px 32px -12px rgba(189, 144, 87, 0.2); }
+.btn-press { transition: transform .18s ease, background-color .2s ease; }
+.btn-press:hover { transform: translateY(-1px); }
+.btn-press:active { transform: scale(.96); }
+
+@media (prefers-reduced-motion: reduce) { 
+  .page-enter, .animate-pop, .card-lift, .btn-press, .animate-video-fade, .subtle-pulse, .camel-glow { 
+    animation: none !important; 
+    transition: none !important; 
+  } 
+}
 

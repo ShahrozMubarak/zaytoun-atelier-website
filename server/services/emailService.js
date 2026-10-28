@@ -325,8 +325,16 @@ export async function sendOrderEmails(order) {
         • City: ${order.customer?.city || 'N/A'}<br/>
         • Address: ${order.customer?.address || 'N/A'}<br/>
         • Payment Method: <strong>${paymentMethod}</strong><br/>
+        • Status: <strong style="color: #d97706;">${order.status || 'PENDING'}</strong><br/>
         • Tracking: ${courier} (${trackingNumber})
       </div>
+
+      ${order.paymentReceipt ? `
+      <div style="margin: 16px 0; padding: 14px; background: #FFFBEB; border: 1px solid #FCD34D; border-radius: 6px;">
+        <strong style="color: #92400E; display: block; margin-bottom: 6px;">📎 Customer Payment Proof / Screenshot (${order.receiptFileName || 'Receipt'}):</strong>
+        <img src="${order.paymentReceipt}" alt="Payment Proof" style="max-width: 100%; max-height: 360px; border: 1px solid #E5E7EB; border-radius: 4px; display: block;" />
+      </div>
+      ` : ''}
 
       <h3 style="font-size: 14px; margin-bottom: 8px; color: #111;">Items Ordered (${items.length}):</h3>
       <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
@@ -334,8 +342,8 @@ export async function sendOrderEmails(order) {
       </table>
 
       <div style="margin-top: 24px; text-align: center;">
-        <a href="http://localhost:5173/studio" style="background: #364634; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 13px; display: inline-block;">
-          Open Order in Studio Dashboard &rarr;
+        <a href="https://zaytoun-atelier-website.vercel.app/studio" style="background: #364634; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 13px; display: inline-block;">
+          Open Order &amp; Approve in Studio Dashboard &rarr;
         </a>
       </div>
     </div>
@@ -346,13 +354,13 @@ export async function sendOrderEmails(order) {
       to: customerEmail,
       subject: `Order Confirmation #${orderNumber} — Zaytoun Atelier`,
       html: customerHtml,
-      text: `Your Zaytoun order #${orderNumber} has been confirmed. Total: Rs. ${total.toLocaleString()}. Courier: ${courier} (${trackingNumber}). View order status: https://zaytoun-atelier-website.vercel.app/track`
+      text: `Your Zaytoun order #${orderNumber} has been received (Status: ${order.status || 'Pending Studio Verification'}). Total: Rs. ${total.toLocaleString()}. Courier: ${courier} (${trackingNumber}). Track: https://zaytoun-atelier-website.vercel.app/track/${orderNumber}`
     }) : Promise.resolve(),
     sendMailSafely({
       to: OWNER_EMAIL,
-      subject: `🚨 [New Order] #${orderNumber} - Rs. ${total.toLocaleString()} by ${customerName}`,
+      subject: `🚨 [New Order - ${paymentMethod}] #${orderNumber} - Rs. ${total.toLocaleString()} by ${customerName}`,
       html: ownerHtml,
-      text: `New order #${orderNumber} received for Rs. ${total.toLocaleString()} by ${customerName} (${customerEmail}).`
+      text: `New order #${orderNumber} received for Rs. ${total.toLocaleString()} by ${customerName} (${customerEmail}). Payment Method: ${paymentMethod}.`
     })
   ]);
 }
@@ -372,6 +380,8 @@ export async function sendOrderStatusEmail(order, newStatus) {
   const statusLabel = String(newStatus).toUpperCase();
 
   const statusMessages = {
+    pending: 'Your order is currently pending studio review and receipt verification.',
+    approved: `Your order has been APPROVED by our studio! Your consignment tracking is active via ${courier} (${trackingNumber}).`,
     confirmed: 'Your order has been confirmed and transferred to our master cutters at the atelier.',
     dispatched: `Your package has been prepared and handed over to ${courier} for courier transit.`,
     shipped: `Your package is on its way via ${courier}. It will arrive shortly at your destination.`,

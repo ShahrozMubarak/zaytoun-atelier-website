@@ -31,26 +31,49 @@ export default function OrderConfirmationModal({ order, onClose }) {
     navigate(`/track/${orderId}`);
   };
 
+  const isPending = !order.status || order.status === 'pending';
+
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-onyx-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6">
       <div className="bg-white dark:bg-onyx-900 rounded-none max-w-2xl w-full p-6 sm:p-8 shadow-2xl border border-linen-300 dark:border-onyx-800 relative fade-in text-center space-y-6">
         
         {/* Celebration Icon */}
-        <div className="w-16 h-16 rounded-none bg-olive-700 text-linen-100 mx-auto flex items-center justify-center text-3xl shadow-lg">
+        <div className="w-16 h-16 rounded-none bg-black dark:bg-white text-white dark:text-black mx-auto flex items-center justify-center text-3xl shadow-lg font-bold">
           ✓
         </div>
 
         {/* Heading */}
-        <div className="space-y-1">
+        <div className="space-y-1.5">
           <span className="text-[11px] uppercase font-mono tracking-widest text-camel-600 dark:text-camel-400 font-bold">
-            Wear Less, Wear Longer • Order Confirmed
+            Wear Less, Wear Longer • Consignment Registered
           </span>
           <h2 className="font-editorial text-2xl sm:text-3xl font-bold text-onyx-950 dark:text-linen-50">
             Thank You For Your Patronage
           </h2>
           <p className="text-xs text-onyx-600 dark:text-linen-400">
-            A confirmation email and SMS with your live tracking link has been sent to <strong className="text-onyx-950 dark:text-linen-100">{order.customer?.email}</strong>.
+            Order confirmation sent to <strong className="text-onyx-950 dark:text-linen-100">{order.customer?.email}</strong>.
           </p>
+
+          {/* Pending Studio Approval Notification Box */}
+          <div className="mt-3 p-3.5 bg-amber-50 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-700/50 text-left rounded-none space-y-1">
+            <div className="flex items-center space-x-2">
+              <span className="w-2.5 h-2.5 rounded-none bg-amber-500 animate-pulse"></span>
+              <strong className="text-xs uppercase tracking-wider text-amber-900 dark:text-amber-300">
+                {isPending ? "Order Status: Pending Studio Verification" : `Order Status: ${order.status.toUpperCase()}`}
+              </strong>
+            </div>
+            <p className="text-[11px] text-amber-800 dark:text-amber-300/90 leading-relaxed font-sans">
+              {isPending
+                ? "Our studio concierge is verifying your payment screenshot / order details. Once approved in the Studio, you will receive an automated WhatsApp notification and your live courier tracking will activate."
+                : "Your order has been verified and approved by the studio. Live courier tracking is now active."
+              }
+            </p>
+            {order.paymentReceipt && (
+              <div className="pt-1 flex items-center space-x-2 text-[10px] text-amber-900 dark:text-amber-300 font-mono">
+                <span>📎 Payment screenshot recorded ({order.receiptFileName || 'receipt.jpg'})</span>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Shareable Tracking Link Banner */}

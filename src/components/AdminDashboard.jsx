@@ -5,6 +5,7 @@ import {
   deleteProductFromDB, 
   fetchOrdersFromDB, 
   updateOrderStatusInDB,
+  approveOrderInDB,
   fetchSubscribersFromDB, 
   deleteSubscriberFromDB, 
   fetchCustomersFromDB, 
@@ -43,6 +44,8 @@ export default function AdminDashboard({
   const [orderFilterPayment, setOrderFilterPayment] = useState('all');
   const [orderSearchQuery, setOrderSearchQuery] = useState('');
   const [selectedOrderDetails, setSelectedOrderDetails] = useState(null);
+  const [enlargedReceipt, setEnlargedReceipt] = useState(null);
+  const [approvalLoading, setApprovalLoading] = useState(false);
 
   // Product Add / Edit Modal State
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
@@ -299,6 +302,55 @@ export default function AdminDashboard({
     );
     if (onUpdateOrderStatus) onUpdateOrderStatus(orderId, newStatus);
     await updateOrderStatusInDB(orderId, newStatus);
+  };
+
+  // Studio Order Approval & Live Tracking Activation
+  const handleApproveOrder = async (order) => {
+    const orderId = order._id || order.id || order.orderNumber;
+    setApprovalLoading(true);
+    try {
+      const res = await approveOrderInDB(orderId);
+      const trackingNumber = res?.order?.trackingNumber || `TCS-${Math.floor(10000000 + Math.random() * 90000000)}-PK`;
+      const updatedOrder = {
+        ...order,
+        status: 'approved',
+        courier: 'TCS Express',
+        trackingNumber: trackingNumber,
+        approvedAt: new Date().toISOString()
+      };
+
+      setLiveOrders(prev =>
+        prev.map(o => (o._id === orderId || o.id === orderId || o.orderNumber === orderId ? { ...o, ...updatedOrder } : o))
+      );
+      setSelectedOrderDetails(prev => (prev ? { ...prev, ...updatedOrder } : null));
+
+      // Compose pre-filled customer WhatsApp alert message
+      const cleanPhone = (order.customer?.phone || '').replace(/[^0-9]/g, '');
+      const formattedPhone = cleanPhone.startsWith('0')
+        ? '92' + cleanPhone.slice(1)
+        : (cleanPhone.startsWith('92') ? cleanPhone : '92' + cleanPhone);
+
+      const msg = `Assalam-o-Alaikum ${order.customer?.firstName || 'Valued Client'},
+
+Your Zaytoun Atelier order #${order.orderNumber || order.id} has been verified and APPROVED by our studio concierge.
+
+📦 Consignment Tracking #: ${trackingNumber}
+🚚 Courier: TCS Express (slow-fashion slow-tailored consignment)
+🔗 Live Track Your Parcel: ${window.location.origin}/track/${order.orderNumber || order.id}
+
+Thank you for choosing Zaytoun Atelier craftsmanship.`;
+
+      const waUrl = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(msg)}`;
+
+      if (window.confirm("✅ Order Approved! TCS tracking number generated.\n\nOpen customer's WhatsApp to send the automated notification now?")) {
+        window.open(waUrl, '_blank');
+      }
+    } catch (err) {
+      console.error("Error approving order:", err);
+      alert("Error approving order: " + err.message);
+    } finally {
+      setApprovalLoading(false);
+    }
   };
 
   // Copy Subscriber Emails (CSV)
@@ -621,7 +673,14 @@ export default function AdminDashboard({
                             {ord.customer?.city || 'Lahore'}
                           </td>
                           <td className="py-3 px-4 font-mono uppercase text-[10px]">
-                            {ord.paymentMethod === 'cod' ? '💵 COD' : ord.paymentMethod?.toUpperCase()}
+                            <div className="flex items-center space-x-1.5">
+                              <span>{ord.paymentMethod === 'cod' ? '💵 COD' : ord.paymentMethod?.toUpperCase()}</span>
+                              {ord.paymentReceipt && (
+                                <span className="px-1.5 py-0.5 bg-camel-100 text-camel-800 dark:bg-camel-900/50 dark:text-camel-300 font-bold text-[9px]">
+                                  📎 PROOF
+                                </span>
+                              )}
+                            </div>
                           </td>
                           <td className="py-3 px-4 font-bold text-onyx-950 dark:text-white">
                             Rs. {Number(ord.total || 0).toLocaleString()}
@@ -633,6 +692,7 @@ export default function AdminDashboard({
                               className="px-2.5 py-1 rounded-lg text-xs font-bold border border-linen-300 dark:border-onyx-700 bg-linen-50 dark:bg-onyx-800 cursor-pointer"
                             >
                               <option value="pending">Pending</option>
+                              <option value="approved">Approved</option>
                               <option value="processing">Processing</option>
                               <option value="dispatched">Dispatched</option>
                               <option value="delivered">Delivered</option>
@@ -893,7 +953,14 @@ export default function AdminDashboard({
                             {ord.customer?.city || 'Lahore'}
                           </td>
                           <td className="py-3 px-4 font-mono uppercase text-[10px]">
-                            {ord.paymentMethod === 'cod' ? '💵 COD' : ord.paymentMethod?.toUpperCase()}
+                            <div className="flex items-center space-x-1.5">
+                              <span>{ord.paymentMethod === 'cod' ? '💵 COD' : ord.paymentMethod?.toUpperCase()}</span>
+                              {ord.paymentReceipt && (
+                                <span className="px-1.5 py-0.5 bg-camel-100 text-camel-800 dark:bg-camel-900/50 dark:text-camel-300 font-bold text-[9px]">
+                                  📎 PROOF
+                                </span>
+                              )}
+                            </div>
                           </td>
                           <td className="py-3 px-4 text-onyx-600 font-mono">
                             {ord.items?.length || 1} pcs
@@ -908,6 +975,7 @@ export default function AdminDashboard({
                               className="px-2.5 py-1 rounded-lg text-xs font-bold border border-linen-300 dark:border-onyx-700 bg-linen-50 dark:bg-onyx-800 cursor-pointer"
                             >
                               <option value="pending">Pending</option>
+                              <option value="approved">Approved</option>
                               <option value="processing">Processing</option>
                               <option value="dispatched">Dispatched</option>
                               <option value="delivered">Delivered</option>
@@ -1499,7 +1567,42 @@ export default function AdminDashboard({
                 </div>
               </div>
 
-              <div className="pt-2">
+              {/* Payment Proof Screenshot Inspection */}
+              {selectedOrderDetails.paymentReceipt ? (
+                <div className="p-3.5 rounded-none bg-linen-100 dark:bg-onyx-850 border border-linen-300 dark:border-onyx-700 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold uppercase tracking-wider text-[10px] text-camel-600 dark:text-camel-400">
+                      📎 Payment Proof Screenshot:
+                    </span>
+                    <span className="text-[10px] font-mono text-onyx-500 dark:text-linen-400">
+                      {selectedOrderDetails.receiptFileName || 'payment_proof.jpg'}
+                    </span>
+                  </div>
+                  <div
+                    onClick={() => setEnlargedReceipt({
+                      src: selectedOrderDetails.paymentReceipt,
+                      fileName: selectedOrderDetails.receiptFileName
+                    })}
+                    className="relative group cursor-pointer border border-linen-300 dark:border-onyx-700 bg-white dark:bg-black overflow-hidden flex items-center justify-center p-1"
+                  >
+                    <img
+                      src={selectedOrderDetails.paymentReceipt}
+                      alt="Customer Payment Receipt"
+                      className="max-h-48 w-auto object-contain mx-auto transition-transform group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-xs font-bold font-mono">
+                      🔍 Click to Inspect Fullscreen
+                    </div>
+                  </div>
+                </div>
+              ) : ['jazzcash', 'easypaisa', 'bank'].includes((selectedOrderDetails.paymentMethod || '').toLowerCase()) ? (
+                <div className="p-3 rounded-none bg-amber-50 dark:bg-amber-950/30 border border-amber-300 text-amber-800 dark:text-amber-300 text-[11px]">
+                  ⚠️ Manual gateway order with no screenshot proof recorded.
+                </div>
+              ) : null}
+
+              {/* Order Status & Verification Approval Actions */}
+              <div className="pt-2 space-y-2.5">
                 <label className="block font-bold text-onyx-700 dark:text-linen-300 mb-1">
                   Change Fulfillment Status:
                 </label>
@@ -1509,15 +1612,76 @@ export default function AdminDashboard({
                     handleStatusChange(selectedOrderDetails.id || selectedOrderDetails.orderNumber, e.target.value);
                     setSelectedOrderDetails({ ...selectedOrderDetails, status: e.target.value });
                   }}
-                  className="w-full px-3 py-2.5 rounded-xl border border-linen-300 dark:border-onyx-700 bg-linen-50 dark:bg-onyx-800 font-bold"
+                  className="w-full px-3 py-2.5 rounded-none border border-linen-300 dark:border-onyx-700 bg-linen-50 dark:bg-onyx-800 font-bold text-xs"
                 >
                   <option value="pending">Pending</option>
+                  <option value="approved">Approved</option>
                   <option value="processing">Processing</option>
                   <option value="dispatched">Dispatched</option>
                   <option value="delivered">Delivered</option>
                   <option value="cancelled">Cancelled</option>
                 </select>
+
+                {/* Primary Approval Button (When Status is Pending) */}
+                {selectedOrderDetails.status === 'pending' && (
+                  <button
+                    type="button"
+                    disabled={approvalLoading}
+                    onClick={() => handleApproveOrder(selectedOrderDetails)}
+                    className="w-full py-3 bg-black hover:bg-neutral-800 text-white dark:bg-camel-500 dark:hover:bg-camel-600 dark:text-onyx-950 font-bold uppercase tracking-widest text-xs transition active:scale-95 shadow-sm rounded-none"
+                  >
+                    {approvalLoading ? 'Approving Consignment...' : '✓ Approve Order & Activate Live Tracking'}
+                  </button>
+                )}
+
+                {/* Direct WhatsApp Customer Notification Link */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    const cleanPhone = (selectedOrderDetails.customer?.phone || '').replace(/[^0-9]/g, '');
+                    const formattedPhone = cleanPhone.startsWith('0')
+                      ? '92' + cleanPhone.slice(1)
+                      : (cleanPhone.startsWith('92') ? cleanPhone : '92' + cleanPhone);
+                    const msg = `Assalam-o-Alaikum ${selectedOrderDetails.customer?.firstName || 'Valued Client'},\n\nYour Zaytoun Atelier order #${selectedOrderDetails.orderNumber || selectedOrderDetails.id} is ${selectedOrderDetails.status === 'approved' ? 'APPROVED' : 'CONFIRMED'}.\n\n📦 Courier: TCS Express (Tracking #: ${selectedOrderDetails.trackingNumber || 'TCS-99482104-PK'})\n🔗 Live Track: ${window.location.origin}/track/${selectedOrderDetails.orderNumber || selectedOrderDetails.id}\n\nThank you for choosing Zaytoun Atelier slow-fashion craftsmanship.`;
+                    window.open(`https://wa.me/${formattedPhone}?text=${encodeURIComponent(msg)}`, '_blank');
+                  }}
+                  className="w-full py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold uppercase tracking-wider text-xs transition flex items-center justify-center space-x-2 rounded-none shadow-sm"
+                >
+                  <span>📱 Send Customer WhatsApp Notification</span>
+                </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Enlarged Payment Receipt Modal */}
+      {enlargedReceipt && (
+        <div
+          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 cursor-pointer"
+          onClick={() => setEnlargedReceipt(null)}
+        >
+          <div
+            className="relative max-w-3xl max-h-[92vh] bg-white dark:bg-onyx-900 border border-neutral-700 p-3 shadow-2xl rounded-none flex flex-col"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-center pb-2 mb-2 border-b border-neutral-200 dark:border-neutral-800">
+              <span className="font-mono text-xs font-bold text-onyx-900 dark:text-white">
+                📎 {enlargedReceipt.fileName || 'Payment Proof Attachment'}
+              </span>
+              <button
+                onClick={() => setEnlargedReceipt(null)}
+                className="text-xs font-bold px-3 py-1 bg-neutral-200 dark:bg-neutral-800 hover:bg-neutral-300 text-black dark:text-white rounded-none"
+              >
+                ✕ Close
+              </button>
+            </div>
+            <div className="overflow-auto max-h-[80vh] flex items-center justify-center bg-neutral-50 dark:bg-black/50 p-2">
+              <img
+                src={enlargedReceipt.src}
+                alt="Payment Proof Full"
+                className="max-h-[75vh] w-auto object-contain mx-auto shadow-md"
+              />
             </div>
           </div>
         </div>
