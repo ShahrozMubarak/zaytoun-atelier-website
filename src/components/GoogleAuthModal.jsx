@@ -22,11 +22,14 @@ export default function GoogleAuthModal({
   const [customName, setCustomName] = useState("Shahroz Dogar");
   const [customEmail, setCustomEmail] = useState("shaahrozdogar@gmail.com");
 
+  const [copiedOrigin, setCopiedOrigin] = useState(false);
+
   // Reset states on open/close
   useEffect(() => {
     if (isOpen) {
       setErrorMessage("");
       setLoading(false);
+      setCopiedOrigin(false);
     }
   }, [isOpen]);
 
@@ -44,10 +47,9 @@ export default function GoogleAuthModal({
       onError: (err) => {
         console.warn("Google Sign-In Notice:", err.message);
         setLoading(false);
+        const origin = typeof window !== 'undefined' ? window.location.origin : '';
         setErrorMessage(
-          err.message?.includes("origin") || err.message?.includes("invalid") || err.message?.includes("popup")
-            ? "Google OAuth requires localhost to be whitelisted in Google Cloud Console. Click '1-Click Instant Sign-In' below to continue immediately!"
-            : err.message || "Google Sign-In could not complete. Use 1-Click Sign-In below."
+          `Google Origin Mismatch: ${origin} is not listed in your Google Cloud Console "Authorized JavaScript origins". Use the 1-Click Sign-In below to continue instantly, or add ${origin} to your Google Cloud credentials.`
         );
       }
     });
@@ -171,9 +173,27 @@ export default function GoogleAuthModal({
 
           {/* Error / Notice message */}
           {errorMessage && (
-            <div className="mb-4 p-3 rounded-none bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800 text-amber-900 dark:text-amber-200 text-xs flex items-start space-x-2">
-              <span className="text-sm">⚠️</span>
-              <span className="flex-1 leading-snug">{errorMessage}</span>
+            <div className="mb-4 p-3 rounded-none bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800 text-amber-900 dark:text-amber-200 text-xs space-y-2">
+              <div className="flex items-start space-x-2">
+                <span className="text-sm">⚠️</span>
+                <span className="flex-1 leading-snug">{errorMessage}</span>
+              </div>
+              <div className="flex items-center space-x-2 pt-1 border-t border-amber-200 dark:border-amber-900/50">
+                <code className="bg-amber-100 dark:bg-amber-900/60 px-2 py-0.5 text-[11px] font-mono select-all">
+                  {typeof window !== 'undefined' ? window.location.origin : 'http://localhost:5173'}
+                </code>
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText(window.location.origin);
+                    setCopiedOrigin(true);
+                    setTimeout(() => setCopiedOrigin(false), 2000);
+                  }}
+                  className="px-2 py-0.5 rounded-none bg-amber-900 text-white dark:bg-amber-200 dark:text-black text-[10px] uppercase font-bold hover:opacity-90 transition cursor-pointer"
+                >
+                  {copiedOrigin ? "Copied!" : "Copy Origin"}
+                </button>
+              </div>
             </div>
           )}
 
