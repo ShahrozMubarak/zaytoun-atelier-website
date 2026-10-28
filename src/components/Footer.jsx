@@ -62,6 +62,25 @@ export default function Footer({ onOpenSizeGuide }) {
                 </li>
               </ul>
             </div>
+
+            <div>
+              <p className="text-[#A6865A] dark:text-[#E6D3B3] mb-3 font-mono">Contact</p>
+              <ul className="space-y-2.5 text-neutral-400 font-medium normal-case tracking-normal text-sm">
+                <li>
+                  <a href="tel:+923001234567" className="hover:text-white transition">
+                    +92 300 1234567
+                  </a>
+                </li>
+                <li>
+                  <a href="mailto:concierge@zaytounatelier.com" className="hover:text-white transition">
+                    concierge@zaytounatelier.com
+                  </a>
+                </li>
+                <li className="text-neutral-500 text-xs font-mono">
+                  Gulberg III, Lahore
+                </li>
+              </ul>
+            </div>
           </div>
 
         </div>

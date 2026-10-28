@@ -36,24 +36,6 @@ export default function AdminGate({ children, user = null, onOpenAuthModal }) {
     return <NotFoundPage />;
   }
 
-  // Authorized Owner Experience
-  return (
-    <div>
-      <div className="bg-[#FAF8F3] dark:bg-onyx-900 border-b border-[#E6D3B3]/40 dark:border-onyx-800 px-4 py-2.5 flex items-center justify-between text-xs">
-        <div className="flex items-center space-x-2.5">
-          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span className="font-mono text-onyx-800 dark:text-neutral-200 font-bold">
-            Executive Session: <strong className="text-black dark:text-[#E6D3B3]">{user.name || 'Owner'} ({user.email})</strong>
-          </span>
-          <span className="bg-[#E6D3B3] text-black px-2 py-0.5 rounded-none font-bold text-[11px] uppercase tracking-wider">
-            Verified Owner
-          </span>
-        </div>
-        <div className="text-[11px] text-neutral-500 font-mono">
-          Strict Access Mode: 404 Active for Public
-        </div>
-      </div>
-      {children}
-    </div>
-  );
+  // Authorized Owner Experience - Clean, invisible security wrapper with zero clutter
+  return children;
 }

@@ -371,7 +371,7 @@ export default function CheckoutModal({
                     }`}
                   />
                   {formErrors.firstName && (
-                    <p className="text-red-600 text-xs font-bold mt-1">⚠️ {formErrors.firstName}</p>
+                    <p className="text-red-600 text-xs font-medium mt-1">{formErrors.firstName}</p>
                   )}
                 </div>
                 <div>
@@ -388,7 +388,7 @@ export default function CheckoutModal({
                     }`}
                   />
                   {formErrors.lastName && (
-                    <p className="text-red-600 text-xs font-bold mt-1">⚠️ {formErrors.lastName}</p>
+                    <p className="text-red-600 text-xs font-medium mt-1">{formErrors.lastName}</p>
                   )}
                 </div>
               </div>
@@ -409,7 +409,7 @@ export default function CheckoutModal({
                     }`}
                   />
                   {formErrors.phone ? (
-                    <p className="text-red-600 text-xs font-bold mt-1">⚠️ {formErrors.phone}</p>
+                    <p className="text-red-600 text-xs font-medium mt-1">{formErrors.phone}</p>
                   ) : (
                     <span className="text-xs text-onyx-500 block mt-1">Digits only (03XXXXXXXXX). Required for courier delivery updates</span>
                   )}
@@ -417,8 +417,8 @@ export default function CheckoutModal({
                 <div>
                   <div className="flex items-center justify-between mb-1">
                     <label className="block text-xs font-semibold text-onyx-800">Email Address (Google Account)</label>
-                    <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 border border-emerald-200 dark:border-emerald-800">
-                      ✓ Google Verified
+                    <span className="text-[10px] font-bold text-neutral-600 dark:text-neutral-300 uppercase tracking-widest px-2 py-0.5 border border-neutral-300 dark:border-neutral-700">
+                      Verified
                     </span>
                   </div>
                   <input
@@ -430,7 +430,7 @@ export default function CheckoutModal({
                     className="w-full bg-neutral-100 dark:bg-onyx-800 border border-linen-300 dark:border-onyx-700 rounded-none p-2.5 text-xs text-onyx-700 dark:text-neutral-300 font-mono cursor-not-allowed"
                   />
                   {formErrors.email && (
-                    <p className="text-red-600 text-xs font-bold mt-1">⚠️ {formErrors.email}</p>
+                    <p className="text-red-600 text-xs font-medium mt-1">{formErrors.email}</p>
                   )}
                 </div>
               </div>
@@ -449,7 +449,7 @@ export default function CheckoutModal({
                   }`}
                 />
                 {formErrors.address && (
-                  <p className="text-red-600 text-xs font-bold mt-1">⚠️ {formErrors.address}</p>
+                  <p className="text-red-600 text-xs font-medium mt-1">{formErrors.address}</p>
                 )}
               </div>
 
@@ -491,7 +491,7 @@ export default function CheckoutModal({
                     }`}
                   />
                   {formErrors.postalCode && (
-                    <p className="text-red-600 text-xs font-bold mt-1">⚠️ {formErrors.postalCode}</p>
+                    <p className="text-red-600 text-xs font-medium mt-1">{formErrors.postalCode}</p>
                   )}
                 </div>
               </div>
@@ -564,7 +564,6 @@ export default function CheckoutModal({
                   <div className="flex-1">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
-                        <span className="text-lg">💵</span>
                         <strong className="text-xs sm:text-sm font-bold text-onyx-950">Cash on Delivery (COD)</strong>
                         <span className="text-xs bg-camel-100 text-camel-800 font-bold px-2 py-0.5 rounded">Most Popular</span>
                       </div>
@@ -595,7 +594,6 @@ export default function CheckoutModal({
                   <div className="flex-1">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
-                        <span className="text-lg">💳</span>
                         <strong className="text-xs sm:text-sm font-bold text-onyx-950">Credit / Debit Card</strong>
                         <span className="text-xs bg-sand-200 text-sand-900 font-bold px-2 py-0.5 rounded">Instant 5% Off</span>
                       </div>
@@ -826,9 +824,8 @@ export default function CheckoutModal({
                     <div className="p-4 bg-white border-2 border-dashed border-sand-500 rounded-none space-y-3">
                       <div className="flex items-center justify-between">
                         <div>
-                          <strong className="text-xs uppercase tracking-wide text-onyx-950 flex items-center space-x-1.5">
-                            <span>📎</span>
-                            <span>Upload Payment Screenshot / Receipt *</span>
+                          <strong className="text-xs uppercase tracking-wide text-onyx-950 block">
+                            Upload Payment Screenshot / Receipt *
                           </strong>
                           <p className="text-xs text-onyx-500 mt-0.5">
                             Screenshot of successful transfer showing TID, date &amp; amount. Required before order confirmation.
@@ -836,7 +833,7 @@ export default function CheckoutModal({
                         </div>
                         {receiptPreview && (
                           <span className="text-xs font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-none border border-emerald-300">
-                            ✓ Proof Attached
+                            Proof Attached
                           </span>
                         )}
                       </div>
@@ -893,9 +890,8 @@ export default function CheckoutModal({
                       )}
 
                       {receiptError && (
-                        <div className="p-2.5 bg-red-50 border border-red-300 text-red-700 text-xs font-bold flex items-center space-x-2">
-                          <span>⚠️</span>
-                          <span>{receiptError}</span>
+                        <div className="p-2.5 bg-red-50 border border-red-300 text-red-700 text-xs font-semibold">
+                          {receiptError}
                         </div>
                       )}
                     </div>

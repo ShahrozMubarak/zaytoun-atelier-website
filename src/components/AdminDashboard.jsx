@@ -284,7 +284,7 @@ export default function AdminDashboard({
       return;
     }
     localStorage.setItem('zaytoun_admin_email', clean);
-    setAdminEmailSavedMessage(`✅ Authorized owner email updated to "${clean}". Studio access is strictly limited to this Google account.`);
+    setAdminEmailSavedMessage(`Authorized owner email updated to "${clean}". Studio access is strictly limited to this Google account.`);
     setTimeout(() => setAdminEmailSavedMessage(''), 5000);
   };
 
@@ -396,7 +396,7 @@ export default function AdminDashboard({
     }
 
     setIsProductModalOpen(false);
-    alert(`✅ Product "${productForm.name}" successfully saved to MongoDB Atlas!`);
+    alert(`Product "${productForm.name}" successfully saved to MongoDB Atlas.`);
   };
 
   // Delete Product from MongoDB
@@ -408,7 +408,7 @@ export default function AdminDashboard({
     if (onDeleteProduct) onDeleteProduct(productId);
 
     if (success) {
-      alert("✅ Product removed from database.");
+      alert("Product removed from database.");
     }
   };
 
@@ -451,15 +451,15 @@ export default function AdminDashboard({
 
 Your Zaytoun Atelier order #${order.orderNumber || order.id} has been verified and APPROVED by our studio concierge.
 
-📦 Consignment Tracking #: ${trackingNumber}
-🚚 Courier: TCS Express (slow-fashion slow-tailored consignment)
-🔗 Live Track Your Parcel: ${window.location.origin}/track/${order.orderNumber || order.id}
+Consignment Tracking #: ${trackingNumber}
+Courier: TCS Express
+Live Track: ${window.location.origin}/track/${order.orderNumber || order.id}
 
 Thank you for choosing Zaytoun Atelier craftsmanship.`;
 
       const waUrl = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(msg)}`;
 
-      if (window.confirm("✅ Order Approved! TCS tracking number generated.\n\nOpen customer's WhatsApp to send the automated notification now?")) {
+      if (window.confirm("Order Approved. TCS tracking number generated.\n\nOpen customer's WhatsApp to send the notification now?")) {
         window.open(waUrl, '_blank');
       }
     } catch (err) {
@@ -506,261 +506,151 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
   return (
     <div className="min-h-screen bg-neutral-50 dark:bg-black text-black dark:text-white font-sans flex flex-col transition-colors w-full overflow-x-hidden">
       
-      {/* Top Executive Header */}
-      <header className="sticky top-0 z-30 bg-white/95 dark:bg-onyx-950/95 backdrop-blur-md border-b border-neutral-200 dark:border-onyx-800 px-3 sm:px-8 h-16 sm:h-20 flex items-center justify-between shadow-sm">
-        <div className="flex items-center space-x-2 sm:space-x-3 min-w-0">
-          <BrandLogo size="sm" asLink={false} />
-          <div className="border-l border-neutral-300 dark:border-onyx-800 pl-2 sm:pl-3 flex items-center space-x-1.5 shrink-0">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-            </span>
-            <span className="text-[10px] sm:text-[11px] uppercase font-bold tracking-wider text-emerald-800 dark:text-emerald-400">
-              <span className="hidden sm:inline">MongoDB </span>Atlas Live
-            </span>
+      {/* Sleek Minimalist Studio Navigation Bar - Styled cleanly like Navbar */}
+      <div className="sticky top-16 sm:top-20 z-30 bg-white/95 dark:bg-black/95 backdrop-blur-md border-b border-neutral-200 dark:border-neutral-800 px-4 sm:px-8 lg:px-12">
+        <div className="max-w-[1600px] mx-auto flex flex-col md:flex-row md:items-center justify-between gap-3 py-2 sm:py-0 min-h-[56px] sm:min-h-[64px]">
+          
+          {/* Clean Minimalist Tabs (Styled like Navbar Links) */}
+          <nav className="flex items-center space-x-6 sm:space-x-8 overflow-x-auto scrollbar-none text-xs font-bold uppercase tracking-widest py-1">
+            {[
+              { id: 'overview', label: 'Overview' },
+              { id: 'approvals', label: 'Approvals', count: pendingOrders.length, highlight: true },
+              { id: 'orders', label: 'Orders', count: liveOrders.length },
+              { id: 'products', label: 'Catalog', count: liveProducts.length },
+              { id: 'customers', label: 'Clients', count: customers.length },
+              { id: 'subscribers', label: 'Gazette', count: subscribers.length + inquiries.length },
+              { id: 'security', label: 'Security' },
+              { id: 'appearance', label: 'Theme' }
+            ].map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`py-3.5 whitespace-nowrap transition-all border-b-2 flex items-center space-x-2 ${
+                  activeTab === tab.id
+                    ? 'border-black dark:border-[#E6D3B3] text-black dark:text-[#E6D3B3] font-black'
+                    : 'border-transparent text-neutral-400 hover:text-black dark:hover:text-white font-medium'
+                }`}
+              >
+                <span>{tab.label}</span>
+                {tab.count !== undefined && tab.count > 0 && (
+                  <span className={`px-1.5 py-0.5 rounded-none text-[10px] font-mono ${
+                    tab.highlight && tab.count > 0
+                      ? 'bg-amber-500 text-black font-black'
+                      : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300'
+                  }`}>
+                    {tab.count}
+                  </span>
+                )}
+              </button>
+            ))}
+          </nav>
+
+          {/* Sleek Actions (Clean, spaced, no cheap icons) */}
+          <div className="flex items-center space-x-3 shrink-0 pb-2 md:pb-0">
+            <button
+              onClick={handleOpenCreateProduct}
+              className="px-4 py-2 bg-black hover:bg-neutral-800 text-white dark:bg-[#E6D3B3] dark:hover:bg-[#d9c19b] dark:text-black text-xs font-bold uppercase tracking-wider rounded-none transition"
+            >
+              + New Garment
+            </button>
+            <button
+              onClick={loadAllDataFromMongoDB}
+              disabled={loading}
+              className="hidden sm:inline-block px-3 py-2 border border-neutral-300 dark:border-neutral-700 hover:border-black dark:hover:border-white text-neutral-700 dark:text-neutral-300 text-xs font-bold uppercase tracking-wider rounded-none transition"
+            >
+              {loading ? 'Syncing...' : 'Refresh'}
+            </button>
+            <button
+              onClick={onCloseAdmin}
+              className="px-3 py-2 border border-neutral-300 dark:border-neutral-700 hover:border-black dark:hover:border-white text-neutral-700 dark:text-neutral-300 text-xs font-bold uppercase tracking-wider rounded-none transition"
+            >
+              Storefront →
+            </button>
           </div>
-        </div>
 
-        <div className="flex items-center space-x-2 sm:space-x-3 shrink-0">
-          <button
-            onClick={loadAllDataFromMongoDB}
-            disabled={loading}
-            className="flex items-center space-x-1 sm:space-x-1.5 px-2.5 py-1.5 rounded-none border border-neutral-300 dark:border-onyx-700 bg-white dark:bg-onyx-900 text-xs font-semibold text-neutral-800 dark:text-neutral-200 hover:border-black dark:hover:border-white shadow-sm transition active:scale-95"
-            title="Refresh database records"
-          >
-            <span className={loading ? "animate-spin" : ""}>🔄</span>
-            <span className="hidden sm:inline">{loading ? "Connecting..." : "Sync Atlas"}</span>
-          </button>
-
-          <button
-            onClick={onCloseAdmin}
-            className="flex items-center space-x-1 px-3 py-1.5 sm:px-4 sm:py-2 rounded-none bg-black hover:bg-neutral-800 text-white dark:bg-[#E6D3B3] dark:hover:bg-[#d9c19b] dark:text-black text-xs font-bold uppercase tracking-wider shadow transition active:scale-95"
-          >
-            <span>← Storefront</span>
-          </button>
         </div>
-      </header>
+      </div>
 
       {/* Main Container */}
-      <main className="max-w-[1500px] w-full mx-auto px-3 sm:px-8 py-6 sm:py-8 flex-1 space-y-6 sm:space-y-8">
+      <main className="max-w-[1600px] w-full mx-auto px-4 sm:px-8 lg:px-12 py-8 sm:py-12 flex-1 space-y-10">
         
-        {/* Title & Live Counters Banner */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2 border-b border-neutral-200 dark:border-onyx-800">
-          <div>
-            <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#A6865A] dark:text-[#E6D3B3] font-bold">
-              ATELIER EXECUTIVE SYSTEM
-            </span>
-            <h1 className="font-editorial text-2xl sm:text-4xl lg:text-5xl font-bold text-black dark:text-white mt-1">
-              Admin & Database Portal
-            </h1>
-            <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-1">
-              Live MongoDB cluster connection • Last synced: {lastRefreshed.toLocaleTimeString()}
-            </p>
-          </div>
-
-          <button
-            onClick={handleOpenCreateProduct}
-            className="bg-black hover:bg-neutral-800 text-white dark:bg-[#E6D3B3] dark:hover:bg-[#d9c19b] dark:text-black font-bold text-xs uppercase tracking-wider px-4 sm:px-5 py-2.5 sm:py-3 rounded-none shadow transition active:scale-95 flex items-center space-x-2 self-start sm:self-auto"
-          >
-            <span>+ Add New Garment</span>
-          </button>
-        </div>
-
-        {/* Executive Tabs Bar */}
-        <div className="sticky top-16 sm:top-20 z-20 bg-white/95 dark:bg-onyx-950/95 backdrop-blur-md py-2 border-b border-neutral-200 dark:border-onyx-800 text-xs font-semibold overflow-x-auto flex items-center space-x-4 sm:space-x-6 scrollbar-none w-full">
-          <button
-            onClick={() => setActiveTab('overview')}
-            className={`pb-3 transition whitespace-nowrap flex items-center space-x-1.5 ${
-              activeTab === 'overview'
-                ? 'text-black dark:text-[#E6D3B3] font-bold border-b-2 border-black dark:border-[#E6D3B3]'
-                : 'text-neutral-500 dark:text-neutral-400 hover:text-black dark:hover:text-[#E6D3B3]'
-            }`}
-          >
-            <span>📈 Analytics & Graphs</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('approvals')}
-            className={`pb-3 transition whitespace-nowrap flex items-center space-x-1.5 ${
-              activeTab === 'approvals'
-                ? 'text-black dark:text-[#E6D3B3] font-bold border-b-2 border-black dark:border-[#E6D3B3]'
-                : 'text-neutral-500 dark:text-neutral-400 hover:text-black dark:hover:text-[#E6D3B3]'
-            }`}
-          >
-            <span>⚡ Approvals Queue</span>
-            {pendingOrders.length > 0 && (
-              <span className="px-2 py-0.5 rounded-none font-bold text-xs bg-amber-500 text-black animate-pulse">
-                {pendingOrders.length}
-              </span>
-            )}
-          </button>
-
-          <button
-            onClick={() => setActiveTab('orders')}
-            className={`pb-3 transition whitespace-nowrap flex items-center space-x-1.5 ${
-              activeTab === 'orders'
-                ? 'text-black dark:text-[#E6D3B3] font-bold border-b-2 border-black dark:border-[#E6D3B3]'
-                : 'text-neutral-500 dark:text-neutral-400 hover:text-black dark:hover:text-[#E6D3B3]'
-            }`}
-          >
-            <span>📦 Orders & Shipments</span>
-            <span className="px-1.5 py-0.5 rounded-none text-xs bg-neutral-100 dark:bg-onyx-800 font-bold">
-              {liveOrders.length}
-            </span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('products')}
-            className={`pb-3 transition whitespace-nowrap flex items-center space-x-1.5 ${
-              activeTab === 'products'
-                ? 'text-black dark:text-[#E6D3B3] font-bold border-b-2 border-black dark:border-[#E6D3B3]'
-                : 'text-neutral-500 dark:text-neutral-400 hover:text-black dark:hover:text-[#E6D3B3]'
-            }`}
-          >
-            <span>👗 Products Catalog</span>
-            <span className="px-1.5 py-0.5 rounded-none text-xs bg-neutral-100 dark:bg-onyx-800 font-bold">
-              {liveProducts.length}
-            </span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('customers')}
-            className={`pb-3 transition whitespace-nowrap flex items-center space-x-1.5 ${
-              activeTab === 'customers'
-                ? 'text-black dark:text-[#E6D3B3] font-bold border-b-2 border-black dark:border-[#E6D3B3]'
-                : 'text-neutral-500 dark:text-neutral-400 hover:text-black dark:hover:text-[#E6D3B3]'
-            }`}
-          >
-            <span>👤 Client Directory</span>
-            <span className="px-1.5 py-0.5 rounded-none text-xs bg-neutral-100 dark:bg-onyx-800 font-bold">
-              {customers.length}
-            </span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('subscribers')}
-            className={`pb-3 transition whitespace-nowrap flex items-center space-x-1.5 ${
-              activeTab === 'subscribers'
-                ? 'text-black dark:text-[#E6D3B3] font-bold border-b-2 border-black dark:border-[#E6D3B3]'
-                : 'text-neutral-500 dark:text-neutral-400 hover:text-black dark:hover:text-[#E6D3B3]'
-            }`}
-          >
-            <span>📬 Gazette & Concierge</span>
-            <span className="px-1.5 py-0.5 rounded-none text-xs bg-neutral-100 dark:bg-onyx-800 font-bold">
-              {subscribers.length + inquiries.length}
-            </span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('security')}
-            className={`pb-3 transition whitespace-nowrap flex items-center space-x-1.5 ${
-              activeTab === 'security'
-                ? 'text-black dark:text-[#E6D3B3] font-bold border-b-2 border-black dark:border-[#E6D3B3]'
-                : 'text-neutral-500 dark:text-neutral-400 hover:text-black dark:hover:text-[#E6D3B3]'
-            }`}
-          >
-            <span>🛡️ Security & Access</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('appearance')}
-            className={`pb-3 transition whitespace-nowrap flex items-center space-x-1.5 ${
-              activeTab === 'appearance'
-                ? 'text-black dark:text-[#E6D3B3] font-bold border-b-2 border-black dark:border-[#E6D3B3]'
-                : 'text-neutral-500 dark:text-neutral-400 hover:text-black dark:hover:text-[#E6D3B3]'
-            }`}
-          >
-            <span>🎨 Brand & Palette</span>
-          </button>
-        </div>
-
         {/* =========================================================================
             TAB 1: VISUAL ANALYTICS & INTERACTIVE REVENUE GRAPH
         ========================================================================= */}
         {activeTab === 'overview' && (
           <div className="space-y-8 animate-fadeIn">
-            {/* 6 Key MongoDB Metrics Cards */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-4">
-              <div className="p-3 sm:p-4 rounded-none bg-white dark:bg-onyx-900 border border-neutral-300 dark:border-onyx-800 shadow-sm">
-                <span className="text-[11px] sm:text-xs uppercase font-bold text-neutral-500 dark:text-neutral-400 tracking-wider block">
+            {/* 6 Key Metrics Cards */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+              <div className="p-4 sm:p-5 rounded-none bg-white dark:bg-onyx-900 border border-neutral-200 dark:border-neutral-800">
+                <span className="text-xs uppercase font-bold text-neutral-400 tracking-widest block">
                   Total Sales
                 </span>
-                <p className="text-base sm:text-xl font-black text-black dark:text-[#E6D3B3] mt-1 font-mono truncate">
+                <p className="text-lg sm:text-2xl font-black text-black dark:text-[#E6D3B3] mt-2 font-mono">
                   Rs. {totalRevenue.toLocaleString()}
                 </p>
-                <span className="text-[10px] sm:text-xs text-emerald-600 font-semibold block mt-0.5">● Atlas Verified</span>
               </div>
 
-              <div className="p-3 sm:p-4 rounded-none bg-white dark:bg-onyx-900 border border-neutral-300 dark:border-onyx-800 shadow-sm">
-                <span className="text-[11px] sm:text-xs uppercase font-bold text-neutral-500 dark:text-neutral-400 tracking-wider block">
+              <div className="p-4 sm:p-5 rounded-none bg-white dark:bg-onyx-900 border border-neutral-200 dark:border-neutral-800">
+                <span className="text-xs uppercase font-bold text-neutral-400 tracking-widest block">
                   Approvals
                 </span>
-                <p className="text-base sm:text-xl font-black text-amber-600 dark:text-amber-400 mt-1 font-mono">
+                <p className="text-lg sm:text-2xl font-black text-black dark:text-white mt-2 font-mono">
                   {pendingOrders.length}
                 </p>
-                <span className="text-[10px] sm:text-xs text-neutral-500 block mt-0.5">Awaiting Check</span>
               </div>
 
-              <div className="p-3 sm:p-4 rounded-none bg-white dark:bg-onyx-900 border border-neutral-300 dark:border-onyx-800 shadow-sm">
-                <span className="text-[11px] sm:text-xs uppercase font-bold text-neutral-500 dark:text-neutral-400 tracking-wider block">
-                  Total Orders
+              <div className="p-4 sm:p-5 rounded-none bg-white dark:bg-onyx-900 border border-neutral-200 dark:border-neutral-800">
+                <span className="text-xs uppercase font-bold text-neutral-400 tracking-widest block">
+                  Orders
                 </span>
-                <p className="text-base sm:text-xl font-black text-black dark:text-white mt-1 font-mono">
+                <p className="text-lg sm:text-2xl font-black text-black dark:text-white mt-2 font-mono">
                   {liveOrders.length}
                 </p>
-                <span className="text-[10px] sm:text-xs text-neutral-500 block mt-0.5">Consignments</span>
               </div>
 
-              <div className="p-3 sm:p-4 rounded-none bg-white dark:bg-onyx-900 border border-neutral-300 dark:border-onyx-800 shadow-sm">
-                <span className="text-[11px] sm:text-xs uppercase font-bold text-neutral-500 dark:text-neutral-400 tracking-wider block">
+              <div className="p-4 sm:p-5 rounded-none bg-white dark:bg-onyx-900 border border-neutral-200 dark:border-neutral-800">
+                <span className="text-xs uppercase font-bold text-neutral-400 tracking-widest block">
                   Catalog
                 </span>
-                <p className="text-base sm:text-xl font-black text-black dark:text-white mt-1 font-mono">
+                <p className="text-lg sm:text-2xl font-black text-black dark:text-white mt-2 font-mono">
                   {liveProducts.length}
                 </p>
-                <span className="text-[10px] sm:text-xs text-[#A6865A] dark:text-[#E6D3B3] font-semibold block mt-0.5">Active Pieces</span>
               </div>
 
-              <div className="p-3 sm:p-4 rounded-none bg-white dark:bg-onyx-900 border border-neutral-300 dark:border-onyx-800 shadow-sm">
-                <span className="text-[11px] sm:text-xs uppercase font-bold text-neutral-500 dark:text-neutral-400 tracking-wider block">
+              <div className="p-4 sm:p-5 rounded-none bg-white dark:bg-onyx-900 border border-neutral-200 dark:border-neutral-800">
+                <span className="text-xs uppercase font-bold text-neutral-400 tracking-widest block">
                   Clients
                 </span>
-                <p className="text-base sm:text-xl font-black text-black dark:text-white mt-1 font-mono">
+                <p className="text-lg sm:text-2xl font-black text-black dark:text-white mt-2 font-mono">
                   {customers.length}
                 </p>
-                <span className="text-[10px] sm:text-xs text-neutral-500 block mt-0.5">Registered Profiles</span>
               </div>
 
-              <div className="p-3 sm:p-4 rounded-none bg-white dark:bg-onyx-900 border border-neutral-300 dark:border-onyx-800 shadow-sm">
-                <span className="text-[11px] sm:text-xs uppercase font-bold text-neutral-500 dark:text-neutral-400 tracking-wider block">
-                  Gazette Circle
+              <div className="p-4 sm:p-5 rounded-none bg-white dark:bg-onyx-900 border border-neutral-200 dark:border-neutral-800">
+                <span className="text-xs uppercase font-bold text-neutral-400 tracking-widest block">
+                  Gazette
                 </span>
-                <p className="text-base sm:text-xl font-black text-black dark:text-white mt-1 font-mono">
+                <p className="text-lg sm:text-2xl font-black text-black dark:text-white mt-2 font-mono">
                   {subscribers.length}
                 </p>
-                <span className="text-[10px] sm:text-xs text-emerald-600 font-semibold block mt-0.5">Subscribers</span>
               </div>
             </div>
 
-            {/* INTERACTIVE ANIMATED REVENUE GRAPH (7-DAY TRAJECTORY) */}
-            <div className="p-4 sm:p-6 rounded-none bg-white dark:bg-onyx-900 border border-neutral-300 dark:border-onyx-800 shadow-sm space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-neutral-200 dark:border-onyx-800 pb-4">
+            {/* Revenue Trajectory Graph (7 Days) */}
+            <div className="p-5 sm:p-8 rounded-none bg-white dark:bg-onyx-900 border border-neutral-200 dark:border-neutral-800 space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-neutral-200 dark:border-neutral-800 pb-4">
                 <div>
-                  <h3 className="font-editorial text-xl font-bold text-black dark:text-white flex items-center space-x-2">
-                    <span>📈 Revenue Trajectory</span>
-                    <span className="text-xs font-mono font-normal text-neutral-500">(Past 7 Days)</span>
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-black dark:text-white">
+                    Revenue (Past 7 Days)
                   </h3>
-                  <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-0.5">
-                    Live revenue aggregation across completed &amp; booked orders
-                  </p>
                 </div>
-                <div className="flex items-center space-x-4 text-xs font-mono">
+                <div className="flex items-center space-x-6 text-xs font-mono">
                   <div>
-                    <span className="text-neutral-500">Peak Daily: </span>
+                    <span className="text-neutral-400">Peak: </span>
                     <strong className="text-black dark:text-[#E6D3B3]">Rs. {maxChartRevenue.toLocaleString()}</strong>
                   </div>
                   <div>
-                    <span className="text-neutral-500">Avg/Day: </span>
+                    <span className="text-neutral-400">Average: </span>
                     <strong className="text-black dark:text-[#E6D3B3]">
                       Rs. {Math.round(totalRevenue / 7).toLocaleString()}
                     </strong>
@@ -948,35 +838,29 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
 
             </div>
 
-            {/* Low Inventory Alert Banner (if any item has <= 4 stock) */}
+            {/* Low Inventory Alert Banner */}
             {lowStockProducts.length > 0 && (
               <div className="p-4 rounded-none bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-                <div className="flex items-center space-x-3 text-amber-900 dark:text-amber-200">
-                  <span className="text-lg">⚠️</span>
-                  <div>
-                    <strong>Low Stock Inventory Alert: </strong>
-                    <span>{lowStockProducts.length} garments have critical scarcity (4 or fewer remaining).</span>
-                  </div>
+                <div className="text-amber-900 dark:text-amber-200">
+                  <strong className="uppercase tracking-wider">Low Stock Notice: </strong>
+                  <span>{lowStockProducts.length} pieces have 4 or fewer remaining.</span>
                 </div>
                 <button
                   onClick={() => setActiveTab('products')}
                   className="font-bold text-amber-800 dark:text-amber-300 underline text-xs"
                 >
-                  Inspect in Products Catalog →
+                  View in Catalog →
                 </button>
               </div>
             )}
 
             {/* Recent Orders Section */}
-            <div className="bg-white dark:bg-onyx-900 rounded-none border border-neutral-300 dark:border-onyx-800 shadow-sm overflow-hidden">
-              <div className="p-5 border-b border-neutral-200 dark:border-onyx-800 flex items-center justify-between">
+            <div className="bg-white dark:bg-onyx-900 rounded-none border border-neutral-200 dark:border-neutral-800 shadow-sm overflow-hidden">
+              <div className="p-5 border-b border-neutral-200 dark:border-neutral-800 flex items-center justify-between">
                 <div>
-                  <h3 className="font-editorial text-lg font-bold text-black dark:text-white">
-                    Recent Customer Orders
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-black dark:text-white">
+                    Recent Orders
                   </h3>
-                  <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                    Direct from MongoDB Atlas orders collection (Stored Unhashed)
-                  </p>
                 </div>
                 <button
                   onClick={() => setActiveTab('orders')}
@@ -988,12 +872,12 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
 
               {liveOrders.length === 0 ? (
                 <div className="p-8 text-center text-xs text-neutral-500">
-                  No customer orders in MongoDB yet. Place an order from the storefront!
+                  No customer orders received yet.
                 </div>
               ) : (
                 <div className="overflow-x-auto w-full">
                   <table className="w-full min-w-[650px] text-left text-xs">
-                    <thead className="bg-neutral-100 dark:bg-onyx-950 text-neutral-600 dark:text-neutral-400 text-xs font-bold uppercase tracking-wider border-b border-neutral-200 dark:border-onyx-800">
+                    <thead className="bg-neutral-100 dark:bg-onyx-950 text-neutral-600 dark:text-neutral-400 text-xs font-bold uppercase tracking-wider border-b border-neutral-200 dark:border-neutral-800">
                       <tr>
                         <th className="py-3 px-4">Order #</th>
                         <th className="py-3 px-4">Customer</th>
@@ -1020,10 +904,10 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                           </td>
                           <td className="py-3 px-4 font-mono uppercase text-xs">
                             <div className="flex items-center space-x-1.5">
-                              <span>{ord.paymentMethod === 'cod' ? '💵 COD' : ord.paymentMethod?.toUpperCase()}</span>
+                              <span>{ord.paymentMethod === 'cod' ? 'COD' : ord.paymentMethod?.toUpperCase()}</span>
                               {ord.paymentReceipt && (
                                 <span className="px-1.5 py-0.5 bg-[#E6D3B3] text-black font-bold text-xs">
-                                  📎 PROOF
+                                  PROOF
                                 </span>
                               )}
                             </div>
@@ -1060,34 +944,30 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
         ========================================================================= */}
         {activeTab === 'approvals' && (
           <div className="space-y-6 animate-fadeIn">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-200 dark:border-onyx-800 pb-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-200 dark:border-neutral-800 pb-4">
               <div>
-                <h3 className="font-editorial text-2xl font-bold text-black dark:text-white">
-                  Consignment Approval Queue
+                <h3 className="text-sm font-bold uppercase tracking-wider text-black dark:text-white">
+                  Approvals Queue
                 </h3>
-                <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                  Review payment screenshots, approve orders, and auto-dispatch courier tracking numbers
-                </p>
               </div>
               <span className="px-3 py-1 bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-200 text-xs font-bold uppercase tracking-wider">
-                {pendingOrders.length} Pending Verifications
+                {pendingOrders.length} Pending
               </span>
             </div>
 
             {pendingOrders.length === 0 ? (
-              <div className="p-12 text-center border-2 border-dashed border-neutral-300 dark:border-onyx-800 bg-white dark:bg-onyx-900 rounded-none space-y-2">
-                <span className="text-3xl">🎉</span>
-                <h4 className="font-bold text-sm text-black dark:text-white">Queue Clear!</h4>
-                <p className="text-xs text-neutral-500">All received orders have been approved and processed.</p>
+              <div className="p-12 text-center border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-onyx-900 rounded-none space-y-1">
+                <h4 className="font-bold text-sm text-black dark:text-white uppercase tracking-wider">Queue Clear</h4>
+                <p className="text-xs text-neutral-500">No pending orders awaiting verification.</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {pendingOrders.map(order => (
                   <div
                     key={order.orderNumber || order.id}
-                    className="p-5 rounded-none bg-white dark:bg-onyx-900 border-2 border-neutral-300 dark:border-onyx-800 space-y-4 shadow-sm"
+                    className="p-5 rounded-none bg-white dark:bg-onyx-900 border border-neutral-200 dark:border-neutral-800 space-y-4 shadow-sm"
                   >
-                    <div className="flex justify-between items-start border-b border-neutral-200 dark:border-onyx-800 pb-3">
+                    <div className="flex justify-between items-start border-b border-neutral-200 dark:border-neutral-800 pb-3">
                       <div>
                         <span className="font-mono text-xs font-black text-black dark:text-[#E6D3B3] block">
                           #{order.orderNumber || order.id}
@@ -1101,7 +981,7 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                       </span>
                     </div>
 
-                    {/* Customer Info (Unhashed) */}
+                    {/* Customer Info */}
                     <div className="text-xs space-y-1 font-mono">
                       <div><strong className="font-sans text-neutral-700 dark:text-neutral-300">Client:</strong> {order.customer?.firstName} {order.customer?.lastName}</div>
                       <div><strong className="font-sans text-neutral-700 dark:text-neutral-300">Phone:</strong> {order.customer?.phone}</div>
@@ -1120,8 +1000,8 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                           alt="Receipt Preview"
                           className="max-h-36 mx-auto object-contain transition-transform group-hover:scale-105"
                         />
-                        <span className="block text-[11px] font-bold text-neutral-600 dark:text-neutral-300 mt-1">
-                          🔍 Click to Inspect Fullscreen
+                        <span className="block text-xs font-bold text-neutral-600 dark:text-neutral-300 mt-1">
+                          Click to enlarge receipt
                         </span>
                       </div>
                     ) : (
@@ -1138,7 +1018,7 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                         onClick={() => handleApproveOrder(order)}
                         className="w-full py-2.5 bg-black hover:bg-neutral-800 text-white dark:bg-[#E6D3B3] dark:hover:bg-[#d9c19b] dark:text-black font-bold uppercase tracking-wider text-xs transition active:scale-95 shadow-sm"
                       >
-                        {approvalLoading ? 'Approving...' : '✓ Approve & Assign TCS Tracking'}
+                        {approvalLoading ? 'Approving...' : 'Approve & Assign Tracking'}
                       </button>
                       <button
                         type="button"
@@ -1150,7 +1030,7 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                         }}
                         className="w-full py-2 bg-emerald-700 hover:bg-emerald-800 text-white font-bold uppercase tracking-wider text-xs transition flex items-center justify-center space-x-1"
                       >
-                        <span>📱 WhatsApp Customer</span>
+                        <span>WhatsApp Customer</span>
                       </button>
                     </div>
 
@@ -1166,32 +1046,13 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
         ========================================================================= */}
         {activeTab === 'security' && (
           <div className="max-w-2xl mx-auto space-y-6 animate-fadeIn p-6 bg-white dark:bg-onyx-900 border border-neutral-300 dark:border-onyx-800 shadow-sm">
-            <div className="border-b border-neutral-200 dark:border-onyx-800 pb-4">
-              <span className="text-xs font-mono font-bold uppercase tracking-widest text-[#A6865A] dark:text-[#E6D3B3]">
-                Atelier Security Core
-              </span>
-              <h3 className="font-editorial text-2xl font-bold text-black dark:text-white mt-1">
-                Executive Access &amp; 404 Shield
+            <div className="border-b border-neutral-200 dark:border-neutral-800 pb-4">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-black dark:text-white">
+                Studio Security &amp; Owner Email
               </h3>
-              <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-1">
-                Manage who can unlock the Studio Dashboard. All unauthorized visitors or random URL attempts are automatically redirected to 404 Page Not Found.
+              <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+                Configure the authorized Google account allowed to access Studio. All other visitors automatically see 404 Page Not Found.
               </p>
-            </div>
-
-            {/* Active Security Badges */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-              <div className="p-3 bg-neutral-50 dark:bg-onyx-950 border border-neutral-200 dark:border-onyx-800 space-y-1">
-                <span className="text-emerald-600 font-bold block">● 404 Cloaking</span>
-                <span className="text-neutral-500">Public sees 404 for /studio &amp; /admin</span>
-              </div>
-              <div className="p-3 bg-neutral-50 dark:bg-onyx-950 border border-neutral-200 dark:border-onyx-800 space-y-1">
-                <span className="text-emerald-600 font-bold block">● Google OAuth 2.0</span>
-                <span className="text-neutral-500">Strict cryptographically signed session</span>
-              </div>
-              <div className="p-3 bg-neutral-50 dark:bg-onyx-950 border border-neutral-200 dark:border-onyx-800 space-y-1">
-                <span className="text-emerald-600 font-bold block">● Atlas Direct Sync</span>
-                <span className="text-neutral-500">Unhashed database storage</span>
-              </div>
             </div>
 
             {/* Change Owner Email Form */}
@@ -1327,8 +1188,8 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
 
                           {/* Department (Men / Women / Kids) */}
                           <td className="py-3 px-4">
-                            <span className="px-2 py-0.5 rounded-none text-[10px] font-bold uppercase tracking-wider bg-neutral-100 dark:bg-onyx-800 text-neutral-800 dark:text-neutral-200 border border-neutral-300 dark:border-onyx-700">
-                              {dept === 'men' ? '👨 Men' : dept === 'women' ? '👩 Women' : '👶 Kids'}
+                            <span className="px-2 py-0.5 rounded-none text-xs font-bold uppercase tracking-wider bg-neutral-100 dark:bg-onyx-800 text-neutral-800 dark:text-neutral-200 border border-neutral-300 dark:border-onyx-700">
+                              {dept === 'men' ? 'Men' : dept === 'women' ? 'Women' : 'Kids'}
                             </span>
                           </td>
 
@@ -1473,10 +1334,10 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                           </td>
                           <td className="py-3 px-4 font-mono uppercase text-[10px]">
                             <div className="flex items-center space-x-1.5">
-                              <span>{ord.paymentMethod === 'cod' ? '💵 COD' : ord.paymentMethod?.toUpperCase()}</span>
+                              <span>{ord.paymentMethod === 'cod' ? 'COD' : ord.paymentMethod?.toUpperCase()}</span>
                               {ord.paymentReceipt && (
                                 <span className="px-1.5 py-0.5 bg-[#E6D3B3] text-black font-bold text-[9px] rounded-none">
-                                  📎 PROOF
+                                  PROOF
                                 </span>
                               )}
                             </div>
@@ -1608,7 +1469,7 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                   onClick={handleCopySubscriberEmails}
                   className="px-4 py-2 bg-black hover:bg-neutral-800 text-white dark:bg-[#E6D3B3] dark:hover:bg-[#d9c19b] dark:text-black text-xs font-bold uppercase tracking-wider rounded-none transition active:scale-95 whitespace-nowrap shadow-sm"
                 >
-                  {copiedEmails ? '✓ Copied All Emails!' : 'Copy All Emails (CSV)'}
+                  {copiedEmails ? 'Copied to Clipboard' : 'Copy All Emails (CSV)'}
                 </button>
               </div>
 
@@ -1848,9 +1709,9 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                     onChange={(e) => setProductForm({ ...productForm, person: e.target.value })}
                     className="w-full px-3 py-2 rounded-none border border-neutral-300 dark:border-onyx-700 bg-neutral-50 dark:bg-onyx-800 font-bold text-xs text-black dark:text-white"
                   >
-                    <option value="women">👩 Women's Collection</option>
-                    <option value="men">👨 Men's Collection</option>
-                    <option value="kids">👶 Kids Pret</option>
+                    <option value="women">Women's Collection</option>
+                    <option value="men">Men's Collection</option>
+                    <option value="kids">Kids Pret</option>
                   </select>
                 </div>
 
@@ -2040,7 +1901,7 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
               {/* Customer Info Card */}
               <div className="p-3.5 rounded-none bg-neutral-100 dark:bg-onyx-850 border border-neutral-200 dark:border-onyx-800 space-y-1">
                 <div className="font-bold text-black dark:text-white">
-                  👤 Client: {selectedOrderDetails.customer?.firstName} {selectedOrderDetails.customer?.lastName}
+                  Client: {selectedOrderDetails.customer?.firstName} {selectedOrderDetails.customer?.lastName}
                 </div>
                 <div>Email: <span className="font-mono">{selectedOrderDetails.customer?.email}</span></div>
                 <div>Phone: <span className="font-mono font-bold text-black dark:text-[#E6D3B3]">{selectedOrderDetails.customer?.phone}</span></div>
@@ -2052,7 +1913,7 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
 
               {/* Items List */}
               <div>
-                <span className="font-bold uppercase tracking-wider text-[10px] text-neutral-500">
+                <span className="font-bold uppercase tracking-wider text-xs text-neutral-500">
                   Ordered Items:
                 </span>
                 <div className="mt-2 divide-y divide-neutral-200 dark:divide-onyx-800 border border-neutral-200 dark:border-onyx-800 rounded-none overflow-hidden">
@@ -2060,7 +1921,7 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                     <div key={idx} className="p-3 flex items-center justify-between">
                       <div>
                         <strong className="block text-black dark:text-white">{item.name}</strong>
-                        <span className="text-[11px] text-neutral-500">
+                        <span className="text-xs text-neutral-500">
                           Size: {item.size || item.selectedSize} • Color: {item.color || item.selectedColor} • Qty: {item.quantity || 1}
                         </span>
                       </div>
@@ -2075,11 +1936,11 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
               {/* Order Pricing Summary */}
               <div className="p-3.5 rounded-none bg-neutral-50 dark:bg-onyx-800 border border-neutral-200 dark:border-onyx-700 flex items-center justify-between">
                 <div>
-                  <span className="text-[10px] uppercase font-bold text-neutral-500">Payment Gateway</span>
+                  <span className="text-xs uppercase font-bold text-neutral-500">Payment Gateway</span>
                   <div className="font-bold uppercase font-mono">{selectedOrderDetails.paymentMethod}</div>
                 </div>
                 <div className="text-right">
-                  <span className="text-[10px] uppercase font-bold text-neutral-500">Payable Total</span>
+                  <span className="text-xs uppercase font-bold text-neutral-500">Payable Total</span>
                   <div className="text-base font-black font-mono text-black dark:text-[#E6D3B3]">
                     Rs. {Number(selectedOrderDetails.total || selectedOrderDetails.pricing?.finalTotal || 0).toLocaleString()}
                   </div>
@@ -2090,10 +1951,10 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
               {selectedOrderDetails.paymentReceipt ? (
                 <div className="p-3.5 rounded-none bg-neutral-100 dark:bg-onyx-800 border border-neutral-300 dark:border-onyx-700 space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="font-bold uppercase tracking-wider text-[10px] text-[#A6865A] dark:text-[#E6D3B3]">
-                      📎 Payment Proof Screenshot:
+                    <span className="font-bold uppercase tracking-wider text-xs text-[#A6865A] dark:text-[#E6D3B3]">
+                      Payment Proof Screenshot:
                     </span>
-                    <span className="text-[10px] font-mono text-neutral-500 dark:text-neutral-400">
+                    <span className="text-xs font-mono text-neutral-500 dark:text-neutral-400">
                       {selectedOrderDetails.receiptFileName || 'payment_proof.jpg'}
                     </span>
                   </div>
@@ -2110,13 +1971,13 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                       className="max-h-48 w-auto object-contain mx-auto transition-transform group-hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-xs font-bold font-mono">
-                      🔍 Click to Inspect Fullscreen
+                      Click to enlarge receipt
                     </div>
                   </div>
                 </div>
               ) : ['jazzcash', 'easypaisa', 'bank'].includes((selectedOrderDetails.paymentMethod || '').toLowerCase()) ? (
-                <div className="p-3 rounded-none bg-amber-50 dark:bg-amber-950/30 border border-amber-300 text-amber-800 dark:text-amber-300 text-[11px]">
-                  ⚠️ Manual gateway order with no screenshot proof recorded.
+                <div className="p-3 rounded-none bg-amber-50 dark:bg-amber-950/30 border border-amber-300 text-amber-800 dark:text-amber-300 text-xs">
+                  Manual gateway order (no receipt attached).
                 </div>
               ) : null}
 
@@ -2149,7 +2010,7 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                     onClick={() => handleApproveOrder(selectedOrderDetails)}
                     className="w-full py-3 bg-black hover:bg-neutral-800 text-white dark:bg-[#E6D3B3] dark:hover:bg-[#d9c19b] dark:text-black font-bold uppercase tracking-widest text-xs transition active:scale-95 shadow-sm rounded-none"
                   >
-                    {approvalLoading ? 'Approving Consignment...' : '✓ Approve Order & Activate Live Tracking'}
+                    {approvalLoading ? 'Approving Consignment...' : 'Approve Order & Activate Live Tracking'}
                   </button>
                 )}
 
@@ -2161,12 +2022,12 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                     const formattedPhone = cleanPhone.startsWith('0')
                       ? '92' + cleanPhone.slice(1)
                       : (cleanPhone.startsWith('92') ? cleanPhone : '92' + cleanPhone);
-                    const msg = `Assalam-o-Alaikum ${selectedOrderDetails.customer?.firstName || 'Valued Client'},\n\nYour Zaytoun Atelier order #${selectedOrderDetails.orderNumber || selectedOrderDetails.id} is ${selectedOrderDetails.status === 'approved' ? 'APPROVED' : 'CONFIRMED'}.\n\n📦 Courier: TCS Express (Tracking #: ${selectedOrderDetails.trackingNumber || 'TCS-99482104-PK'})\n🔗 Live Track: ${window.location.origin}/track/${selectedOrderDetails.orderNumber || selectedOrderDetails.id}\n\nThank you for choosing Zaytoun Atelier slow-fashion craftsmanship.`;
+                    const msg = `Assalam-o-Alaikum ${selectedOrderDetails.customer?.firstName || 'Valued Client'},\n\nYour Zaytoun Atelier order #${selectedOrderDetails.orderNumber || selectedOrderDetails.id} is ${selectedOrderDetails.status === 'approved' ? 'APPROVED' : 'CONFIRMED'}.\n\nCourier: TCS Express (Tracking #: ${selectedOrderDetails.trackingNumber || 'TCS-99482104-PK'})\nLive Track: ${window.location.origin}/track/${selectedOrderDetails.orderNumber || selectedOrderDetails.id}\n\nThank you for choosing Zaytoun Atelier slow-fashion craftsmanship.`;
                     window.open(`https://wa.me/${formattedPhone}?text=${encodeURIComponent(msg)}`, '_blank');
                   }}
                   className="w-full py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold uppercase tracking-wider text-xs transition flex items-center justify-center space-x-2 rounded-none shadow-sm"
                 >
-                  <span>📱 Send Customer WhatsApp Notification</span>
+                  <span>Send Customer WhatsApp Notification</span>
                 </button>
               </div>
             </div>
@@ -2186,13 +2047,13 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
           >
             <div className="flex justify-between items-center pb-2 mb-2 border-b border-neutral-200 dark:border-neutral-800">
               <span className="font-mono text-xs font-bold text-onyx-900 dark:text-white">
-                📎 {enlargedReceipt.fileName || 'Payment Proof Attachment'}
+                {enlargedReceipt.fileName || 'Payment Proof Attachment'}
               </span>
               <button
                 onClick={() => setEnlargedReceipt(null)}
                 className="text-xs font-bold px-3 py-1 bg-neutral-200 dark:bg-neutral-800 hover:bg-neutral-300 text-black dark:text-white rounded-none"
               >
-                ✕ Close
+                Close
               </button>
             </div>
             <div className="overflow-auto max-h-[80vh] flex items-center justify-center bg-neutral-50 dark:bg-black/50 p-2">

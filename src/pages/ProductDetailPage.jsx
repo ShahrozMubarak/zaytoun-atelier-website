@@ -336,11 +336,11 @@ export default function ProductDetailPage({
             {/* Trust Badges */}
             <div className="grid grid-cols-2 gap-3 pt-3 border-t border-neutral-200 dark:border-onyx-800 text-xs font-mono">
               <div className="p-3 bg-neutral-50 dark:bg-onyx-900 border border-neutral-200 dark:border-onyx-800 rounded-none">
-                <p className="font-bold uppercase text-xs text-neutral-900 dark:text-neutral-100">🚚 TCS Express Delivery</p>
+                <p className="font-bold uppercase text-xs text-neutral-900 dark:text-neutral-100">TCS Express Delivery</p>
                 <p className="text-xs text-neutral-500 mt-1">2-3 business days across Pakistan</p>
               </div>
               <div className="p-3 bg-neutral-50 dark:bg-onyx-900 border border-neutral-200 dark:border-onyx-800 rounded-none">
-                <p className="font-bold uppercase text-xs text-neutral-900 dark:text-neutral-100">🔄 14-Day Exchanges</p>
+                <p className="font-bold uppercase text-xs text-neutral-900 dark:text-neutral-100">14-Day Exchanges</p>
                 <p className="text-xs text-neutral-500 mt-1">Hassle-free size adjustments</p>
               </div>
             </div>
@@ -370,13 +370,13 @@ export default function ProductDetailPage({
 
               <div className="text-xs text-neutral-600 dark:text-neutral-300 font-light leading-relaxed">
                 {activeTab === 'fabric' && (
-                  <p>🧵 <strong>Fabric:</strong> {product.fabric || "100% Authentic Ring-Spun Cotton Denim (13.5oz)."}</p>
+                  <p><strong>Fabric:</strong> {product.fabric || "100% Authentic Ring-Spun Cotton Denim (13.5oz)."}</p>
                 )}
                 {activeTab === 'care' && (
-                  <p>💧 <strong>Care:</strong> {product.care || "Machine wash cold inside out with similar colors. Line dry."}</p>
+                  <p><strong>Care:</strong> {product.care || "Machine wash cold inside out with similar colors. Line dry."}</p>
                 )}
                 {activeTab === 'delivery' && (
-                  <p>🚚 <strong>Courier:</strong> Standard courier delivery via TCS Express (2-3 business days across Pakistan). Automated consignment tracking provided upon checkout.</p>
+                  <p><strong>Courier:</strong> Standard courier delivery via TCS Express (2-3 business days across Pakistan). Automated consignment tracking provided upon checkout.</p>
                 )}
               </div>
             </div>

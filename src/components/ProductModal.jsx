@@ -337,10 +337,10 @@ export default function ProductModal({
                 </div>
 
                 <div className="text-neutral-600 dark:text-neutral-300 font-light leading-relaxed">
-                  {activeTab === 'fabric' && <p>🧵 <strong>Fabric:</strong> {product.fabric || "100% Authentic Ring-Spun Cotton Denim (13.5oz)."}</p>}
-                  {activeTab === 'care' && <p>💧 <strong>Care:</strong> {product.care || "Machine wash cold inside out with similar colors. Line dry."}</p>}
+                  {activeTab === 'fabric' && <p><strong>Fabric:</strong> {product.fabric || "100% Authentic Ring-Spun Cotton Denim (13.5oz)."}</p>}
+                  {activeTab === 'care' && <p><strong>Care:</strong> {product.care || "Machine wash cold inside out with similar colors. Line dry."}</p>}
                   {activeTab === 'delivery' && (
-                    <p>🚚 <strong>Courier:</strong> Standard courier delivery via TCS Express (2-3 business days across Pakistan). Automated tracking provided upon checkout.</p>
+                    <p><strong>Courier:</strong> Standard courier delivery via TCS Express (2-3 business days across Pakistan). Automated tracking provided upon checkout.</p>
                   )}
                 </div>
               </div>
