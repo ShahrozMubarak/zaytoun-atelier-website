@@ -51,14 +51,14 @@ export default function App() {
     try {
       const saved = localStorage.getItem('zaytoun_theme_config');
       return saved ? JSON.parse(saved) : {
-        brand: "ZAYTOUN",
-        olive: "#364634",
+        brand: "ZAYTOUN ATELIER",
+        olive: "#E6D3B3",
         camel: "#C69F6F"
       };
     } catch {
       return {
-        brand: "ZAYTOUN",
-        olive: "#364634",
+        brand: "ZAYTOUN ATELIER",
+        olive: "#E6D3B3",
         camel: "#C69F6F"
       };
     }
@@ -77,7 +77,7 @@ export default function App() {
   useEffect(() => {
     try {
       localStorage.setItem('zaytoun_theme_config', JSON.stringify(themeConfig));
-      document.documentElement.style.setProperty('--olive', themeConfig.olive || '#364634');
+      document.documentElement.style.setProperty('--olive', themeConfig.olive || '#E6D3B3');
       document.documentElement.style.setProperty('--camel', themeConfig.camel || '#C69F6F');
       if (themeConfig.linen) {
         document.documentElement.style.setProperty('--linen', themeConfig.linen);
@@ -730,7 +730,7 @@ export default function App() {
       {/* Luxury Initial Preloader */}
       <Preloader />
 
-      <div className="min-h-screen flex flex-col bg-white dark:bg-onyx-950 text-onyx-950 dark:text-linen-100 transition-colors font-sans antialiased selection:bg-camel-500 selection:text-white">
+      <div className="min-h-screen w-full max-w-full overflow-x-hidden flex flex-col bg-white dark:bg-onyx-950 text-onyx-950 dark:text-linen-100 transition-colors font-sans antialiased selection:bg-camel-500 selection:text-white">
         
         {/* Minimalist Top Navigation Bar */}
         <Navbar
@@ -745,7 +745,7 @@ export default function App() {
         />
 
         {/* Multi-Page Routes */}
-        <main className="flex-1">
+        <main className="flex-1 w-full max-w-full overflow-x-hidden">
           <Routes>
             {/* Home / Preview Landing Page */}
             <Route

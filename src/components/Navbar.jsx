@@ -37,7 +37,7 @@ export default function Navbar({
 
   return (
     <header className="sticky top-0 z-40 w-full bg-white dark:bg-onyx-950 border-b border-neutral-200 dark:border-onyx-800 transition-colors shadow-sm">
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12 h-16 sm:h-20 flex items-center justify-between">
+      <div className="max-w-[1600px] mx-auto px-3 sm:px-8 lg:px-12 h-16 sm:h-20 flex items-center justify-between">
         
         {/* Brand Logo - Bespoke Luxury Atelier Monogram & Wide-Tracked Wordmark */}
         <BrandLogo size="md" />
@@ -62,7 +62,7 @@ export default function Navbar({
         </nav>
 
         {/* Right Header Utilities */}
-        <div className="flex items-center space-x-2 sm:space-x-4 text-sm text-black dark:text-white">
+        <div className="flex items-center space-x-1.5 sm:space-x-3 text-sm text-black dark:text-white shrink-0">
           
           {/* Currency Switcher (Desktop/Tablet) */}
           <button
@@ -100,7 +100,7 @@ export default function Navbar({
           {!user ? (
             <button
               onClick={() => onOpenAuthModal && onOpenAuthModal({ title: "Sign in with Google", subtitle: "Access your saved bag, couture orders, and concierge." })}
-              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-none border border-neutral-300 dark:border-onyx-700 hover:border-black dark:hover:border-white bg-white dark:bg-onyx-900 text-xs font-bold transition-all shadow-sm active:scale-95 text-neutral-800 dark:text-white"
+              className="flex items-center space-x-1 sm:space-x-1.5 px-2 py-1.5 sm:px-3 sm:py-1.5 rounded-none border border-neutral-300 dark:border-onyx-700 hover:border-black dark:hover:border-white bg-white dark:bg-onyx-900 text-xs font-bold transition-all shadow-sm active:scale-95 text-neutral-800 dark:text-white"
               title="Sign in with Google"
             >
               <svg className="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 24 24">
@@ -115,27 +115,27 @@ export default function Navbar({
             <div className="relative">
               <button
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
-                className="flex items-center space-x-1.5 p-1 pl-1.5 pr-2.5 rounded-full border border-camel-400/50 dark:border-camel-500/40 hover:border-camel-500 bg-linen-50 dark:bg-onyx-900 transition-all text-xs font-bold text-neutral-900 dark:text-white"
+                className="flex items-center space-x-1 p-1 sm:pl-1.5 sm:pr-2.5 rounded-full border border-sand-400/50 dark:border-sand-500/40 hover:border-sand-500 bg-sand-50/50 dark:bg-onyx-900 transition-all text-xs font-bold text-neutral-900 dark:text-white"
                 title={`Signed in as ${user.name}`}
               >
                 <img
                   src={user.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(user.name)}`}
                   alt={user.name}
-                  className="w-6 h-6 rounded-full object-cover border border-camel-400/60"
+                  className="w-6 h-6 rounded-full object-cover border border-sand-400/60"
                 />
-                <span className="max-w-[70px] sm:max-w-[110px] truncate text-left">{user.firstName || user.name}</span>
-                <svg className="w-3 h-3 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <span className="hidden sm:inline max-w-[110px] truncate text-left">{user.firstName || user.name}</span>
+                <svg className="w-3 h-3 text-neutral-400 hidden sm:block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
 
               {/* User Dropdown Menu */}
               {userMenuOpen && (
-                <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-white dark:bg-onyx-950 border border-neutral-200 dark:border-onyx-800 shadow-2xl py-2 z-50 animate-fadeIn">
+                <div className="absolute right-0 mt-2 w-56 rounded-none bg-white dark:bg-onyx-950 border border-neutral-200 dark:border-onyx-800 shadow-2xl py-2 z-50 animate-fadeIn">
                   <div className="px-4 py-2.5 border-b border-neutral-100 dark:border-onyx-800">
                     <p className="font-bold text-neutral-900 dark:text-white truncate">{user.name}</p>
                     <p className="text-[11px] text-neutral-500 dark:text-neutral-400 truncate">{user.email}</p>
-                    <span className="inline-flex items-center space-x-1.5 mt-1 px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/40 text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
+                    <span className="inline-flex items-center space-x-1.5 mt-1 px-2 py-0.5 rounded-none bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/40 text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                       <span>Google Verified</span>
                     </span>
@@ -171,18 +171,18 @@ export default function Navbar({
             </div>
           )}
 
-          {/* Shopping Bag Pill Button (Signature Olive & Camel) */}
+          {/* Shopping Bag Button (Sharp Luxury) */}
           <button
             onClick={onOpenCart}
-            className="flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-olive-700 hover:bg-olive-800 text-white border border-camel-400/40 hover:border-camel-400 transition-all font-bold text-xs uppercase tracking-wider shadow-sm active:scale-95"
+            className="flex items-center space-x-1.5 px-2.5 py-1.5 sm:px-3.5 sm:py-1.5 rounded-none bg-black hover:bg-neutral-800 text-white dark:bg-[#E6D3B3] dark:hover:bg-[#d9c19b] dark:text-black transition-all font-bold text-xs uppercase tracking-wider shadow-sm active:scale-95"
             title="Shopping Bag"
             aria-label="Shopping Bag"
           >
             <svg className="w-4 h-4 fill-none stroke-current" viewBox="0 0 24 24" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
             </svg>
-            <span>Bag</span>
-            <span className="w-4 h-4 rounded-full bg-camel-500 text-onyx-950 text-[10px] flex items-center justify-center font-black shadow-sm">
+            <span className="hidden sm:inline">Bag</span>
+            <span className="w-4 h-4 rounded-none bg-[#E6D3B3] text-black dark:bg-black dark:text-[#E6D3B3] text-[10px] flex items-center justify-center font-black shadow-sm">
               {cartCount}
             </span>
           </button>

@@ -277,14 +277,14 @@ export default function HomePage({
           {/* Scroll Navigation Arrows */}
           <button
             onClick={() => scrollCategory('left')}
-            className="absolute -left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-none bg-white/95 dark:bg-onyx-900/95 shadow-md border border-neutral-300 dark:border-onyx-700 text-black dark:text-white flex items-center justify-center z-10 opacity-0 group-hover/strip:opacity-100 transition-opacity hover:scale-105"
+            className="hidden sm:flex absolute -left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-none bg-white/95 dark:bg-onyx-900/95 shadow-md border border-neutral-300 dark:border-onyx-700 text-black dark:text-white items-center justify-center z-10 opacity-0 group-hover/strip:opacity-100 transition-opacity hover:scale-105"
             aria-label="Scroll Categories Left"
           >
             ←
           </button>
           <button
             onClick={() => scrollCategory('right')}
-            className="absolute -right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-none bg-white/95 dark:bg-onyx-900/95 shadow-md border border-neutral-300 dark:border-onyx-700 text-black dark:text-white flex items-center justify-center z-10 opacity-0 group-hover/strip:opacity-100 transition-opacity hover:scale-105"
+            className="hidden sm:flex absolute -right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-none bg-white/95 dark:bg-onyx-900/95 shadow-md border border-neutral-300 dark:border-onyx-700 text-black dark:text-white items-center justify-center z-10 opacity-0 group-hover/strip:opacity-100 transition-opacity hover:scale-105"
             aria-label="Scroll Categories Right"
           >
             →
@@ -368,11 +368,11 @@ export default function HomePage({
           </button>
 
           {/* Slide Text Content */}
-          <div className="absolute inset-0 p-8 sm:p-14 lg:p-20 flex flex-col justify-end text-white max-w-2xl space-y-3 z-10">
+          <div className="absolute inset-0 p-5 sm:p-14 lg:p-20 flex flex-col justify-end text-white max-w-2xl space-y-2 sm:space-y-3 z-10">
             <span className="text-xs font-black uppercase tracking-[0.2em] bg-white text-black px-3 py-1 w-max rounded-none">
               {bannerSlides[currentSlide].tag}
             </span>
-            <h2 className="text-3xl sm:text-5xl md:text-6xl font-black uppercase tracking-tight text-white font-sans drop-shadow-sm">
+            <h2 className="text-2xl sm:text-5xl md:text-6xl font-black uppercase tracking-tight text-white font-sans drop-shadow-sm">
               {bannerSlides[currentSlide].headline}
             </h2>
             <p className="text-xs sm:text-sm font-bold uppercase tracking-wider text-neutral-200">
@@ -415,7 +415,7 @@ export default function HomePage({
           5. NEW ARRIVALS HORIZONTAL PRODUCT SHELF (OUTFITTERS STYLE 3:4 CARDS)
       ========================================================================= */}
       <section className="w-full max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12 pb-14 sm:pb-20">
-        <div className="flex items-center justify-between mb-6 pb-3 border-b border-neutral-200 dark:border-onyx-800">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 pb-3 border-b border-neutral-200 dark:border-onyx-800 gap-3">
           <div>
             <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tight">
               NEW IN STORE
@@ -424,21 +424,23 @@ export default function HomePage({
               Autumn / Winter 2026 Core Collection
             </p>
           </div>
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={() => scrollNewArrivals('left')}
-              className="w-8 h-8 rounded-none border border-neutral-300 dark:border-onyx-700 hover:border-black dark:hover:border-white text-xs font-bold flex items-center justify-center transition"
-              aria-label="Scroll Left"
-            >
-              ←
-            </button>
-            <button
-              onClick={() => scrollNewArrivals('right')}
-              className="w-8 h-8 rounded-none border border-neutral-300 dark:border-onyx-700 hover:border-black dark:hover:border-white text-xs font-bold flex items-center justify-center transition"
-              aria-label="Scroll Right"
-            >
-              →
-            </button>
+          <div className="flex items-center justify-between sm:justify-end space-x-2">
+            <div className="hidden sm:flex items-center space-x-2">
+              <button
+                onClick={() => scrollNewArrivals('left')}
+                className="w-8 h-8 rounded-none border border-neutral-300 dark:border-onyx-700 hover:border-black dark:hover:border-white text-xs font-bold flex items-center justify-center transition"
+                aria-label="Scroll Left"
+              >
+                ←
+              </button>
+              <button
+                onClick={() => scrollNewArrivals('right')}
+                className="w-8 h-8 rounded-none border border-neutral-300 dark:border-onyx-700 hover:border-black dark:hover:border-white text-xs font-bold flex items-center justify-center transition"
+                aria-label="Scroll Right"
+              >
+                →
+              </button>
+            </div>
             <Link
               to="/shop"
               className="text-xs font-bold uppercase tracking-wider text-black dark:text-white px-4 py-1.5 border border-neutral-300 dark:border-onyx-800 hover:border-black dark:hover:border-white rounded-none transition"

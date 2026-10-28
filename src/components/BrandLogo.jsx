@@ -17,12 +17,12 @@ export default function BrandLogo({
   className = '',
   asLink = true
 }) {
-  // Dimensions based on size preset
+  // Dimensions based on size preset with responsive mobile scaling
   const sizeMap = {
-    sm: { icon: 'w-7 h-7', text: 'text-base', sub: 'text-[9px]' },
-    md: { icon: 'w-9 h-9 sm:w-10 sm:h-10', text: 'text-xl sm:text-2xl', sub: 'text-xs' },
-    lg: { icon: 'w-12 h-12 sm:w-14 sm:h-14', text: 'text-2xl sm:text-3xl', sub: 'text-xs sm:text-sm' },
-    xl: { icon: 'w-16 h-16 sm:w-20 sm:h-20', text: 'text-3xl sm:text-4xl', sub: 'text-sm' }
+    sm: { icon: 'w-6 h-6 sm:w-8 sm:h-8', text: 'text-xs sm:text-base', sub: 'text-[8px] sm:text-[10px]' },
+    md: { icon: 'w-7 h-7 sm:w-10 sm:h-10', text: 'text-sm sm:text-xl lg:text-2xl', sub: 'text-[9px] sm:text-xs' },
+    lg: { icon: 'w-9 h-9 sm:w-14 sm:h-14', text: 'text-lg sm:text-3xl', sub: 'text-[10px] sm:text-sm' },
+    xl: { icon: 'w-12 h-12 sm:w-20 sm:h-20', text: 'text-xl sm:text-4xl', sub: 'text-xs sm:text-sm' }
   };
 
   const currentSize = sizeMap[size] || sizeMap.md;
@@ -91,12 +91,12 @@ export default function BrandLogo({
   const Wordmark = showWordmark && (
     <div className={`flex flex-col leading-none ${stacked ? 'items-center text-center mt-3' : 'text-left'}`}>
       <span
-        className={`font-editorial ${currentSize.text} font-black tracking-[0.28em] text-black dark:text-white uppercase transition-colors`}
+        className={`font-editorial ${currentSize.text} font-black tracking-[0.16em] sm:tracking-[0.28em] text-black dark:text-white uppercase transition-colors`}
       >
         ZAYTOUN
       </span>
       <span
-        className={`${currentSize.sub} font-bold tracking-[0.45em] text-[#A6865A] dark:text-[#E6D3B3] uppercase mt-1 transition-colors`}
+        className={`${currentSize.sub} font-bold tracking-[0.28em] sm:tracking-[0.45em] text-[#A6865A] dark:text-[#E6D3B3] uppercase mt-0.5 sm:mt-1 transition-colors`}
       >
         ATELIER
       </span>
@@ -106,7 +106,7 @@ export default function BrandLogo({
   const innerContent = (
     <div
       className={`inline-flex ${
-        stacked ? 'flex-col items-center' : 'items-center space-x-3.5'
+        stacked ? 'flex-col items-center' : 'items-center space-x-2 sm:space-x-3.5'
       } ${className}`}
     >
       {MonogramEmblem}
