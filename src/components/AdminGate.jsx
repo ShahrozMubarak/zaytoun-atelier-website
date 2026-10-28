@@ -18,10 +18,20 @@ export default function AdminGate({ children, user = null, onOpenAuthModal }) {
     }
   })();
 
-  const currentUserEmail = user?.email ? user.email.toLowerCase().trim() : '';
-  const isAuthorizedOwner = Boolean(user && currentUserEmail && currentUserEmail === configuredAdminEmail);
+  // Retrieve user from prop or synchronously from active Google auth storage
+  const activeUser = user || (() => {
+    try {
+      const stored = localStorage.getItem('zaytoun_client_user');
+      return stored ? JSON.parse(stored) : null;
+    } catch {
+      return null;
+    }
+  })();
 
-  // If visitor is NOT the authorized owner, conceal studio behind 404 Not Found
+  const currentUserEmail = activeUser?.email ? activeUser.email.toLowerCase().trim() : '';
+  const isAuthorizedOwner = Boolean(activeUser && currentUserEmail && currentUserEmail === configuredAdminEmail);
+
+  // If visitor is NOT the authorized owner (unauthenticated, or logged in with any other email), render 404
   if (!isAuthorizedOwner) {
     return <NotFoundPage />;
   }

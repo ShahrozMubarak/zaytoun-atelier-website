@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import BrandLogo from '../components/BrandLogo';
 
 /**
  * NotFoundPage - Editorial Luxury 404 Experience
@@ -12,8 +13,8 @@ export default function NotFoundPage({ onOpenAuthModal }) {
       <div className="max-w-md w-full text-center space-y-6">
         
         {/* Monogram Mark */}
-        <div className="w-14 h-14 mx-auto bg-black dark:bg-[#E6D3B3] text-[#E6D3B3] dark:text-black flex items-center justify-center font-black text-2xl shadow-sm">
-          Z
+        <div className="flex justify-center">
+          <BrandLogo size="lg" showWordmark={false} />
         </div>
 
         <div className="space-y-2">

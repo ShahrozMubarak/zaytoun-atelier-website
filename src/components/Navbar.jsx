@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, Link, useLocation } from 'react-router-dom';
 import { useCurrency } from '../context/CurrencyContext';
+import BrandLogo from './BrandLogo';
 
 /**
  * Navbar - Bold, modern luxury navigation bar.
@@ -39,28 +40,7 @@ export default function Navbar({
       <div className="max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12 h-16 sm:h-20 flex items-center justify-between">
         
         {/* Brand Logo - Bespoke Luxury Atelier Monogram & Wide-Tracked Wordmark */}
-        <Link
-          to="/"
-          className="group flex items-center space-x-3 transition-opacity hover:opacity-90 select-none"
-        >
-          {/* Architectural Monogram Emblem */}
-          <div className="relative w-9 h-9 sm:w-10 sm:h-10 bg-black dark:bg-[#E6D3B3] flex items-center justify-center border border-black dark:border-[#E6D3B3] shadow-sm transition-transform group-hover:scale-105">
-            <span className="font-editorial text-lg sm:text-xl font-black text-[#E6D3B3] dark:text-black tracking-tight">
-              Z
-            </span>
-            <span className="absolute -top-1 -right-1 w-2 h-2 bg-[#E6D3B3] dark:bg-black border border-black dark:border-[#E6D3B3]"></span>
-          </div>
-
-          {/* Luxury Typographic Identity */}
-          <div className="flex flex-col leading-none">
-            <span className="font-editorial text-lg sm:text-2xl font-black tracking-[0.24em] text-black dark:text-white uppercase">
-              ZAYTOUN
-            </span>
-            <span className="text-[11px] sm:text-xs font-bold tracking-[0.38em] text-neutral-500 dark:text-sand-300 uppercase mt-1">
-              ATELIER
-            </span>
-          </div>
-        </Link>
+        <BrandLogo size="md" />
 
         {/* Bold Center Navigation */}
         <nav className="hidden md:flex items-center space-x-8 lg:space-x-10">
