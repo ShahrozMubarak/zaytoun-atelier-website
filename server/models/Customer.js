@@ -18,10 +18,15 @@ const CustomerSchema = new mongoose.Schema(
     province: { type: String, trim: true },
     address: { type: String, trim: true },
     postalCode: { type: String, trim: true },
-    ordersCount: { type: Number, default: 1 },
+    avatar: { type: String },
+    googleId: { type: String },
+    authProvider: { type: String, default: 'google' },
+    loginCount: { type: Number, default: 1 },
+    lastLoginAt: { type: Date, default: Date.now },
+    ordersCount: { type: Number, default: 0 },
     totalSpent: { type: Number, default: 0 },
     orderHistory: [{ type: String }],
-    lastOrderDate: { type: Date, default: Date.now }
+    lastOrderDate: { type: Date }
   },
   {
     timestamps: true

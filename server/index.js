@@ -13,6 +13,7 @@ import Customer from './models/Customer.js';
 import Subscriber from './models/Subscriber.js';
 import Inquiry from './models/Inquiry.js';
 import ThemeConfig from './models/ThemeConfig.js';
+import User from './models/User.js';
 import { SEED_PRODUCTS } from './seedData.js';
 import { generateAdminToken, requireAdminAuth, verifyAdminPassword } from './middleware/auth.js';
 import { validateSubscriber, validateInquiry, validateOrder, validateProduct } from './middleware/validation.js';
@@ -119,24 +120,56 @@ app.get('/api/auth/verify', requireAdminAuth, (req, res) => {
 });
 
 /**
- * Client Google Authentication & MongoDB Sync
- * Upserts customer record when a shopper signs in with Google
+ * Client Google & Account Authentication - Persists to MongoDB Atlas
+ * Upserts customer & user record so account and sign-in info is stored in DB.
  */
 app.post('/api/auth/google-client', async (req, res) => {
   try {
-    const { name, email, avatar, googleId } = req.body;
+    const { name, email, avatar, googleId, authProvider = 'google' } = req.body;
     if (!email) {
       return res.status(400).json({ error: 'Email is required.' });
+    }
+
+    if (!isDBConnected()) {
+      await connectDB();
     }
 
     const cleanEmail = email.toLowerCase().trim();
     const parts = (name || '').trim().split(' ');
     const firstName = parts[0] || 'Client';
     const lastName = parts.slice(1).join(' ') || '';
+    const resolvedAvatar = avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name || cleanEmail)}`;
 
-    let customer = null;
+    let savedUser = null;
+    let savedCustomer = null;
+
     if (isDBConnected()) {
-      customer = await Customer.findOneAndUpdate(
+      // 1. Persist directly to `users` collection in MongoDB Atlas
+      savedUser = await User.findOneAndUpdate(
+        { email: cleanEmail },
+        {
+          $setOnInsert: {
+            email: cleanEmail,
+            ordersCount: 0,
+            totalSpent: 0
+          },
+          $set: {
+            name: name || `${firstName} ${lastName}`.trim() || cleanEmail.split('@')[0],
+            firstName,
+            lastName,
+            avatar: resolvedAvatar,
+            googleId: googleId || '',
+            authProvider,
+            lastLoginAt: new Date(),
+            verified: true
+          },
+          $inc: { loginCount: 1 }
+        },
+        { upsert: true, returnDocument: 'after' }
+      );
+
+      // 2. Persist directly to `customers` collection in MongoDB Atlas
+      savedCustomer = await Customer.findOneAndUpdate(
         { email: cleanEmail },
         {
           $setOnInsert: {
@@ -146,14 +179,20 @@ app.post('/api/auth/google-client', async (req, res) => {
             orderHistory: []
           },
           $set: {
-            name: name || cleanEmail.split('@')[0],
+            name: name || `${firstName} ${lastName}`.trim() || cleanEmail.split('@')[0],
             firstName,
-            lastName
-          }
+            lastName,
+            avatar: resolvedAvatar,
+            googleId: googleId || '',
+            authProvider,
+            lastLoginAt: new Date()
+          },
+          $inc: { loginCount: 1 }
         },
         { upsert: true, returnDocument: 'after' }
       );
-      console.log(`👤 [MongoDB] Google shopper synced: ${cleanEmail}`);
+
+      console.log(`👤 [MongoDB] Account saved in both 'users' and 'customers' collections: ${cleanEmail}`);
     }
 
     res.json({
@@ -163,14 +202,29 @@ app.post('/api/auth/google-client', async (req, res) => {
         name: name || cleanEmail.split('@')[0],
         firstName,
         lastName,
-        avatar: avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name || cleanEmail)}`,
+        avatar: resolvedAvatar,
         googleId: googleId || '',
-        authProvider: 'google',
-        syncedToDB: Boolean(customer)
+        authProvider,
+        syncedToDB: Boolean(savedUser || savedCustomer)
       }
     });
   } catch (err) {
-    console.warn('⚠️ [MongoDB] Error syncing Google client:', err.message);
+    console.warn('⚠️ [MongoDB] Error syncing client account:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * View All Registered Users (Protected for Studio Admin)
+ */
+app.get('/api/users', requireAdminAuth, async (req, res) => {
+  try {
+    if (!isDBConnected()) {
+      await connectDB();
+    }
+    const users = await User.find().sort({ lastLoginAt: -1 });
+    res.json(users);
+  } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
