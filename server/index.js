@@ -78,7 +78,7 @@ connectDB().then((connected) => {
 /**
  * Admin Login: issues a signed JWT token that expires in 8 hours
  */
-app.post('/api/auth/login', (createRateLimiter(), req, res) => {
+app.post('/api/auth/login', createRateLimiter({ max: 20, windowMs: 15 * 60 * 1000 }), (req, res) => {
   const { password, username } = req.body;
 
   if (username && username.trim().toLowerCase() !== 'shahroz') {

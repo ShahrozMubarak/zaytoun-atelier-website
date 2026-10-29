@@ -58,8 +58,7 @@ export default function Navbar({
           </NavLink>
           <NavLink to="/shop" className={navLinkClass}>
             Collection
-          </NavLink><NavLink to="/lookbook" className={navLinkClass}>LOOKBOOK</NavLink>
-          
+          </NavLink>
           <NavLink to="/story" className={navLinkClass}>
             Story
           </NavLink>
@@ -71,6 +70,20 @@ export default function Navbar({
         {/* Right Header Utilities */}
         <div className="flex items-center space-x-1.5 sm:space-x-3 text-sm text-black dark:text-white shrink-0">
           
+          {/* Search Button (Optional) */}
+          {onOpenSearch && (
+            <button
+              onClick={onOpenSearch}
+              className="p-1.5 rounded-none text-neutral-700 dark:text-neutral-300 hover:text-black dark:hover:text-white transition-colors"
+              title="Search"
+              aria-label="Search"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </button>
+          )}
+
           {/* Currency Switcher (Desktop/Tablet) */}
           <button
             onClick={() => {
@@ -81,7 +94,7 @@ export default function Navbar({
             className="hidden sm:inline-block text-xs font-bold px-2 py-1 rounded-none border border-neutral-300 dark:border-neutral-700 hover:border-black dark:hover:border-white transition uppercase"
             title="Switch Currency"
           >
-            {currency}{onOpenSearch && (<button onClick={onOpenSearch} className="p-1.5 rounded-none text-neutral-700 dark:text-neutral-300 hover:text-black dark:hover:text-white transition-colors" title="Search" aria-label="Search"><svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg></button>)}
+            {currency}
           </button>
 
           {/* Theme Toggle Button (Desktop/Tablet) */}
