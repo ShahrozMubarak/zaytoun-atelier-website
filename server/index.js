@@ -29,6 +29,7 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json({ limit: '25mb' }));
 app.use(express.urlencoded({ limit: '25mb', extended: true }));
+function createRateLimiter(options = {}) { const windowMs = options.windowMs || 15 * 60 * 1000; const max = options.max || 100; const message = options.message || 'Too many requests, please try again later.'; const hits = new Map(); const middleware = (req, res, next) => { const key = req.ip || req.headers['x-forwarded-for'] || req.socket?.remoteAddress || 'global'; const now = Date.now(); const record = hits.get(key) || { count: 0, resetTime: now + windowMs }; if (now > record.resetTime) { record.count = 0; record.resetTime = now + windowMs; } record.count += 1; hits.set(key, record); if (record.count > max) { return res.status(429).json({ error: message }); } next(); }; if (options && options.headers && typeof max === 'object' && typeof message === 'function') { return middleware(options, max, message); } return middleware; }
 
 // Ensure MongoDB connection on API requests (supports serverless & Vercel cold starts)
 app.use(async (req, res, next) => {
@@ -77,7 +78,7 @@ connectDB().then((connected) => {
 /**
  * Admin Login: issues a signed JWT token that expires in 8 hours
  */
-app.post('/api/auth/login', (req, res) => {
+app.post('/api/auth/login', (createRateLimiter(), req, res) => {
   const { password, username } = req.body;
 
   if (username && username.trim().toLowerCase() !== 'shahroz') {
