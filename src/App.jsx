@@ -453,22 +453,7 @@ export default function App() {
 
   // Gated Cart Handler: Requires Google Sign-In before anyone can add to cart or buy
   const handleAddToCart = (product, size = 'M', color = null, quantity = 1) => {
-    if (!currentUser || currentUser.authProvider !== 'google' || !currentUser.googleVerified) {
-      const garmentColor = color || product.colors?.[0]?.name || product.primaryColor || 'Olive';
-      setAuthModalConfig({
-        title: "Sign in with Google to Add to Bag",
-        subtitle: `Please sign in with your Google account to add "${product.name || 'this piece'}" to your shopping bag.`,
-        pendingItem: {
-          product,
-          ...product,
-          selectedSize: size,
-          selectedColor: garmentColor,
-          quantity: quantity || 1
-        }
-      });
-      setIsAuthModalOpen(true);
-      return false; // Indicates auth required
-    }
+   
 
     addToCartDirect(product, size, color, quantity);
     setIsCartOpen(true);
