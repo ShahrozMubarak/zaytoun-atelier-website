@@ -1,17 +1,17 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import BrandLogo from './BrandLogo';
 
 /**
  * Footer - Ultra-Minimalist Editorial Split Footer
- * 
- * Rules:
- * - Left half is spacious and empty, featuring ONLY the bespoke brand logo.
- * - Text cut in half: only 4 essential navigation/concierge links on the right half.
- * - Zero administrative links exposed.
- * - Understated luxury copyright.
  */
 export default function Footer({ onOpenSizeGuide }) {
+  const location = useLocation();
+
+  if (location.pathname.startsWith('/studio') || location.pathname.startsWith('/admin')) {
+    return null;
+  }
+
   return (
     <footer className="bg-black text-neutral-300 border-t border-neutral-900 transition-colors select-none">
       <div className="max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12 py-14 sm:py-20">

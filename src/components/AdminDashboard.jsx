@@ -561,63 +561,17 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
   return (
     <div className="min-h-screen bg-neutral-50 dark:bg-black text-black dark:text-white font-sans flex flex-col transition-colors w-full overflow-x-hidden">
       
-      {/* Executive Studio Desktop & Mobile Navigation Bar - Camel Luxury Accent */}
-      <header className="sticky top-16 sm:top-20 z-30 bg-[#FAF4EB]/98 dark:bg-[#12100E]/98 backdrop-blur-md border-b-2 border-[#C69F6F]/40 shadow-xs">
-        <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
-          {/* Top Row: Identification & Quick PC Actions */}
-          <div className="flex flex-wrap items-center justify-between gap-3 py-3 border-b border-[#C69F6F]/20">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 rounded-none border border-[#C69F6F] bg-gradient-to-br from-[#E6D3B3] via-[#C69F6F] to-[#8C6D45] text-black flex items-center justify-center font-serif font-black text-xs shadow-xs">
-                ZA
-              </div>
-              <div>
-                <div className="flex items-center space-x-2">
-                  <h1 className="text-xs sm:text-sm font-black uppercase tracking-widest text-black dark:text-[#E6D3B3] font-mono">
-                    ZAYTOUN ATELIER • STUDIO
-                  </h1>
-                  <span className="hidden sm:inline-flex items-center space-x-1.5 px-2 py-0.5 rounded-none text-[9px] font-mono font-bold uppercase bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800">
-                    <span className="w-1.5 h-1.5 rounded-none bg-emerald-600 animate-pulse" />
-                    <span>Live MongoDB Sync</span>
-                  </span>
-                </div>
-                <p className="text-[10px] text-neutral-500 font-mono hidden md:block">
-                  Executive Workspace • Authorized: {currentUserEmail}
-                </p>
-              </div>
-            </div>
-
-            {/* PC Action Buttons */}
-            <div className="flex items-center space-x-2 sm:space-x-3">
-              <button
-                onClick={handleOpenCreateProduct}
-                className="px-3.5 sm:px-4 py-2 bg-black hover:bg-neutral-800 text-white dark:bg-[#C69F6F] dark:hover:bg-[#b58f5f] dark:text-black text-xs font-black uppercase tracking-wider rounded-none transition shadow-sm cursor-pointer flex items-center space-x-1.5"
-              >
-                <span>+</span>
-                <span>New Garment</span>
-              </button>
-              <button
-                onClick={loadAllDataFromMongoDB}
-                disabled={loading}
-                className="px-3 sm:px-3.5 py-2 border border-[#C69F6F]/50 bg-[#FAF4EB] dark:bg-[#1A1713] hover:border-[#C69F6F] text-black dark:text-white text-xs font-black uppercase tracking-wider rounded-none transition cursor-pointer flex items-center space-x-1.5"
-                title="Refresh all data from MongoDB Atlas"
-              >
-                <svg className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                </svg>
-                <span className="hidden sm:inline">{loading ? 'Syncing...' : 'Sync Live'}</span>
-              </button>
-              <button
-                onClick={onCloseAdmin}
-                className="px-3 sm:px-3.5 py-2 border border-[#C69F6F]/50 bg-[#FAF4EB] dark:bg-[#1A1713] hover:border-[#C69F6F] text-black dark:text-white text-xs font-black uppercase tracking-wider rounded-none transition cursor-pointer flex items-center space-x-1"
-              >
-                <span>Storefront</span>
-                <span>→</span>
-              </button>
-            </div>
+      {/* Website-Style Admin Navigation Bar */}
+      <header className="sticky top-0 z-40 w-full bg-white dark:bg-onyx-950 border-b border-neutral-200 dark:border-onyx-800 transition-colors shadow-sm">
+        <div className="max-w-[1600px] mx-auto px-3 sm:px-8 lg:px-12 h-16 sm:h-20 flex items-center justify-between gap-4 sm:gap-6">
+          
+          {/* Brand Logo - Same bespoke luxury wordmark & monogram as website */}
+          <div className="shrink-0 flex items-center">
+            <BrandLogo size="md" />
           </div>
 
-          {/* Bottom Row: Full-Width Responsive Tabs for Desktop PC & Mobile */}
-          <nav className="flex items-center flex-wrap lg:flex-nowrap overflow-x-auto scrollbar-none py-1 gap-1 sm:gap-1.5 w-full">
+          {/* Simple Text Tabs - Identical style to website navigation links */}
+          <nav className="hidden lg:flex items-center space-x-6 xl:space-x-8">
             {[
               { id: 'overview', label: 'Overview' },
               { id: 'approvals', label: 'Approvals', count: pendingOrders.length, highlight: true },
@@ -627,29 +581,98 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
               { id: 'subscribers', label: 'Gazette', count: subscribers.length + inquiries.length },
               { id: 'security', label: 'Security' },
               { id: 'appearance', label: 'Theme' }
-            ].map(tab => (
+            ].map(tab => {
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`text-xs sm:text-sm font-bold uppercase tracking-wider transition-all py-1.5 flex items-center space-x-1.5 cursor-pointer ${
+                    isActive
+                      ? 'text-black dark:text-[#E6D3B3] border-b-2 border-black dark:border-[#E6D3B3] font-black'
+                      : 'text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-[#E6D3B3]'
+                  }`}
+                >
+                  <span>{tab.label}</span>
+                  {tab.count !== undefined && tab.count > 0 && (
+                    <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono font-bold leading-tight ${
+                      tab.highlight
+                        ? 'bg-amber-500 text-black'
+                        : 'bg-neutral-200 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200'
+                    }`}>
+                      {tab.count}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </nav>
+
+          {/* Clean Quick Actions */}
+          <div className="flex items-center space-x-2 sm:space-x-3 shrink-0">
+            <button
+              onClick={handleOpenCreateProduct}
+              className="px-3 sm:px-4 py-2 bg-black hover:bg-neutral-800 text-white dark:bg-[#C69F6F] dark:hover:bg-[#b58f5f] dark:text-black text-xs font-bold uppercase tracking-wider rounded-none transition shadow-sm cursor-pointer flex items-center space-x-1.5"
+            >
+              <span>+</span>
+              <span>New Garment</span>
+            </button>
+            <button
+              onClick={loadAllDataFromMongoDB}
+              disabled={loading}
+              className="p-2 sm:px-2.5 sm:py-2 border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-onyx-900 hover:border-black dark:hover:border-white text-black dark:text-white text-xs font-bold uppercase tracking-wider rounded-none transition cursor-pointer flex items-center space-x-1.5"
+              title="Sync Live Data"
+            >
+              <svg className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+            </button>
+            <button
+              onClick={onCloseAdmin}
+              className="px-3 sm:px-3.5 py-2 border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-onyx-900 hover:border-black dark:hover:border-white text-black dark:text-white text-xs font-bold uppercase tracking-wider rounded-none transition cursor-pointer flex items-center space-x-1"
+            >
+              <span>Storefront</span>
+              <span>→</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile & Tablet Tab Strip */}
+        <div className="lg:hidden border-t border-neutral-200 dark:border-onyx-800 bg-white dark:bg-onyx-950 px-3 sm:px-6 py-2 flex items-center space-x-4 overflow-x-auto scrollbar-none">
+          {[
+            { id: 'overview', label: 'Overview' },
+            { id: 'approvals', label: 'Approvals', count: pendingOrders.length, highlight: true },
+            { id: 'orders', label: 'Orders', count: liveOrders.length },
+            { id: 'products', label: 'Catalog', count: liveProducts.length },
+            { id: 'customers', label: 'Clients', count: customers.length },
+            { id: 'subscribers', label: 'Gazette', count: subscribers.length + inquiries.length },
+            { id: 'security', label: 'Security' },
+            { id: 'appearance', label: 'Theme' }
+          ].map(tab => {
+            const isActive = activeTab === tab.id;
+            return (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`py-2 px-2.5 sm:px-3 lg:px-3.5 xl:px-4 rounded-none text-xs font-black uppercase tracking-wider transition-all whitespace-nowrap flex items-center space-x-1.5 sm:space-x-2 border-b-2 ${
-                  activeTab === tab.id
-                    ? 'border-[#C69F6F] text-black dark:text-[#E6D3B3] bg-[#F2E5D3]/70 dark:bg-[#201B16]'
-                    : 'border-transparent text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white hover:bg-[#F2E5D3]/30 dark:hover:bg-[#1A1713]'
+                className={`text-xs font-bold uppercase tracking-wider whitespace-nowrap py-1 transition-all flex items-center space-x-1 cursor-pointer ${
+                  isActive
+                    ? 'text-black dark:text-[#E6D3B3] border-b-2 border-black dark:border-[#E6D3B3] font-black'
+                    : 'text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-[#E6D3B3]'
                 }`}
               >
                 <span>{tab.label}</span>
                 {tab.count !== undefined && tab.count > 0 && (
-                  <span className={`px-1.5 py-0.5 rounded-none text-[10px] font-mono font-black ${
-                    tab.highlight && tab.count > 0
-                      ? 'bg-[#C69F6F] text-black'
-                      : 'bg-[#EAE0D2] dark:bg-neutral-800 text-black dark:text-white'
+                  <span className={`px-1.5 py-0.2 rounded-full text-[9px] font-mono font-bold leading-tight ${
+                    tab.highlight
+                      ? 'bg-amber-500 text-black'
+                      : 'bg-neutral-200 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200'
                   }`}>
                     {tab.count}
                   </span>
                 )}
               </button>
-            ))}
-          </nav>
+            );
+          })}
         </div>
       </header>
 

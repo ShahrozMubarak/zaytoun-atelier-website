@@ -27,6 +27,11 @@ export default function Navbar({
     setUserMenuOpen(false);
   }, [location.pathname]);
 
+  // On Studio / Admin routes, AdminDashboard renders its own website-style header with admin tabs
+  if (location.pathname.startsWith('/studio') || location.pathname.startsWith('/admin')) {
+    return null;
+  }
+
   // Bold navigation link style with Sand #E6D3B3 active indicator
   const navLinkClass = ({ isActive }) =>
     `text-xs sm:text-sm font-bold uppercase tracking-wider transition-all py-1 ${
