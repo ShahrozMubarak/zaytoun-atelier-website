@@ -58,6 +58,7 @@ export default function CheckoutModal({
   const [receiptPreview, setReceiptPreview] = useState(null);
   const [receiptFileName, setReceiptFileName] = useState("");
   const [receiptError, setReceiptError] = useState("");
+  const [isDraggingReceipt, setIsDraggingReceipt] = useState(false);
   const fileInputRef = useRef(null);
 
   // Automatically sync customer name and email when Google user is logged in
@@ -126,8 +127,7 @@ export default function CheckoutModal({
     }
   };
 
-  const handleReceiptFileChange = (e) => {
-    const file = e.target.files?.[0];
+  const processReceiptFile = (file) => {
     if (!file) return;
 
     if (file.size > 5 * 1024 * 1024) {
@@ -150,6 +150,11 @@ export default function CheckoutModal({
       setReceiptPreview(event.target.result);
     };
     reader.readAsDataURL(file);
+  };
+
+  const handleReceiptFileChange = (e) => {
+    const file = e.target.files?.[0];
+    processReceiptFile(file);
   };
 
   const handleRemoveReceipt = () => {
@@ -838,54 +843,85 @@ export default function CheckoutModal({
                         )}
                       </div>
 
+                      {/* Permanently mounted native file input connected via id to labels */}
+                      <input
+                        id="checkout-receipt-input"
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/png,image/jpeg,image/webp,image/jpg,application/pdf"
+                        onChange={handleReceiptFileChange}
+                        className="hidden"
+                        aria-label="Upload payment screenshot or PDF receipt"
+                      />
+
                       {!receiptPreview ? (
-                        <div
-                          onClick={() => fileInputRef.current?.click()}
-                          className="flex flex-col items-center justify-center p-5 bg-linen-50 border border-linen-300 hover:border-black transition cursor-pointer text-center group"
+                        <label
+                          htmlFor="checkout-receipt-input"
+                          onDragOver={(e) => { e.preventDefault(); setIsDraggingReceipt(true); }}
+                          onDragLeave={() => setIsDraggingReceipt(false)}
+                          onDrop={(e) => {
+                            e.preventDefault();
+                            setIsDraggingReceipt(false);
+                            if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                              processReceiptFile(e.dataTransfer.files[0]);
+                            }
+                          }}
+                          className={`relative flex flex-col items-center justify-center p-6 border-2 border-dashed transition text-center cursor-pointer group ${
+                            isDraggingReceipt
+                              ? 'border-black bg-linen-200'
+                              : 'border-sand-500 bg-linen-50 hover:border-black hover:bg-linen-100'
+                          }`}
                         >
-                          <input
-                            ref={fileInputRef}
-                            type="file"
-                            accept="image/png,image/jpeg,image/webp,image/jpg,application/pdf"
-                            onChange={handleReceiptFileChange}
-                            className="hidden"
-                          />
-                          <svg className="w-8 h-8 text-sand-700 group-hover:scale-110 transition-transform mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <svg className="w-8 h-8 text-sand-700 group-hover:scale-110 group-hover:text-black transition-all mb-2.5 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                           </svg>
-                          <button
-                            type="button"
-                            onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}
-                            className="px-4 py-2 bg-black text-white text-xs font-bold uppercase tracking-wider rounded-none hover:bg-neutral-800 transition"
-                          >
-                            Choose File / Upload Screenshot
-                          </button>
-                          <span className="text-xs text-onyx-500 mt-1 font-mono">Accepts PNG, JPG, WEBP, PDF (Max 5MB)</span>
-                        </div>
+                          <div className="inline-flex items-center space-x-2 px-5 py-2.5 bg-black text-white text-xs font-black uppercase tracking-wider rounded-none group-hover:bg-neutral-800 transition shadow-sm pointer-events-none">
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                            </svg>
+                            <span>Choose File / Upload Screenshot</span>
+                          </div>
+                          <span className="text-xs text-onyx-600 mt-2 font-medium pointer-events-none">or drag &amp; drop screenshot directly here</span>
+                          <span className="text-[11px] text-onyx-500 mt-0.5 font-mono font-bold pointer-events-none">PNG, JPG, WEBP, PDF (Max 5MB)</span>
+                        </label>
                       ) : (
-                        <div className="p-3 bg-linen-100 border border-linen-300 flex items-center justify-between">
-                          <div className="flex items-center space-x-3">
-                            <img
-                              src={receiptPreview}
-                              alt="Receipt Preview"
-                              className="w-14 h-16 object-cover border border-linen-300 shadow-sm bg-white"
-                            />
-                            <div>
-                              <strong className="block text-xs text-onyx-950 truncate max-w-[220px]">
+                        <div className="p-3.5 bg-linen-100 border border-linen-300 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                          <div className="flex items-center space-x-3 min-w-0 flex-1">
+                            {receiptPreview.startsWith('data:application/pdf') ? (
+                              <div className="w-14 h-16 bg-red-100 border border-red-300 flex flex-col items-center justify-center flex-shrink-0 text-red-700 font-mono font-black text-xs">
+                                PDF
+                              </div>
+                            ) : (
+                              <img
+                                src={receiptPreview}
+                                alt="Receipt Preview"
+                                className="w-14 h-16 object-cover border border-linen-300 shadow-sm bg-white flex-shrink-0"
+                              />
+                            )}
+                            <div className="min-w-0 flex-1">
+                              <strong className="block text-xs font-black text-onyx-950 truncate font-mono">
                                 {receiptFileName}
                               </strong>
-                              <span className="text-xs text-emerald-700 font-bold block">
-                                Ready to be verified by Atelier Studio
+                              <span className="text-xs text-emerald-700 font-bold block mt-0.5">
+                                ✓ Ready to be verified by Atelier Studio
                               </span>
                             </div>
                           </div>
-                          <button
-                            type="button"
-                            onClick={handleRemoveReceipt}
-                            className="text-xs text-red-600 hover:text-red-800 font-bold uppercase underline tracking-wider"
-                          >
-                            Remove / Replace
-                          </button>
+                          <div className="flex items-center space-x-3 shrink-0 self-end sm:self-center">
+                            <label
+                              htmlFor="checkout-receipt-input"
+                              className="px-3 py-1.5 bg-white border border-linen-300 hover:border-black text-onyx-900 text-xs font-bold uppercase tracking-wider rounded-none transition cursor-pointer"
+                            >
+                              Change File
+                            </label>
+                            <button
+                              type="button"
+                              onClick={handleRemoveReceipt}
+                              className="text-xs text-red-600 hover:text-red-800 font-bold uppercase underline tracking-wider cursor-pointer"
+                            >
+                              Remove
+                            </button>
+                          </div>
                         </div>
                       )}
 

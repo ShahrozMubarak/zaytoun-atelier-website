@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import BrandLogo from './BrandLogo';
 import { 
   fetchProductsFromDB, 
@@ -67,6 +67,10 @@ export default function AdminDashboard({
   // Product Add / Edit Modal State
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [editingProductId, setEditingProductId] = useState(null);
+  const [productImageTab, setProductImageTab] = useState('upload'); // 'upload' (Choose File) | 'url'
+  const [isDraggingGarmentFile, setIsDraggingGarmentFile] = useState(false);
+  const garmentFileInputRef = useRef(null);
+
   const [productForm, setProductForm] = useState({
     name: '',
     person: 'women', // 'women' | 'men' | 'kids'
@@ -84,6 +88,24 @@ export default function AdminDashboard({
     stockL: 8,
     stockXL: 4
   });
+
+  // Handle local garment photo upload from PC or Mobile device
+  const handleGarmentFileProcess = (file) => {
+    if (!file) return;
+    if (file.size > 8 * 1024 * 1024) {
+      alert("File exceeds 8MB limit. Please choose a smaller compressed image.");
+      return;
+    }
+    if (!file.type.startsWith('image/')) {
+      alert("Please upload an image file (PNG, JPG, WEBP, AVIF).");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setProductForm(prev => ({ ...prev, imageUrl: e.target.result }));
+    };
+    reader.readAsDataURL(file);
+  };
 
   // Appearance Form State
   const [brandName, setBrandName] = useState(themeConfig?.brand || "ZAYTOUN ATELIER");
@@ -251,11 +273,11 @@ export default function AdminDashboard({
 
   const [hoveredChartPoint, setHoveredChartPoint] = useState(null);
 
-  // SVG Chart Dimensions
-  const chartWidth = 680;
-  const chartHeight = 220;
-  const paddingX = 40;
-  const paddingY = 30;
+  // SVG Chart Dimensions (Optimized for PC Widescreen & Tablet/Mobile)
+  const chartWidth = 1000;
+  const chartHeight = 280;
+  const paddingX = 50;
+  const paddingY = 35;
 
   const maxChartRevenue = useMemo(() => {
     const maxVal = Math.max(...revenueChartData.map(d => d.revenue), 0);
@@ -317,6 +339,7 @@ export default function AdminDashboard({
   // Open Create Product Modal
   const handleOpenCreateProduct = () => {
     setEditingProductId(null);
+    setProductImageTab('upload');
     setProductForm({
       name: '',
       person: 'women',
@@ -326,7 +349,7 @@ export default function AdminDashboard({
       originalPrice: 16500,
       primaryColor: 'Sand',
       colorHex: '#E6D3B3',
-      imageUrl: 'https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=1000&q=80',
+      imageUrl: '',
       description: 'Handcrafted luxury piece tailored in breathable Belgian linen and pure fibers.',
       stockXS: 5,
       stockS: 10,
@@ -340,6 +363,8 @@ export default function AdminDashboard({
   // Open Edit Product Modal
   const handleOpenEditProduct = (prod) => {
     setEditingProductId(prod.id);
+    const existingImg = prod.images?.[0] || prod.image || '';
+    setProductImageTab(existingImg && existingImg.startsWith('http') ? 'url' : 'upload');
     setProductForm({
       name: prod.name || '',
       person: prod.person || prod.gender || 'women',
@@ -349,7 +374,7 @@ export default function AdminDashboard({
       originalPrice: prod.originalPrice || prod.price || 0,
       primaryColor: prod.primaryColor || prod.colorName || 'Sand',
       colorHex: prod.color || '#E6D3B3',
-      imageUrl: prod.images?.[0] || prod.image || '',
+      imageUrl: existingImg,
       description: prod.description || '',
       stockXS: prod.stockPerSize?.XS ?? 5,
       stockS: prod.stockPerSize?.S ?? 10,
@@ -536,12 +561,63 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
   return (
     <div className="min-h-screen bg-neutral-50 dark:bg-black text-black dark:text-white font-sans flex flex-col transition-colors w-full overflow-x-hidden">
       
-      {/* Sleek Minimalist Studio Navigation Bar - Camel Luxury Accent */}
-      <div className="sticky top-16 sm:top-20 z-30 bg-[#FAF4EB]/95 dark:bg-black/95 backdrop-blur-md border-b border-[#C69F6F]/35 px-4 sm:px-8 lg:px-12">
-        <div className="max-w-[1600px] mx-auto flex flex-col md:flex-row md:items-center justify-between gap-3 py-2 sm:py-0 min-h-[56px] sm:min-h-[64px]">
-          
-          {/* Clean Minimalist Tabs (Styled like Navbar Links) */}
-          <nav className="flex items-center space-x-6 sm:space-x-8 overflow-x-auto scrollbar-none text-xs font-bold uppercase tracking-widest py-1">
+      {/* Executive Studio Desktop & Mobile Navigation Bar - Camel Luxury Accent */}
+      <header className="sticky top-16 sm:top-20 z-30 bg-[#FAF4EB]/98 dark:bg-[#12100E]/98 backdrop-blur-md border-b-2 border-[#C69F6F]/40 shadow-xs">
+        <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
+          {/* Top Row: Identification & Quick PC Actions */}
+          <div className="flex flex-wrap items-center justify-between gap-3 py-3 border-b border-[#C69F6F]/20">
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 rounded-none border border-[#C69F6F] bg-gradient-to-br from-[#E6D3B3] via-[#C69F6F] to-[#8C6D45] text-black flex items-center justify-center font-serif font-black text-xs shadow-xs">
+                ZA
+              </div>
+              <div>
+                <div className="flex items-center space-x-2">
+                  <h1 className="text-xs sm:text-sm font-black uppercase tracking-widest text-black dark:text-[#E6D3B3] font-mono">
+                    ZAYTOUN ATELIER • STUDIO
+                  </h1>
+                  <span className="hidden sm:inline-flex items-center space-x-1.5 px-2 py-0.5 rounded-none text-[9px] font-mono font-bold uppercase bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800">
+                    <span className="w-1.5 h-1.5 rounded-none bg-emerald-600 animate-pulse" />
+                    <span>Live MongoDB Sync</span>
+                  </span>
+                </div>
+                <p className="text-[10px] text-neutral-500 font-mono hidden md:block">
+                  Executive Workspace • Authorized: {currentUserEmail}
+                </p>
+              </div>
+            </div>
+
+            {/* PC Action Buttons */}
+            <div className="flex items-center space-x-2 sm:space-x-3">
+              <button
+                onClick={handleOpenCreateProduct}
+                className="px-3.5 sm:px-4 py-2 bg-black hover:bg-neutral-800 text-white dark:bg-[#C69F6F] dark:hover:bg-[#b58f5f] dark:text-black text-xs font-black uppercase tracking-wider rounded-none transition shadow-sm cursor-pointer flex items-center space-x-1.5"
+              >
+                <span>+</span>
+                <span>New Garment</span>
+              </button>
+              <button
+                onClick={loadAllDataFromMongoDB}
+                disabled={loading}
+                className="px-3 sm:px-3.5 py-2 border border-[#C69F6F]/50 bg-[#FAF4EB] dark:bg-[#1A1713] hover:border-[#C69F6F] text-black dark:text-white text-xs font-black uppercase tracking-wider rounded-none transition cursor-pointer flex items-center space-x-1.5"
+                title="Refresh all data from MongoDB Atlas"
+              >
+                <svg className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                <span className="hidden sm:inline">{loading ? 'Syncing...' : 'Sync Live'}</span>
+              </button>
+              <button
+                onClick={onCloseAdmin}
+                className="px-3 sm:px-3.5 py-2 border border-[#C69F6F]/50 bg-[#FAF4EB] dark:bg-[#1A1713] hover:border-[#C69F6F] text-black dark:text-white text-xs font-black uppercase tracking-wider rounded-none transition cursor-pointer flex items-center space-x-1"
+              >
+                <span>Storefront</span>
+                <span>→</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Bottom Row: Full-Width Responsive Tabs for Desktop PC & Mobile */}
+          <nav className="flex items-center flex-wrap lg:flex-nowrap overflow-x-auto scrollbar-none py-1 gap-1 sm:gap-1.5 w-full">
             {[
               { id: 'overview', label: 'Overview' },
               { id: 'approvals', label: 'Approvals', count: pendingOrders.length, highlight: true },
@@ -555,17 +631,17 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`py-3.5 whitespace-nowrap transition-all border-b-2 flex items-center space-x-2 ${
+                className={`py-2 px-2.5 sm:px-3 lg:px-3.5 xl:px-4 rounded-none text-xs font-black uppercase tracking-wider transition-all whitespace-nowrap flex items-center space-x-1.5 sm:space-x-2 border-b-2 ${
                   activeTab === tab.id
-                    ? 'border-[#C69F6F] text-[#8C6D45] dark:text-[#E6D3B3] font-black'
-                    : 'border-transparent text-neutral-500 hover:text-black dark:hover:text-white font-bold'
+                    ? 'border-[#C69F6F] text-black dark:text-[#E6D3B3] bg-[#F2E5D3]/70 dark:bg-[#201B16]'
+                    : 'border-transparent text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white hover:bg-[#F2E5D3]/30 dark:hover:bg-[#1A1713]'
                 }`}
               >
                 <span>{tab.label}</span>
                 {tab.count !== undefined && tab.count > 0 && (
-                  <span className={`px-2 py-0.5 rounded-none text-[10px] font-mono font-black ${
+                  <span className={`px-1.5 py-0.5 rounded-none text-[10px] font-mono font-black ${
                     tab.highlight && tab.count > 0
-                      ? 'bg-[#C69F6F] text-black font-black'
+                      ? 'bg-[#C69F6F] text-black'
                       : 'bg-[#EAE0D2] dark:bg-neutral-800 text-black dark:text-white'
                   }`}>
                     {tab.count}
@@ -574,93 +650,69 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
               </button>
             ))}
           </nav>
-
-          {/* Sleek Actions (Clean, spaced, camel accents) */}
-          <div className="flex items-center space-x-3 shrink-0 pb-2 md:pb-0">
-            <button
-              onClick={handleOpenCreateProduct}
-              className="px-4 py-2 bg-black hover:bg-neutral-800 text-white dark:bg-[#C69F6F] dark:hover:bg-[#b58f5f] dark:text-black text-xs font-black uppercase tracking-wider rounded-none transition shadow-sm cursor-pointer"
-            >
-              + New Garment
-            </button>
-            <button
-              onClick={loadAllDataFromMongoDB}
-              disabled={loading}
-              className="hidden sm:inline-block px-3.5 py-2 border border-[#C69F6F]/40 bg-[#FAF4EB] dark:bg-[#1A1713] hover:border-[#C69F6F] text-black dark:text-white text-xs font-black uppercase tracking-wider rounded-none transition cursor-pointer"
-            >
-              {loading ? 'Syncing...' : 'Refresh'}
-            </button>
-            <button
-              onClick={onCloseAdmin}
-              className="px-3.5 py-2 border border-[#C69F6F]/40 bg-[#FAF4EB] dark:bg-[#1A1713] hover:border-[#C69F6F] text-black dark:text-white text-xs font-black uppercase tracking-wider rounded-none transition cursor-pointer"
-            >
-              Storefront →
-            </button>
-          </div>
-
         </div>
-      </div>
+      </header>
 
-      {/* Main Container */}
-      <main className="max-w-[1600px] w-full mx-auto px-4 sm:px-8 lg:px-12 py-8 sm:py-12 flex-1 space-y-10">
+      {/* Main Container - PC Wide Screen Optimized */}
+      <main className="max-w-[1800px] w-full mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-6 sm:py-8 flex-1 space-y-8">
         
         {/* =========================================================================
             TAB 1: VISUAL ANALYTICS & INTERACTIVE REVENUE GRAPH
         ========================================================================= */}
         {activeTab === 'overview' && (
           <div className="space-y-8 animate-fadeIn">
-            {/* 6 Key Metrics Cards (Camel Accent Luxury Theme) */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
-              <div className="p-5 rounded-none bg-[#F5EDE1] dark:bg-[#201B16] border-2 border-[#C69F6F]/45 shadow-xs hover:border-[#C69F6F] transition-all">
-                <span className="text-xs uppercase font-black text-[#8C6D45] dark:text-[#C69F6F] tracking-widest block font-mono">
+            {/* 6 Key Metrics Cards (Responsive PC & Mobile Grid) */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 lg:gap-4">
+              <div className="p-4 sm:p-5 rounded-none bg-[#F5EDE1] dark:bg-[#201B16] border-2 border-[#C69F6F]/45 shadow-xs hover:border-[#C69F6F] transition-all">
+                <span className="text-[11px] font-mono uppercase font-black text-[#8C6D45] dark:text-[#C69F6F] tracking-widest block truncate">
                   Total Sales
                 </span>
-                <p className="text-xl sm:text-2xl font-black text-black dark:text-[#E6D3B3] mt-2 font-mono tracking-tight">
+                <p className="text-lg sm:text-xl xl:text-2xl font-black text-black dark:text-[#E6D3B3] mt-2 font-mono tracking-tight truncate">
                   Rs. {totalRevenue.toLocaleString()}
                 </p>
               </div>
 
-              <div className="p-5 rounded-none bg-[#F5EDE1] dark:bg-[#201B16] border-2 border-[#C69F6F]/45 shadow-xs hover:border-[#C69F6F] transition-all">
-                <span className="text-xs uppercase font-black text-[#8C6D45] dark:text-[#C69F6F] tracking-widest block font-mono">
+              <div className="p-4 sm:p-5 rounded-none bg-[#F5EDE1] dark:bg-[#201B16] border-2 border-[#C69F6F]/45 shadow-xs hover:border-[#C69F6F] transition-all">
+                <span className="text-[11px] font-mono uppercase font-black text-[#8C6D45] dark:text-[#C69F6F] tracking-widest block truncate">
                   Approvals
                 </span>
-                <p className="text-xl sm:text-2xl font-black text-black dark:text-white mt-2 font-mono tracking-tight">
+                <p className="text-lg sm:text-xl xl:text-2xl font-black text-black dark:text-white mt-2 font-mono tracking-tight truncate">
                   {pendingOrders.length}
                 </p>
               </div>
 
-              <div className="p-5 rounded-none bg-[#F5EDE1] dark:bg-[#201B16] border-2 border-[#C69F6F]/45 shadow-xs hover:border-[#C69F6F] transition-all">
-                <span className="text-xs uppercase font-black text-[#8C6D45] dark:text-[#C69F6F] tracking-widest block font-mono">
+              <div className="p-4 sm:p-5 rounded-none bg-[#F5EDE1] dark:bg-[#201B16] border-2 border-[#C69F6F]/45 shadow-xs hover:border-[#C69F6F] transition-all">
+                <span className="text-[11px] font-mono uppercase font-black text-[#8C6D45] dark:text-[#C69F6F] tracking-widest block truncate">
                   Orders
                 </span>
-                <p className="text-xl sm:text-2xl font-black text-black dark:text-white mt-2 font-mono tracking-tight">
+                <p className="text-lg sm:text-xl xl:text-2xl font-black text-black dark:text-white mt-2 font-mono tracking-tight truncate">
                   {liveOrders.length}
                 </p>
               </div>
 
-              <div className="p-5 rounded-none bg-[#F5EDE1] dark:bg-[#201B16] border-2 border-[#C69F6F]/45 shadow-xs hover:border-[#C69F6F] transition-all">
-                <span className="text-xs uppercase font-black text-[#8C6D45] dark:text-[#C69F6F] tracking-widest block font-mono">
+              <div className="p-4 sm:p-5 rounded-none bg-[#F5EDE1] dark:bg-[#201B16] border-2 border-[#C69F6F]/45 shadow-xs hover:border-[#C69F6F] transition-all">
+                <span className="text-[11px] font-mono uppercase font-black text-[#8C6D45] dark:text-[#C69F6F] tracking-widest block truncate">
                   Catalog
                 </span>
-                <p className="text-xl sm:text-2xl font-black text-black dark:text-white mt-2 font-mono tracking-tight">
+                <p className="text-lg sm:text-xl xl:text-2xl font-black text-black dark:text-white mt-2 font-mono tracking-tight truncate">
                   {liveProducts.length}
                 </p>
               </div>
 
-              <div className="p-5 rounded-none bg-[#F5EDE1] dark:bg-[#201B16] border-2 border-[#C69F6F]/45 shadow-xs hover:border-[#C69F6F] transition-all">
-                <span className="text-xs uppercase font-black text-[#8C6D45] dark:text-[#C69F6F] tracking-widest block font-mono">
+              <div className="p-4 sm:p-5 rounded-none bg-[#F5EDE1] dark:bg-[#201B16] border-2 border-[#C69F6F]/45 shadow-xs hover:border-[#C69F6F] transition-all">
+                <span className="text-[11px] font-mono uppercase font-black text-[#8C6D45] dark:text-[#C69F6F] tracking-widest block truncate">
                   Clients
                 </span>
-                <p className="text-xl sm:text-2xl font-black text-black dark:text-white mt-2 font-mono tracking-tight">
+                <p className="text-lg sm:text-xl xl:text-2xl font-black text-black dark:text-white mt-2 font-mono tracking-tight truncate">
                   {customers.length}
                 </p>
               </div>
 
-              <div className="p-5 rounded-none bg-[#F5EDE1] dark:bg-[#201B16] border-2 border-[#C69F6F]/45 shadow-xs hover:border-[#C69F6F] transition-all">
-                <span className="text-xs uppercase font-black text-[#8C6D45] dark:text-[#C69F6F] tracking-widest block font-mono">
+              <div className="p-4 sm:p-5 rounded-none bg-[#F5EDE1] dark:bg-[#201B16] border-2 border-[#C69F6F]/45 shadow-xs hover:border-[#C69F6F] transition-all">
+                <span className="text-[11px] font-mono uppercase font-black text-[#8C6D45] dark:text-[#C69F6F] tracking-widest block truncate">
                   Gazette
                 </span>
-                <p className="text-xl sm:text-2xl font-black text-black dark:text-white mt-2 font-mono tracking-tight">
+                <p className="text-lg sm:text-xl xl:text-2xl font-black text-black dark:text-white mt-2 font-mono tracking-tight truncate">
                   {subscribers.length}
                 </p>
               </div>
@@ -692,7 +744,7 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
               <div className="relative w-full overflow-x-auto pt-2">
                 <svg
                   viewBox={`0 0 ${chartWidth} ${chartHeight}`}
-                  className="w-full h-56 select-none"
+                  className="w-full h-64 sm:h-72 lg:h-80 select-none"
                 >
                   <defs>
                     <linearGradient id="sandAreaGrad" x1="0" y1="0" x2="0" y2="1">
@@ -920,7 +972,12 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                     </thead>
                     <tbody className="divide-y divide-neutral-200 dark:divide-onyx-800 font-medium">
                       {liveOrders.slice(0, 5).map((ord) => (
-                        <tr key={ord.id || ord.orderNumber} className="hover:bg-neutral-50 dark:hover:bg-onyx-800/40 transition">
+                        <tr
+                          key={ord.id || ord.orderNumber}
+                          onClick={() => setSelectedOrderDetails(ord)}
+                          className="hover:bg-[#F2E5D3] dark:hover:bg-[#201B16] transition cursor-pointer"
+                          title="Click to view order details"
+                        >
                           <td className="py-3.5 px-4 font-mono font-black text-black dark:text-[#E6D3B3] text-xs">
                             {ord.orderNumber || ord.id}
                           </td>
@@ -1003,7 +1060,7 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                 <p className="text-xs font-bold text-neutral-500">No pending orders awaiting verification.</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {pendingOrders.map(order => (
                   <div
                     key={order.orderNumber || order.id}
@@ -1203,7 +1260,7 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
 
             {/* Products Table (Camel Luxury Container) */}
             <div className="bg-[#FAF4EB] dark:bg-[#1A1713] rounded-none border-2 border-[#C69F6F]/40 overflow-hidden shadow-sm">
-              <div className="overflow-x-auto w-full max-h-[70vh] overflow-y-auto">
+              <div className="overflow-x-auto w-full">
                 <table className="w-full min-w-[750px] text-left text-xs">
                   <thead className="sticky top-0 z-10 bg-[#EEDFC8] dark:bg-[#12100E] text-black dark:text-[#E6D3B3] text-[11px] font-black uppercase tracking-widest border-b border-[#C69F6F]/40 font-mono shadow-sm">
                     <tr>
@@ -1227,7 +1284,7 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                       const dept = (p.person || p.gender || 'women').toLowerCase();
 
                       return (
-                        <tr key={p.id} className="hover:bg-neutral-50 dark:hover:bg-onyx-800/40 transition">
+                        <tr key={p.id} className="hover:bg-[#F2E5D3] dark:hover:bg-[#201B16] transition">
                           {/* Photo */}
                           <td className="py-3.5 px-4">
                             <div className="w-12 h-14 rounded-none overflow-hidden bg-neutral-100 dark:bg-onyx-800 border border-neutral-300 dark:border-neutral-700 flex-shrink-0">
@@ -1359,8 +1416,8 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                   No customer orders matching the active search or filters.
                 </div>
               ) : (
-                <div className="overflow-x-auto w-full max-h-[70vh] overflow-y-auto">
-                  <table className="w-full min-w-[950px] text-left text-xs">
+                <div className="overflow-x-auto w-full">
+                  <table className="w-full min-w-[850px] xl:min-w-full text-left text-xs">
                     <thead className="sticky top-0 z-10 bg-[#EEDFC8] dark:bg-[#12100E] text-black dark:text-[#E6D3B3] text-[11px] font-black uppercase tracking-widest border-b border-[#C69F6F]/40 font-mono shadow-sm">
                       <tr>
                         <th className="py-3.5 px-4">Order #</th>
@@ -1377,7 +1434,7 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                     </thead>
                     <tbody className="divide-y divide-neutral-200 dark:divide-onyx-800 font-medium">
                       {filteredOrders.map((ord) => (
-                        <tr key={ord.id || ord.orderNumber} className="hover:bg-neutral-50 dark:hover:bg-onyx-800/40 transition">
+                        <tr key={ord.id || ord.orderNumber} className="hover:bg-[#F2E5D3] dark:hover:bg-[#201B16] transition">
                           <td className="py-3.5 px-4 font-mono font-black text-black dark:text-[#E6D3B3] text-xs">
                             {ord.orderNumber || ord.id}
                           </td>
@@ -1471,8 +1528,8 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                   No registered client profiles recorded yet.
                 </div>
               ) : (
-                <div className="overflow-x-auto w-full max-h-[70vh] overflow-y-auto">
-                  <table className="w-full min-w-[750px] text-left text-xs">
+                <div className="overflow-x-auto w-full">
+                  <table className="w-full min-w-[750px] xl:min-w-full text-left text-xs">
                     <thead className="sticky top-0 z-10 bg-[#EEDFC8] dark:bg-[#12100E] text-black dark:text-[#E6D3B3] text-[11px] font-black uppercase tracking-widest border-b border-[#C69F6F]/40 font-mono shadow-sm">
                       <tr>
                         <th className="py-3.5 px-4">Client Name</th>
@@ -1486,7 +1543,7 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                     </thead>
                     <tbody className="divide-y divide-neutral-200 dark:divide-onyx-800 font-medium">
                       {customers.map((c) => (
-                        <tr key={c._id || c.email} className="hover:bg-[#F5EDE1] dark:hover:bg-onyx-800/40 transition">
+                        <tr key={c._id || c.email} className="hover:bg-[#F2E5D3] dark:hover:bg-[#201B16] transition">
                           <td className="py-3.5 px-4 font-black text-black dark:text-white text-xs">
                             {c.name || `${c.firstName || ''} ${c.lastName || ''}`.trim() || 'Client'}
                           </td>
@@ -1544,8 +1601,8 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                   No newsletter subscribers recorded yet.
                 </div>
               ) : (
-                <div className="overflow-x-auto w-full max-h-[50vh] overflow-y-auto">
-                  <table className="w-full min-w-[650px] text-left text-xs">
+                <div className="overflow-x-auto w-full">
+                  <table className="w-full min-w-[650px] xl:min-w-full text-left text-xs">
                     <thead className="sticky top-0 z-10 bg-[#EEDFC8] dark:bg-[#12100E] text-black dark:text-[#E6D3B3] text-[11px] font-black uppercase tracking-widest border-b border-[#C69F6F]/40 font-mono shadow-sm">
                       <tr>
                         <th className="py-3 px-4">Email Address</th>
@@ -1557,7 +1614,7 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                     </thead>
                     <tbody className="divide-y divide-neutral-200 dark:divide-onyx-800 font-medium">
                       {subscribers.map((sub) => (
-                        <tr key={sub._id || sub.email} className="hover:bg-[#F5EDE1] dark:hover:bg-onyx-800/40 transition">
+                        <tr key={sub._id || sub.email} className="hover:bg-[#F2E5D3] dark:hover:bg-[#201B16] transition">
                           <td className="py-3 px-4 font-mono font-black text-xs text-black dark:text-white">
                             {sub.email}
                           </td>
@@ -1603,8 +1660,8 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                   No concierge inquiries recorded yet.
                 </div>
               ) : (
-                <div className="overflow-x-auto w-full max-h-[50vh] overflow-y-auto">
-                  <table className="w-full min-w-[650px] text-left text-xs">
+                <div className="overflow-x-auto w-full">
+                  <table className="w-full min-w-[650px] xl:min-w-full text-left text-xs">
                     <thead className="sticky top-0 z-10 bg-[#EEDFC8] dark:bg-[#12100E] text-black dark:text-[#E6D3B3] text-[11px] font-black uppercase tracking-widest border-b border-[#C69F6F]/40 font-mono shadow-sm">
                       <tr>
                         <th className="py-3 px-4">Name</th>
@@ -1616,7 +1673,7 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
                     </thead>
                     <tbody className="divide-y divide-neutral-200 dark:divide-onyx-800 font-medium">
                       {inquiries.map((inq) => (
-                        <tr key={inq._id || inq.createdAt} className="hover:bg-[#F5EDE1] dark:hover:bg-onyx-800/40 transition">
+                        <tr key={inq._id || inq.createdAt} className="hover:bg-[#F2E5D3] dark:hover:bg-[#201B16] transition">
                           <td className="py-3 px-4 font-black text-xs text-black dark:text-white">
                             {inq.name}
                           </td>
@@ -1724,210 +1781,325 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
       </main>
 
       {/* =========================================================================
-          ADD / EDIT GARMENT MODAL
+          ADD / EDIT GARMENT MODAL (PC 2-COLUMN LUXURY SPECIFICATION)
       ========================================================================= */}
       {isProductModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-          <div className="bg-white dark:bg-onyx-900 rounded-none border-2 border-black dark:border-[#E6D3B3] max-w-xl w-full max-h-[92vh] overflow-y-auto shadow-2xl p-5 sm:p-8 animate-fadeIn">
-            <div className="flex items-center justify-between pb-4 border-b border-neutral-200 dark:border-neutral-800 mb-5">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+          <div className="bg-[#FAF4EB] dark:bg-[#1A1713] rounded-none border-2 border-[#C69F6F] max-w-4xl lg:max-w-5xl w-full max-h-[92vh] overflow-y-auto shadow-2xl p-5 sm:p-8 animate-fadeIn">
+            <div className="flex items-center justify-between pb-4 border-b border-[#C69F6F]/30 mb-6">
               <div>
-                <span className="text-[10px] uppercase font-black tracking-widest text-[#A6865A] dark:text-[#E6D3B3] font-mono">
-                  ATELIER CATALOG
+                <span className="text-[10px] uppercase font-black tracking-widest text-[#8C6D45] dark:text-[#E6D3B3] font-mono">
+                  ATELIER CATALOG MANAGEMENT
                 </span>
                 <h3 className="font-editorial text-2xl font-black text-black dark:text-white">
-                  {editingProductId ? "Edit Garment" : "New Garment"}
+                  {editingProductId ? "Edit Garment Specification" : "Create New Garment"}
                 </h3>
               </div>
               <button
+                type="button"
                 onClick={() => setIsProductModalOpen(false)}
-                className="text-neutral-400 hover:text-black dark:hover:text-white text-xl p-1 font-bold"
+                className="text-neutral-500 hover:text-black dark:hover:text-white text-2xl p-1 font-bold cursor-pointer"
               >
                 ✕
               </button>
             </div>
 
-            <form onSubmit={handleSaveProduct} className="space-y-4 text-xs">
-              <div>
-                <label className="block font-black uppercase tracking-wider text-xs text-black dark:text-white mb-1.5">
-                  Garment Title *
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. The Heritage Double-Breasted Overcoat"
-                  value={productForm.name}
-                  onChange={(e) => setProductForm({ ...productForm, name: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-none border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-black text-xs font-bold text-black dark:text-white outline-none focus:border-black dark:focus:border-[#E6D3B3]"
-                />
-              </div>
-
-              {/* Department & Category */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-black uppercase tracking-wider text-xs text-black dark:text-white mb-1.5">
-                    Department (Gender) *
-                  </label>
-                  <select
-                    value={productForm.person}
-                    onChange={(e) => setProductForm({ ...productForm, person: e.target.value })}
-                    className="w-full px-3 py-2 rounded-none border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-black font-bold text-xs text-black dark:text-white outline-none focus:border-black dark:focus:border-[#E6D3B3]"
-                  >
-                    <option value="women">Women's Collection</option>
-                    <option value="men">Men's Collection</option>
-                    <option value="kids">Kids Pret</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block font-black uppercase tracking-wider text-xs text-black dark:text-white mb-1.5">
-                    Category *
-                  </label>
-                  <select
-                    value={productForm.category}
-                    onChange={(e) => setProductForm({ ...productForm, category: e.target.value })}
-                    className="w-full px-3 py-2 rounded-none border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-black font-bold text-xs text-black dark:text-white outline-none focus:border-black dark:focus:border-[#E6D3B3]"
-                  >
-                    <option value="Outerwear">Outerwear</option>
-                    <option value="Knitwear">Knitwear</option>
-                    <option value="Women's Pret">Women's Pret</option>
-                    <option value="Men's Pret">Men's Pret</option>
-                    <option value="Kids Pret">Kids Pret</option>
-                    <option value="Dresses">Dresses</option>
-                    <option value="Accessories">Accessories</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Pricing in PKR */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-black uppercase tracking-wider text-xs text-black dark:text-white mb-1.5">
-                    Price in PKR (₨) *
-                  </label>
-                  <input
-                    type="number"
-                    required
-                    min="100"
-                    value={productForm.price}
-                    onChange={(e) => setProductForm({ ...productForm, price: e.target.value })}
-                    className="w-full px-3 py-2 rounded-none border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-black font-bold text-xs text-black dark:text-white outline-none focus:border-black dark:focus:border-[#E6D3B3]"
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-black uppercase tracking-wider text-xs text-black dark:text-white mb-1.5">
-                    Original Price (₨)
-                  </label>
-                  <input
-                    type="number"
-                    value={productForm.originalPrice}
-                    onChange={(e) => setProductForm({ ...productForm, originalPrice: e.target.value })}
-                    className="w-full px-3 py-2 rounded-none border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-black font-bold text-xs text-black dark:text-white outline-none focus:border-black dark:focus:border-[#E6D3B3]"
-                  />
-                </div>
-              </div>
-
-              {/* Color Details */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-black uppercase tracking-wider text-xs text-black dark:text-white mb-1.5">
-                    Color Name
-                  </label>
-                  <input
-                    type="text"
-                    value={productForm.primaryColor}
-                    onChange={(e) => setProductForm({ ...productForm, primaryColor: e.target.value })}
-                    placeholder="e.g. Desert Sand"
-                    className="w-full px-3 py-2 rounded-none border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-black font-bold text-xs text-black dark:text-white outline-none focus:border-black dark:focus:border-[#E6D3B3]"
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-black uppercase tracking-wider text-xs text-black dark:text-white mb-1.5">
-                    Color Hex Code
-                  </label>
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="color"
-                      value={productForm.colorHex}
-                      onChange={(e) => setProductForm({ ...productForm, colorHex: e.target.value })}
-                      className="w-8 h-8 rounded-none border border-neutral-300 cursor-pointer"
-                    />
+            <form onSubmit={handleSaveProduct} className="space-y-6 text-xs">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+                {/* Column 1: Core Garment Specifications */}
+                <div className="space-y-4">
+                  <div>
+                    <label className="block font-black uppercase tracking-wider text-xs text-black dark:text-white mb-1.5">
+                      Garment Title *
+                    </label>
                     <input
                       type="text"
-                      value={productForm.colorHex}
-                      onChange={(e) => setProductForm({ ...productForm, colorHex: e.target.value })}
-                      className="flex-1 px-3 py-2 rounded-none border border-neutral-300 dark:border-neutral-700 font-mono font-bold text-xs bg-neutral-50 dark:bg-black text-black dark:text-white outline-none focus:border-black dark:focus:border-[#E6D3B3]"
+                      required
+                      placeholder="e.g. The Heritage Double-Breasted Overcoat"
+                      value={productForm.name}
+                      onChange={(e) => setProductForm({ ...productForm, name: e.target.value })}
+                      className="w-full px-3.5 py-2.5 rounded-none border border-[#C69F6F]/40 bg-white dark:bg-black text-xs font-bold text-black dark:text-white outline-none focus:border-[#C69F6F]"
+                    />
+                  </div>
+
+                  {/* Department & Category */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block font-black uppercase tracking-wider text-xs text-black dark:text-white mb-1.5">
+                        Department (Gender) *
+                      </label>
+                      <select
+                        value={productForm.person}
+                        onChange={(e) => setProductForm({ ...productForm, person: e.target.value })}
+                        className="w-full px-3 py-2.5 rounded-none border border-[#C69F6F]/40 bg-white dark:bg-black font-bold text-xs text-black dark:text-white outline-none focus:border-[#C69F6F]"
+                      >
+                        <option value="women">Women's Collection</option>
+                        <option value="men">Men's Collection</option>
+                        <option value="kids">Kids Pret</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block font-black uppercase tracking-wider text-xs text-black dark:text-white mb-1.5">
+                        Category *
+                      </label>
+                      <select
+                        value={productForm.category}
+                        onChange={(e) => setProductForm({ ...productForm, category: e.target.value })}
+                        className="w-full px-3 py-2.5 rounded-none border border-[#C69F6F]/40 bg-white dark:bg-black font-bold text-xs text-black dark:text-white outline-none focus:border-[#C69F6F]"
+                      >
+                        <option value="Outerwear">Outerwear</option>
+                        <option value="Knitwear">Knitwear</option>
+                        <option value="Women's Pret">Women's Pret</option>
+                        <option value="Men's Pret">Men's Pret</option>
+                        <option value="Kids Pret">Kids Pret</option>
+                        <option value="Dresses">Dresses</option>
+                        <option value="Accessories">Accessories</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Pricing in PKR */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block font-black uppercase tracking-wider text-xs text-black dark:text-white mb-1.5">
+                        Price in PKR (₨) *
+                      </label>
+                      <input
+                        type="number"
+                        required
+                        min="100"
+                        value={productForm.price}
+                        onChange={(e) => setProductForm({ ...productForm, price: e.target.value })}
+                        className="w-full px-3 py-2.5 rounded-none border border-[#C69F6F]/40 bg-white dark:bg-black font-bold text-xs text-black dark:text-white outline-none focus:border-[#C69F6F]"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block font-black uppercase tracking-wider text-xs text-black dark:text-white mb-1.5">
+                        Original Price (₨)
+                      </label>
+                      <input
+                        type="number"
+                        value={productForm.originalPrice}
+                        onChange={(e) => setProductForm({ ...productForm, originalPrice: e.target.value })}
+                        className="w-full px-3 py-2.5 rounded-none border border-[#C69F6F]/40 bg-white dark:bg-black font-bold text-xs text-black dark:text-white outline-none focus:border-[#C69F6F]"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Color Details */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block font-black uppercase tracking-wider text-xs text-black dark:text-white mb-1.5">
+                        Color Name
+                      </label>
+                      <input
+                        type="text"
+                        value={productForm.primaryColor}
+                        onChange={(e) => setProductForm({ ...productForm, primaryColor: e.target.value })}
+                        placeholder="e.g. Desert Sand"
+                        className="w-full px-3 py-2.5 rounded-none border border-[#C69F6F]/40 bg-white dark:bg-black font-bold text-xs text-black dark:text-white outline-none focus:border-[#C69F6F]"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block font-black uppercase tracking-wider text-xs text-black dark:text-white mb-1.5">
+                        Color Swatch
+                      </label>
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="color"
+                          value={productForm.colorHex}
+                          onChange={(e) => setProductForm({ ...productForm, colorHex: e.target.value })}
+                          className="w-10 h-10 rounded-none border border-[#C69F6F]/40 cursor-pointer p-0.5 bg-white"
+                        />
+                        <input
+                          type="text"
+                          value={productForm.colorHex}
+                          onChange={(e) => setProductForm({ ...productForm, colorHex: e.target.value })}
+                          className="flex-1 px-3 py-2.5 rounded-none border border-[#C69F6F]/40 font-mono font-bold text-xs bg-white dark:bg-black text-black dark:text-white outline-none focus:border-[#C69F6F]"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Column 2: Media Upload (Choose File Tab) & Inventory */}
+                <div className="space-y-4">
+                  {/* Image Selector Tabs */}
+                  <div>
+                    <label className="block font-black uppercase tracking-wider text-xs text-black dark:text-white mb-2">
+                      Garment Photo *
+                    </label>
+
+                    {/* Source Tab Toggle */}
+                    <div className="flex border border-[#C69F6F]/40 mb-3 bg-[#EEDFC8] dark:bg-[#12100E]">
+                      <button
+                        type="button"
+                        onClick={() => setProductImageTab('upload')}
+                        className={`flex-1 py-2 text-xs font-black uppercase tracking-wider transition cursor-pointer ${
+                          productImageTab === 'upload'
+                            ? 'bg-[#C69F6F] text-black shadow-xs font-black'
+                            : 'text-neutral-700 dark:text-neutral-300 hover:text-black dark:hover:text-white font-bold'
+                        }`}
+                      >
+                        Choose File (PC / Device)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setProductImageTab('url')}
+                        className={`flex-1 py-2 text-xs font-black uppercase tracking-wider transition cursor-pointer ${
+                          productImageTab === 'url'
+                            ? 'bg-[#C69F6F] text-black shadow-xs font-black'
+                            : 'text-neutral-700 dark:text-neutral-300 hover:text-black dark:hover:text-white font-bold'
+                        }`}
+                      >
+                        Image URL Link
+                      </button>
+                    </div>
+
+                    {/* Permanently mounted native file input for Garment */}
+                    <input
+                      id="admin-garment-file-input"
+                      ref={garmentFileInputRef}
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/jpg"
+                      onChange={(e) => handleGarmentFileProcess(e.target.files?.[0])}
+                      className="hidden"
+                    />
+
+                    {productImageTab === 'upload' ? (
+                      <div>
+                        {!productForm.imageUrl ? (
+                          <label
+                            htmlFor="admin-garment-file-input"
+                            onDragOver={(e) => { e.preventDefault(); setIsDraggingGarmentFile(true); }}
+                            onDragLeave={() => setIsDraggingGarmentFile(false)}
+                            onDrop={(e) => {
+                              e.preventDefault();
+                              setIsDraggingGarmentFile(false);
+                              if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                                handleGarmentFileProcess(e.dataTransfer.files[0]);
+                              }
+                            }}
+                            className={`border-2 border-dashed p-6 flex flex-col items-center justify-center text-center cursor-pointer transition ${
+                              isDraggingGarmentFile
+                                ? 'border-black dark:border-white bg-[#EAE0D2] dark:bg-onyx-800'
+                                : 'border-[#C69F6F]/50 bg-white dark:bg-black hover:border-[#C69F6F] hover:bg-[#FAF4EB]'
+                            }`}
+                          >
+                            <svg className="w-8 h-8 text-[#8C6D45] dark:text-[#C69F6F] mb-2 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <span className="px-4 py-2 bg-black text-white dark:bg-[#C69F6F] dark:text-black font-black uppercase text-xs tracking-wider shadow-sm mb-1.5 pointer-events-none">
+                              Choose File / Browse PC
+                            </span>
+                            <span className="text-[11px] text-neutral-500 font-medium pointer-events-none">or drag &amp; drop high-res garment image</span>
+                            <span className="text-[10px] text-neutral-400 font-mono mt-0.5 pointer-events-none">PNG, JPG, WEBP (Max 8MB)</span>
+                          </label>
+                        ) : (
+                          <div className="p-3 bg-white dark:bg-black border border-[#C69F6F]/40 flex items-center justify-between gap-3">
+                            <div className="flex items-center space-x-3 min-w-0">
+                              <img
+                                src={productForm.imageUrl}
+                                alt="Garment Preview"
+                                className="w-16 h-20 object-cover object-top border border-neutral-300 dark:border-neutral-700 bg-neutral-100 flex-shrink-0"
+                              />
+                              <div className="min-w-0">
+                                <span className="text-xs font-black text-black dark:text-white block">
+                                  Image Attached
+                                </span>
+                                <span className="text-[11px] text-emerald-700 dark:text-emerald-400 font-bold block mt-0.5">
+                                  ✓ Ready for catalog publishing
+                                </span>
+                              </div>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <label
+                                htmlFor="admin-garment-file-input"
+                                className="px-3 py-1.5 bg-[#FAF4EB] hover:bg-[#EAE0D2] dark:bg-onyx-800 dark:hover:bg-onyx-700 text-black dark:text-white border border-[#C69F6F]/40 font-black text-xs uppercase tracking-wider cursor-pointer"
+                              >
+                                Change
+                              </label>
+                              <button
+                                type="button"
+                                onClick={() => setProductForm({ ...productForm, imageUrl: '' })}
+                                className="text-xs text-red-600 hover:text-red-800 font-bold uppercase underline cursor-pointer"
+                              >
+                                Remove
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div>
+                        <input
+                          type="url"
+                          placeholder="https://images.unsplash.com/photo-..."
+                          value={productForm.imageUrl}
+                          onChange={(e) => setProductForm({ ...productForm, imageUrl: e.target.value })}
+                          className="w-full px-3 py-2.5 rounded-none border border-[#C69F6F]/40 bg-white dark:bg-black text-xs font-mono font-bold text-black dark:text-white outline-none focus:border-[#C69F6F]"
+                        />
+                        {productForm.imageUrl && (
+                          <div className="mt-2 w-16 h-20 overflow-hidden border border-[#C69F6F]/40">
+                            <img src={productForm.imageUrl} alt="Preview" className="w-full h-full object-cover" />
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Stock Quantity Per Size */}
+                  <div>
+                    <label className="block font-black uppercase tracking-wider text-xs text-black dark:text-white mb-1.5">
+                      Available Stock per Size:
+                    </label>
+                    <div className="grid grid-cols-5 gap-2 text-center">
+                      {['XS', 'S', 'M', 'L', 'XL'].map((size) => (
+                        <div key={size} className="bg-white dark:bg-black p-2 border border-[#C69F6F]/40">
+                          <span className="block font-mono font-black text-[11px] text-[#8C6D45] dark:text-[#C69F6F] mb-1">{size}</span>
+                          <input
+                            type="number"
+                            min="0"
+                            value={productForm[`stock${size}`]}
+                            onChange={(e) => setProductForm({ ...productForm, [`stock${size}`]: e.target.value })}
+                            className="w-full text-center py-1 bg-[#FAF4EB] dark:bg-onyx-800 font-black text-xs text-black dark:text-white border border-neutral-300 dark:border-neutral-700"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Short Description */}
+                  <div>
+                    <label className="block font-black uppercase tracking-wider text-xs text-black dark:text-white mb-1.5">
+                      Description &amp; Tailoring Notes
+                    </label>
+                    <textarea
+                      rows={3}
+                      value={productForm.description}
+                      onChange={(e) => setProductForm({ ...productForm, description: e.target.value })}
+                      className="w-full px-3 py-2 rounded-none border border-[#C69F6F]/40 bg-white dark:bg-black text-xs font-medium text-black dark:text-white outline-none focus:border-[#C69F6F]"
+                      placeholder="Handcrafted tailored piece..."
                     />
                   </div>
                 </div>
               </div>
 
-              {/* Image URL */}
-              <div>
-                <label className="block font-black uppercase tracking-wider text-xs text-black dark:text-white mb-1.5">
-                  Product Image URL *
-                </label>
-                <input
-                  type="url"
-                  required
-                  placeholder="https://images.unsplash.com/photo-..."
-                  value={productForm.imageUrl}
-                  onChange={(e) => setProductForm({ ...productForm, imageUrl: e.target.value })}
-                  className="w-full px-3 py-2 rounded-none border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-black text-xs font-mono font-bold text-black dark:text-white outline-none focus:border-black dark:focus:border-[#E6D3B3]"
-                />
-                {productForm.imageUrl && (
-                  <div className="mt-2 w-16 h-20 rounded-none overflow-hidden border border-neutral-300 dark:border-neutral-700">
-                    <img src={productForm.imageUrl} alt="Preview" className="w-full h-full object-cover" />
-                  </div>
-                )}
-              </div>
-
-              {/* Stock Quantity Per Size */}
-              <div>
-                <label className="block font-black uppercase tracking-wider text-xs text-black dark:text-white mb-1.5">
-                  Available Stock per Size:
-                </label>
-                <div className="grid grid-cols-5 gap-2 text-center">
-                  {['XS', 'S', 'M', 'L', 'XL'].map((size) => (
-                    <div key={size}>
-                      <span className="block font-mono font-bold text-[10px] text-neutral-500 mb-1">{size}</span>
-                      <input
-                        type="number"
-                        min="0"
-                        value={productForm[`stock${size}`]}
-                        onChange={(e) => setProductForm({ ...productForm, [`stock${size}`]: e.target.value })}
-                        className="w-full text-center px-1 py-1.5 rounded-none border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-black font-black text-xs text-black dark:text-white"
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Short Description */}
-              <div>
-                <label className="block font-black uppercase tracking-wider text-xs text-black dark:text-white mb-1.5">
-                  Description
-                </label>
-                <textarea
-                  rows={2}
-                  value={productForm.description}
-                  onChange={(e) => setProductForm({ ...productForm, description: e.target.value })}
-                  className="w-full px-3 py-2 rounded-none border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-black text-xs font-medium text-black dark:text-white outline-none focus:border-black dark:focus:border-[#E6D3B3]"
-                />
-              </div>
-
-              <div className="pt-2 flex justify-end space-x-3">
+              {/* Action Buttons */}
+              <div className="pt-4 border-t border-[#C69F6F]/30 flex justify-end space-x-3">
                 <button
                   type="button"
                   onClick={() => setIsProductModalOpen(false)}
-                  className="px-4 py-2.5 rounded-none border border-neutral-300 dark:border-neutral-700 text-xs font-black text-neutral-700 dark:text-neutral-300 uppercase tracking-wider"
+                  className="px-5 py-2.5 rounded-none border border-[#C69F6F]/50 text-xs font-black text-neutral-700 dark:text-neutral-300 uppercase tracking-wider hover:bg-[#EAE0D2] dark:hover:bg-neutral-800 cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2.5 rounded-none bg-black hover:bg-neutral-800 text-white dark:bg-[#E6D3B3] dark:hover:bg-[#d9c19b] dark:text-black text-xs font-black uppercase tracking-wider shadow-md"
+                  className="px-8 py-2.5 rounded-none bg-black hover:bg-neutral-800 text-white dark:bg-[#C69F6F] dark:hover:bg-[#b58f5f] dark:text-black text-xs font-black uppercase tracking-wider shadow-md cursor-pointer"
                 >
                   Save Garment
                 </button>
@@ -1938,169 +2110,199 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
       )}
 
       {/* =========================================================================
-          ORDER DETAILS INSPECTION MODAL
+          ORDER DETAILS INSPECTION MODAL (PC 2-COLUMN LUXURY SPECIFICATION)
       ========================================================================= */}
       {selectedOrderDetails && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-          <div className="bg-white dark:bg-onyx-900 rounded-none border-2 border-black dark:border-[#E6D3B3] max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl p-5 sm:p-8 animate-fadeIn">
-            <div className="flex items-center justify-between pb-4 border-b border-neutral-200 dark:border-neutral-800 mb-4">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+          <div className="bg-[#FAF4EB] dark:bg-[#1A1713] rounded-none border-2 border-[#C69F6F] max-w-4xl lg:max-w-5xl w-full max-h-[92vh] overflow-y-auto shadow-2xl p-5 sm:p-8 animate-fadeIn">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between pb-4 border-b border-[#C69F6F]/30 mb-6">
               <div>
-                <span className="text-[10px] font-mono font-black uppercase tracking-widest text-[#A6865A] dark:text-[#E6D3B3]">
-                  ORDER SPECIFICATION
+                <span className="text-[10px] font-mono font-black uppercase tracking-widest text-[#8C6D45] dark:text-[#E6D3B3]">
+                  ATELIER ORDER SPECIFICATION
                 </span>
                 <h3 className="font-mono text-2xl font-black text-black dark:text-[#E6D3B3]">
                   #{selectedOrderDetails.orderNumber || selectedOrderDetails.id}
                 </h3>
               </div>
               <button
+                type="button"
                 onClick={() => setSelectedOrderDetails(null)}
-                className="text-neutral-400 hover:text-black dark:hover:text-white text-xl p-1 font-bold"
+                className="text-neutral-500 hover:text-black dark:hover:text-white text-2xl p-1 font-bold cursor-pointer"
               >
                 ✕
               </button>
             </div>
 
-            <div className="space-y-4 text-xs">
-              {/* Customer Info Card */}
-              <div className="p-4 rounded-none bg-neutral-100 dark:bg-black border border-neutral-300 dark:border-neutral-800 space-y-1.5">
-                <div className="font-black text-black dark:text-white text-xs">
-                  Client: {selectedOrderDetails.customer?.firstName} {selectedOrderDetails.customer?.lastName}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 text-xs">
+              {/* Left Column: Customer Profile & Ordered Pieces */}
+              <div className="space-y-4">
+                {/* Client Profile Card */}
+                <div className="p-4 bg-white dark:bg-black border border-[#C69F6F]/40 space-y-2">
+                  <div className="flex justify-between items-center border-b border-neutral-200 dark:border-neutral-800 pb-2">
+                    <span className="font-black uppercase tracking-wider text-xs text-[#8C6D45] dark:text-[#C69F6F]">
+                      Client Profile
+                    </span>
+                    <span className="text-xs font-mono font-bold text-neutral-500">
+                      {selectedOrderDetails.createdAt ? new Date(selectedOrderDetails.createdAt).toLocaleDateString() : 'Recent'}
+                    </span>
+                  </div>
+                  <div className="space-y-1.5">
+                    <div className="font-black text-black dark:text-white text-sm">
+                      {selectedOrderDetails.customer?.firstName} {selectedOrderDetails.customer?.lastName}
+                    </div>
+                    <div className="text-neutral-700 dark:text-neutral-300">
+                      Email: <span className="font-mono font-bold text-black dark:text-white">{selectedOrderDetails.customer?.email}</span>
+                    </div>
+                    <div className="text-neutral-700 dark:text-neutral-300">
+                      Phone: <span className="font-mono font-black text-black dark:text-[#E6D3B3]">{selectedOrderDetails.customer?.phone}</span>
+                    </div>
+                    <div className="text-neutral-700 dark:text-neutral-300">
+                      Delivery Address: <span className="font-bold text-black dark:text-white">{selectedOrderDetails.customer?.address}, {selectedOrderDetails.customer?.city}</span>
+                    </div>
+                    {selectedOrderDetails.customer?.orderNotes && (
+                      <div className="pt-2 text-neutral-600 dark:text-neutral-400 italic border-t border-neutral-200 dark:border-neutral-800">
+                        "{selectedOrderDetails.customer?.orderNotes}"
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <div className="text-black dark:text-white font-medium">Email: <span className="font-mono font-bold">{selectedOrderDetails.customer?.email}</span></div>
-                <div className="text-black dark:text-white font-medium">Phone: <span className="font-mono font-black text-black dark:text-[#E6D3B3]">{selectedOrderDetails.customer?.phone}</span></div>
-                <div className="text-black dark:text-white font-medium">Address: <span className="font-bold">{selectedOrderDetails.customer?.address}, {selectedOrderDetails.customer?.city}</span></div>
-                {selectedOrderDetails.customer?.orderNotes && (
-                  <div className="pt-1 text-neutral-500 italic font-medium">Notes: "{selectedOrderDetails.customer?.orderNotes}"</div>
-                )}
-              </div>
 
-              {/* Items List */}
-              <div>
-                <span className="font-black uppercase tracking-wider text-xs text-black dark:text-white">
-                  Ordered Items:
-                </span>
-                <div className="mt-2 divide-y divide-neutral-200 dark:divide-onyx-800 border border-neutral-300 dark:border-neutral-800 rounded-none overflow-hidden">
-                  {(selectedOrderDetails.items || []).map((item, idx) => (
-                    <div key={idx} className="p-3.5 flex items-center justify-between">
-                      <div>
-                        <strong className="block text-black dark:text-white font-black text-xs">{item.name}</strong>
-                        <span className="text-xs font-bold text-neutral-500 mt-0.5 block">
-                          Size: {item.size || item.selectedSize} • Color: {item.color || item.selectedColor} • Qty: {item.quantity || 1}
+                {/* Ordered Garments */}
+                <div>
+                  <span className="font-black uppercase tracking-wider text-xs text-black dark:text-white block mb-2">
+                    Ordered Pieces ({(selectedOrderDetails.items || []).length}):
+                  </span>
+                  <div className="divide-y divide-neutral-200 dark:divide-neutral-800 border border-[#C69F6F]/40 bg-white dark:bg-black max-h-56 overflow-y-auto">
+                    {(selectedOrderDetails.items || []).map((item, idx) => (
+                      <div key={idx} className="p-3.5 flex items-center justify-between">
+                        <div>
+                          <strong className="block text-black dark:text-white font-black text-xs">{item.name}</strong>
+                          <span className="text-xs font-bold text-neutral-500 mt-0.5 block">
+                            Size: {item.size || item.selectedSize} • Color: {item.color || item.selectedColor} • Qty: {item.quantity || 1}
+                          </span>
+                        </div>
+                        <span className="font-black font-mono text-black dark:text-[#E6D3B3] text-xs">
+                          Rs. {((item.price || 0) * (item.quantity || 1)).toLocaleString()}
                         </span>
                       </div>
-                      <span className="font-black font-mono text-black dark:text-[#E6D3B3] text-xs">
-                        Rs. {(item.price * (item.quantity || 1)).toLocaleString()}
-                      </span>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              </div>
 
-              {/* Order Pricing Summary */}
-              <div className="p-4 rounded-none bg-neutral-50 dark:bg-black border border-neutral-300 dark:border-neutral-700 flex items-center justify-between">
-                <div>
-                  <span className="text-xs uppercase font-black text-neutral-500">Payment Gateway</span>
-                  <div className="font-black uppercase font-mono text-black dark:text-white">{selectedOrderDetails.paymentMethod}</div>
-                </div>
-                <div className="text-right">
-                  <span className="text-xs uppercase font-black text-neutral-500">Payable Total</span>
-                  <div className="text-lg font-black font-mono text-black dark:text-[#E6D3B3]">
-                    Rs. {Number(selectedOrderDetails.total || selectedOrderDetails.pricing?.finalTotal || 0).toLocaleString()}
+                {/* Total Summary */}
+                <div className="p-4 bg-white dark:bg-black border border-[#C69F6F]/40 flex items-center justify-between">
+                  <div>
+                    <span className="text-xs uppercase font-black text-neutral-500">Payment Gateway</span>
+                    <div className="font-black uppercase font-mono text-black dark:text-white">{selectedOrderDetails.paymentMethod}</div>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-xs uppercase font-black text-neutral-500">Payable Total</span>
+                    <div className="text-xl font-black font-mono text-black dark:text-[#E6D3B3]">
+                      Rs. {Number(selectedOrderDetails.total || selectedOrderDetails.pricing?.finalTotal || 0).toLocaleString()}
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Payment Proof Screenshot Inspection */}
-              {selectedOrderDetails.paymentReceipt ? (
-                <div className="p-4 rounded-none bg-neutral-100 dark:bg-black border border-neutral-300 dark:border-neutral-700 space-y-2">
+              {/* Right Column: Receipt Screenshot & Fulfillment Actions */}
+              <div className="space-y-4">
+                {/* Payment Screenshot */}
+                <div className="p-4 bg-white dark:bg-black border border-[#C69F6F]/40 space-y-2.5">
                   <div className="flex items-center justify-between">
-                    <span className="font-black uppercase tracking-wider text-xs text-[#A6865A] dark:text-[#E6D3B3]">
+                    <span className="font-black uppercase tracking-wider text-xs text-[#8C6D45] dark:text-[#E6D3B3]">
                       Payment Proof Screenshot:
                     </span>
                     <span className="text-xs font-mono font-bold text-neutral-500 dark:text-neutral-400">
-                      {selectedOrderDetails.receiptFileName || 'payment_proof.jpg'}
+                      {selectedOrderDetails.receiptFileName || 'proof.jpg'}
                     </span>
                   </div>
-                  <div className="space-y-2">
-                    <div
-                      onClick={() => setEnlargedReceipt({
-                        src: selectedOrderDetails.paymentReceipt,
-                        fileName: selectedOrderDetails.receiptFileName || `Receipt #${selectedOrderDetails.orderNumber}`
-                      })}
-                      className="relative group cursor-pointer border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-black overflow-hidden flex items-center justify-center p-2"
-                    >
-                      <img
-                        src={selectedOrderDetails.paymentReceipt}
-                        alt="Customer Payment Receipt"
-                        className="max-h-48 w-auto object-contain mx-auto transition-transform group-hover:scale-105"
-                      />
+
+                  {selectedOrderDetails.paymentReceipt ? (
+                    <div className="space-y-2">
+                      <div
+                        onClick={() => setEnlargedReceipt({
+                          src: selectedOrderDetails.paymentReceipt,
+                          fileName: selectedOrderDetails.receiptFileName || `Receipt #${selectedOrderDetails.orderNumber}`
+                        })}
+                        className="relative group cursor-pointer border border-[#C69F6F]/30 bg-[#FAF4EB] dark:bg-onyx-950 overflow-hidden flex items-center justify-center p-2"
+                        title="Click to enlarge screenshot"
+                      >
+                        <img
+                          src={selectedOrderDetails.paymentReceipt}
+                          alt="Customer Payment Receipt"
+                          className="max-h-48 w-auto object-contain mx-auto transition-transform group-hover:scale-105"
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setEnlargedReceipt({
+                          src: selectedOrderDetails.paymentReceipt,
+                          fileName: selectedOrderDetails.receiptFileName || `Receipt #${selectedOrderDetails.orderNumber}`
+                        })}
+                        className="w-full py-2 bg-[#C69F6F] hover:bg-[#b58f5f] text-black text-xs font-black uppercase tracking-wider transition cursor-pointer shadow-xs"
+                      >
+                        Open Full Screenshot ↗
+                      </button>
                     </div>
+                  ) : (
+                    <div className="p-4 bg-[#FAF4EB] dark:bg-onyx-900 border border-[#C69F6F]/30 text-center font-bold text-neutral-600 dark:text-neutral-400">
+                      {selectedOrderDetails.paymentMethod === 'cod' ? 'Cash On Delivery Order (No receipt needed)' : 'No screenshot attached for this manual order.'}
+                    </div>
+                  )}
+                </div>
+
+                {/* Fulfillment Status Actions */}
+                <div className="p-4 bg-white dark:bg-black border border-[#C69F6F]/40 space-y-3">
+                  <div>
+                    <label className="block font-black uppercase tracking-wider text-xs text-black dark:text-white mb-1.5">
+                      Change Fulfillment Status:
+                    </label>
+                    <select
+                      value={selectedOrderDetails.status || 'processing'}
+                      onChange={(e) => {
+                        handleStatusChange(selectedOrderDetails.id || selectedOrderDetails.orderNumber, e.target.value);
+                        setSelectedOrderDetails({ ...selectedOrderDetails, status: e.target.value });
+                      }}
+                      className="w-full px-3.5 py-2.5 rounded-none border border-[#C69F6F]/40 bg-[#FAF4EB] dark:bg-onyx-900 font-black text-xs text-black dark:text-white uppercase tracking-wider"
+                    >
+                      <option value="pending">Pending</option>
+                      <option value="approved">Approved</option>
+                      <option value="processing">Processing</option>
+                      <option value="dispatched">Dispatched</option>
+                      <option value="delivered">Delivered</option>
+                      <option value="cancelled">Cancelled</option>
+                    </select>
+                  </div>
+
+                  {/* Primary Approval Button (When Status is Pending) */}
+                  {selectedOrderDetails.status === 'pending' && (
                     <button
                       type="button"
-                      onClick={() => setEnlargedReceipt({
-                        src: selectedOrderDetails.paymentReceipt,
-                        fileName: selectedOrderDetails.receiptFileName || `Receipt #${selectedOrderDetails.orderNumber}`
-                      })}
-                      className="w-full py-2 bg-[#E6D3B3] hover:bg-[#d9c19b] text-black text-xs font-black uppercase tracking-wider transition cursor-pointer"
+                      disabled={approvalLoading}
+                      onClick={() => handleApproveOrder(selectedOrderDetails)}
+                      className="w-full py-3 bg-black hover:bg-neutral-800 text-white dark:bg-[#C69F6F] dark:hover:bg-[#b58f5f] dark:text-black font-black uppercase tracking-widest text-xs transition active:scale-95 shadow-sm rounded-none cursor-pointer"
                     >
-                      Open Full Screenshot ↗
+                      {approvalLoading ? 'Approving Consignment...' : 'Approve Order & Activate Live Tracking'}
                     </button>
-                  </div>
-                </div>
-              ) : ['jazzcash', 'easypaisa', 'bank'].includes((selectedOrderDetails.paymentMethod || '').toLowerCase()) ? (
-                <div className="p-3 rounded-none bg-amber-50 dark:bg-amber-950/30 border border-amber-300 text-amber-900 dark:text-amber-300 text-xs font-bold">
-                  Manual gateway order (no receipt attached).
-                </div>
-              ) : null}
+                  )}
 
-              {/* Order Status & Verification Approval Actions */}
-              <div className="pt-2 space-y-2.5">
-                <label className="block font-black uppercase tracking-wider text-xs text-black dark:text-white mb-1.5">
-                  Change Fulfillment Status:
-                </label>
-                <select
-                  value={selectedOrderDetails.status || 'processing'}
-                  onChange={(e) => {
-                    handleStatusChange(selectedOrderDetails.id || selectedOrderDetails.orderNumber, e.target.value);
-                    setSelectedOrderDetails({ ...selectedOrderDetails, status: e.target.value });
-                  }}
-                  className="w-full px-3.5 py-2.5 rounded-none border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-black font-black text-xs text-black dark:text-white uppercase tracking-wider"
-                >
-                  <option value="pending">Pending</option>
-                  <option value="approved">Approved</option>
-                  <option value="processing">Processing</option>
-                  <option value="dispatched">Dispatched</option>
-                  <option value="delivered">Delivered</option>
-                  <option value="cancelled">Cancelled</option>
-                </select>
-
-                {/* Primary Approval Button (When Status is Pending) */}
-                {selectedOrderDetails.status === 'pending' && (
+                  {/* Direct WhatsApp Customer Notification Link */}
                   <button
                     type="button"
-                    disabled={approvalLoading}
-                    onClick={() => handleApproveOrder(selectedOrderDetails)}
-                    className="w-full py-3 bg-black hover:bg-neutral-800 text-white dark:bg-[#E6D3B3] dark:hover:bg-[#d9c19b] dark:text-black font-black uppercase tracking-widest text-xs transition active:scale-95 shadow-sm rounded-none"
+                    onClick={() => {
+                      const cleanPhone = (selectedOrderDetails.customer?.phone || '').replace(/[^0-9]/g, '');
+                      const formattedPhone = cleanPhone.startsWith('0')
+                        ? '92' + cleanPhone.slice(1)
+                        : (cleanPhone.startsWith('92') ? cleanPhone : '92' + cleanPhone);
+                      const msg = `Assalam-o-Alaikum ${selectedOrderDetails.customer?.firstName || 'Valued Client'},\n\nYour Zaytoun Atelier order #${selectedOrderDetails.orderNumber || selectedOrderDetails.id} is ${selectedOrderDetails.status === 'approved' ? 'APPROVED' : 'CONFIRMED'}.\n\nCourier: TCS Express (Tracking #: ${selectedOrderDetails.trackingNumber || 'TCS-99482104-PK'})\nLive Track: ${window.location.origin}/track/${selectedOrderDetails.orderNumber || selectedOrderDetails.id}\n\nThank you for choosing Zaytoun Atelier slow-fashion craftsmanship.`;
+                      window.open(`https://wa.me/${formattedPhone}?text=${encodeURIComponent(msg)}`, '_blank');
+                    }}
+                    className="w-full py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-black uppercase tracking-wider text-xs transition flex items-center justify-center space-x-2 rounded-none shadow-sm cursor-pointer"
                   >
-                    {approvalLoading ? 'Approving Consignment...' : 'Approve Order & Activate Live Tracking'}
+                    <span>Send Customer WhatsApp Notification</span>
                   </button>
-                )}
-
-                {/* Direct WhatsApp Customer Notification Link */}
-                <button
-                  type="button"
-                  onClick={() => {
-                    const cleanPhone = (selectedOrderDetails.customer?.phone || '').replace(/[^0-9]/g, '');
-                    const formattedPhone = cleanPhone.startsWith('0')
-                      ? '92' + cleanPhone.slice(1)
-                      : (cleanPhone.startsWith('92') ? cleanPhone : '92' + cleanPhone);
-                    const msg = `Assalam-o-Alaikum ${selectedOrderDetails.customer?.firstName || 'Valued Client'},\n\nYour Zaytoun Atelier order #${selectedOrderDetails.orderNumber || selectedOrderDetails.id} is ${selectedOrderDetails.status === 'approved' ? 'APPROVED' : 'CONFIRMED'}.\n\nCourier: TCS Express (Tracking #: ${selectedOrderDetails.trackingNumber || 'TCS-99482104-PK'})\nLive Track: ${window.location.origin}/track/${selectedOrderDetails.orderNumber || selectedOrderDetails.id}\n\nThank you for choosing Zaytoun Atelier slow-fashion craftsmanship.`;
-                    window.open(`https://wa.me/${formattedPhone}?text=${encodeURIComponent(msg)}`, '_blank');
-                  }}
-                  className="w-full py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-black uppercase tracking-wider text-xs transition flex items-center justify-center space-x-2 rounded-none shadow-sm"
-                >
-                  <span>Send Customer WhatsApp Notification</span>
-                </button>
+                </div>
               </div>
             </div>
           </div>
@@ -2114,12 +2316,12 @@ Thank you for choosing Zaytoun Atelier craftsmanship.`;
           onClick={() => setEnlargedReceipt(null)}
         >
           <div
-            className="relative max-w-4xl w-full max-h-[94vh] bg-white dark:bg-onyx-900 border-2 border-black dark:border-[#E6D3B3] p-4 sm:p-6 shadow-2xl rounded-none flex flex-col"
+            className="relative max-w-4xl lg:max-w-5xl w-full max-h-[94vh] bg-[#FAF4EB] dark:bg-[#1A1713] border-2 border-[#C69F6F] p-4 sm:p-6 shadow-2xl rounded-none flex flex-col"
             onClick={e => e.stopPropagation()}
           >
-            <div className="flex flex-wrap justify-between items-center pb-3 mb-3 border-b border-neutral-200 dark:border-neutral-800 gap-2">
+            <div className="flex flex-wrap justify-between items-center pb-3 mb-3 border-b border-[#C69F6F]/30 gap-2">
               <div>
-                <span className="text-[10px] uppercase font-black tracking-widest text-[#A6865A] dark:text-[#E6D3B3] block font-mono">
+                <span className="text-[10px] uppercase font-black tracking-widest text-[#8C6D45] dark:text-[#E6D3B3] block font-mono">
                   CUSTOMER PAYMENT PROOF
                 </span>
                 <span className="font-mono text-xs font-black text-black dark:text-white">
