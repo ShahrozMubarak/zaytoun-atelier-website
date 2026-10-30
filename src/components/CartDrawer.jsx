@@ -242,62 +242,63 @@ export default function CartDrawer({
                   type="text"
                   value={promoCode}
                   onChange={(e) => setPromoCode(e.target.value)}
+                  placeholder="Enter Voucher Code"
                   aria-label="Promo code"
-                  className="w-full bg-neutral-50 dark:bg-onyx-900 border-2 border-neutral-300 dark:border-onyx-800 rounded-none px-3 py-2 text-xs font-bold text-black dark:text-white focus:outline-none focus:border-black dark:focus:border-white uppercase tracking-wider"
+                  className="w-full bg-[#FAF9F6] dark:bg-[#1E1915] border border-[#D8CEBF] dark:border-[#382F26] rounded-xl px-3.5 py-2.5 text-xs font-bold text-black dark:text-white focus:outline-none focus:border-[#9A6E3E] uppercase tracking-wider shadow-inner"
                 />
               </div>
               <button
                 type="submit"
-                className="bg-black dark:bg-white text-white dark:text-black px-5 py-2 rounded-none text-xs font-black uppercase tracking-wider hover:opacity-90 transition whitespace-nowrap shadow-sm"
+                className="bg-[#1C1612] hover:bg-[#9A6E3E] text-white px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition whitespace-nowrap shadow-sm active:scale-95"
               >
                 APPLY
               </button>
             </form>
 
             {promoError && (
-              <p className="text-[11px] text-red-500 font-medium">{promoError}</p>
+              <p className="text-[11px] text-red-500 font-bold">{promoError}</p>
             )}
 
             {appliedPromo && (
-              <div className="flex justify-between items-center bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-300 dark:border-emerald-800 px-3 py-1.5 rounded-none text-xs text-emerald-800 dark:text-emerald-300">
-                <span>Code <strong>{appliedPromo.code}</strong> applied!</span>
+              <div className="flex justify-between items-center bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-300 dark:border-emerald-800 px-3.5 py-2 rounded-xl text-xs text-emerald-800 dark:text-emerald-300 font-bold shadow-2xs">
+                <span>Voucher <strong>{appliedPromo.code}</strong> applied!</span>
                 <button 
                   onClick={() => setAppliedPromo(null)}
-                  className="text-emerald-700 hover:text-emerald-900 font-bold ml-2"
+                  className="text-emerald-700 hover:text-emerald-900 font-black ml-2"
                 >
                   ✕
                 </button>
               </div>
             )}
 
-            {/* Calculations Breakdown */}
-            <div className="space-y-1.5 text-xs text-neutral-600 dark:text-neutral-400 pt-2 border-t border-neutral-200 dark:border-onyx-800">
+            {/* Calculations Breakdown Card */}
+            <div className="p-4 rounded-2xl bg-[#FAF6F0] dark:bg-[#1E1915] border border-[#E8E0D5] dark:border-[#2C241D] space-y-2 text-xs text-neutral-700 dark:text-neutral-300 shadow-2xs">
               <div className="flex justify-between">
-                <span>Subtotal</span>
-                <span className="font-mono">{formatPrice(subtotal)}</span>
+                <span className="font-semibold">Subtotal</span>
+                <span className="font-mono font-bold text-black dark:text-white">{formatPrice(subtotal)}</span>
               </div>
 
               {discountAmount > 0 && (
-                <div className="flex justify-between text-emerald-600 dark:text-emerald-400">
+                <div className="flex justify-between text-emerald-600 dark:text-emerald-400 font-bold">
                   <span>Discount ({appliedPromo?.discountPercent}%)</span>
                   <span className="font-mono">-{formatPrice(discountAmount)}</span>
                 </div>
               )}
 
               <div className="flex justify-between">
-                <span>Express Courier Shipping</span>
+                <span className="font-semibold">Express Courier Shipping</span>
                 <span className="font-mono">
                   {shippingFee === 0 ? (
-                    <strong className="text-black dark:text-white">FREE</strong>
+                    <strong className="text-emerald-600 dark:text-emerald-400 font-bold">FREE</strong>
                   ) : (
-                    formatPrice(shippingFee)
+                    <strong className="text-black dark:text-white font-bold">{formatPrice(shippingFee)}</strong>
                   )}
                 </span>
               </div>
 
-              <div className="flex justify-between items-center pt-2 border-t border-neutral-200 dark:border-onyx-800 text-base font-bold text-black dark:text-white">
-                <span>Total Due</span>
-                <span className="font-sans text-xl text-black dark:text-white">
+              <div className="flex justify-between items-center pt-2.5 border-t border-[#E8E0D5] dark:border-[#332A22] text-sm font-black text-black dark:text-white">
+                <span className="uppercase tracking-wider">Total Due</span>
+                <span className="text-xl text-[#9A6E3E] font-black tracking-tight">
                   {formatPrice(finalTotal)}
                 </span>
               </div>
@@ -308,7 +309,7 @@ export default function CartDrawer({
               onClick={handleCheckoutClick}
               theme="camel"
               containerClassName="w-full"
-              className="w-full bg-black hover:bg-neutral-900 dark:bg-white dark:hover:bg-neutral-100 text-white dark:text-black font-black py-4 rounded-none shadow-md transition active:scale-95 flex items-center justify-center space-x-2 text-xs uppercase tracking-widest"
+              className="w-full bg-[#1C1612] hover:bg-[#9A6E3E] text-white font-black py-4 rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center space-x-2 text-xs uppercase tracking-widest"
             >
               <span>PROCEED TO CHECKOUT</span>
               <span className="arrow-runway-right text-xs">
@@ -319,7 +320,7 @@ export default function CartDrawer({
 
             {/* Secure Atelier Checkout Note */}
             <div className="flex items-center justify-center space-x-2 text-[10px] text-neutral-500 font-mono tracking-widest pt-1 uppercase font-bold">
-              <span className="w-2 h-2 rounded-none bg-emerald-500" />
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               <span className="text-black dark:text-white font-bold">TCS EXPRESS • SECURE DISPATCH</span>
             </div>
           </div>

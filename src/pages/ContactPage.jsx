@@ -97,16 +97,19 @@ export default function ContactPage() {
 
           {/* Right Column (7 cols): Inquiry Form */}
           <div className="lg:col-span-7">
-            <div className="p-8 sm:p-10 rounded-3xl bg-linen-100 dark:bg-onyx-900 border border-linen-300 dark:border-onyx-800 shadow-sm">
-              <h3 className="font-editorial text-2xl font-bold mb-6">Send an Inquiry</h3>
+            <div className="p-8 sm:p-10 rounded-3xl bg-white dark:bg-[#1A1613] border border-[#E6D3B3] dark:border-[#332A22] shadow-sm">
+              <h3 className="font-serif text-2xl font-black mb-2 text-[#1C1612] dark:text-white tracking-tight">Send an Inquiry</h3>
+              <p className="text-xs text-[#7C6A58] dark:text-neutral-400 mb-6 font-medium">
+                Our atelier concierge in Lahore responds within 4 business hours.
+              </p>
 
               {submitted ? (
-                <div className="py-12 text-center space-y-3 bg-olive-900/10 rounded-2xl border border-olive-800/20">
-                  <span className="text-3xl">✓</span>
-                  <h4 className="font-editorial text-xl font-bold text-olive-800 dark:text-camel-400">
+                <div className="py-12 text-center space-y-3 bg-[#FAF6F0] dark:bg-[#201A16] rounded-2xl border border-[#E8E0D5] dark:border-[#332A22]">
+                  <span className="text-3xl text-emerald-600">✓</span>
+                  <h4 className="text-xl font-black text-[#1C1612] dark:text-white">
                     Message Received
                   </h4>
-                  <p className="text-xs text-onyx-600 dark:text-linen-300 max-w-sm mx-auto">
+                  <p className="text-xs text-neutral-600 dark:text-neutral-300 max-w-sm mx-auto font-medium">
                     Our atelier team in Lahore has received your note and will contact you shortly via email or WhatsApp.
                   </p>
                 </div>
@@ -114,7 +117,7 @@ export default function ContactPage() {
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-black uppercase tracking-wider text-black dark:text-white mb-1.5">
+                      <label className="block text-[11px] font-black uppercase tracking-[0.16em] text-[#8C6A3E] dark:text-[#E6D3B3] mb-1.5">
                         Full Name *
                       </label>
                       <input
@@ -122,11 +125,12 @@ export default function ContactPage() {
                         required
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="w-full px-4 py-3 rounded-none bg-neutral-50 dark:bg-onyx-950 border-2 border-neutral-300 dark:border-onyx-800 text-xs font-bold text-black dark:text-white focus:outline-none focus:border-black dark:focus:border-white transition"
+                        placeholder="e.g. Ayesha Malik"
+                        className="w-full px-4 py-3 rounded-xl bg-[#FAF9F6] dark:bg-[#201A16] border border-[#D8CEBF] dark:border-[#382F26] text-xs font-bold text-black dark:text-white focus:outline-none focus:border-[#9A6E3E] focus:ring-2 focus:ring-[#9A6E3E]/20 transition shadow-inner"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-black uppercase tracking-wider text-black dark:text-white mb-1.5">
+                      <label className="block text-[11px] font-black uppercase tracking-[0.16em] text-[#8C6A3E] dark:text-[#E6D3B3] mb-1.5">
                         Email Address *
                       </label>
                       <input
@@ -134,25 +138,27 @@ export default function ContactPage() {
                         required
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        className="w-full px-4 py-3 rounded-none bg-neutral-50 dark:bg-onyx-950 border-2 border-neutral-300 dark:border-onyx-800 text-xs font-bold text-black dark:text-white focus:outline-none focus:border-black dark:focus:border-white transition"
+                        placeholder="ayesha@example.com"
+                        className="w-full px-4 py-3 rounded-xl bg-[#FAF9F6] dark:bg-[#201A16] border border-[#D8CEBF] dark:border-[#382F26] text-xs font-bold text-black dark:text-white focus:outline-none focus:border-[#9A6E3E] focus:ring-2 focus:ring-[#9A6E3E]/20 transition shadow-inner"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-black uppercase tracking-wider text-black dark:text-white mb-1.5">
+                    <label className="block text-[11px] font-black uppercase tracking-[0.16em] text-[#8C6A3E] dark:text-[#E6D3B3] mb-1.5">
                       Order / Tracking Number (Optional)
                     </label>
                     <input
                       type="text"
                       value={formData.orderNumber}
                       onChange={(e) => setFormData({ ...formData, orderNumber: e.target.value })}
-                      className="w-full px-4 py-3 rounded-none bg-neutral-50 dark:bg-onyx-950 border-2 border-neutral-300 dark:border-onyx-800 text-xs font-mono font-bold text-black dark:text-white focus:outline-none focus:border-black dark:focus:border-white transition"
+                      placeholder="e.g. TCS-99482104-LHE"
+                      className="w-full px-4 py-3 rounded-xl bg-[#FAF9F6] dark:bg-[#201A16] border border-[#D8CEBF] dark:border-[#382F26] text-xs font-mono font-bold text-black dark:text-white focus:outline-none focus:border-[#9A6E3E] focus:ring-2 focus:ring-[#9A6E3E]/20 transition shadow-inner"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-black uppercase tracking-wider text-black dark:text-white mb-1.5">
+                    <label className="block text-[11px] font-black uppercase tracking-[0.16em] text-[#8C6A3E] dark:text-[#E6D3B3] mb-1.5">
                       Message / Sizing Question *
                     </label>
                     <textarea
@@ -160,7 +166,8 @@ export default function ContactPage() {
                       rows={5}
                       value={formData.message}
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                      className="w-full px-4 py-3 rounded-none bg-neutral-50 dark:bg-onyx-950 border-2 border-neutral-300 dark:border-onyx-800 text-xs font-medium text-black dark:text-white focus:outline-none focus:border-black dark:focus:border-white transition resize-none"
+                      placeholder="Provide specific details regarding measurements, custom tailoring, or dispatch inquiries..."
+                      className="w-full px-4 py-3 rounded-xl bg-[#FAF9F6] dark:bg-[#201A16] border border-[#D8CEBF] dark:border-[#382F26] text-xs font-medium text-black dark:text-white focus:outline-none focus:border-[#9A6E3E] focus:ring-2 focus:ring-[#9A6E3E]/20 transition resize-none shadow-inner"
                     />
                   </div>
 
@@ -169,10 +176,10 @@ export default function ContactPage() {
                     disabled={loading}
                     theme="camel"
                     containerClassName="w-full"
-                    className="w-full py-4 rounded-none bg-black hover:bg-neutral-900 text-white dark:bg-white dark:text-black dark:hover:bg-neutral-100 font-black text-xs uppercase tracking-widest transition shadow-md active:scale-95 flex items-center justify-center space-x-2"
+                    className="w-full py-4 rounded-xl bg-[#1C1612] hover:bg-[#9A6E3E] text-white font-black text-xs uppercase tracking-widest transition-all shadow-md active:scale-95 flex items-center justify-center space-x-2"
                   >
                     {loading ? (
-                      <span>SENDING INQUIRY...</span>
+                      <span>TRANSMITTING INQUIRY...</span>
                     ) : (
                       <span>TRANSMIT TO ATELIER CONCIERGE →</span>
                     )}

@@ -122,51 +122,6 @@ export default function HomePage({
     }
   };
 
-  // Realistic apparel thumbnails on white background
-  const clothingThumbnails = [
-    {
-      id: 'men-jeans',
-      title: "Men's Jeans",
-      subtitle: 'Barrel & Baggy',
-      image: '/images/catalog/men_barrel_jeans_flat.jpg',
-      filter: 'men-jeans'
-    },
-    {
-      id: 'men-tees',
-      title: "Men's T-Shirts",
-      subtitle: 'Heavyweight Boxy',
-      image: '/images/catalog/men_white_tee_flat.jpg',
-      filter: 'men-tee'
-    },
-    {
-      id: 'men-shirts',
-      title: "Men's Shirts",
-      subtitle: 'Linen & Oxford',
-      image: '/images/catalog/men_model_sage_shirt.jpg',
-      filter: 'men-shirt'
-    },
-    {
-      id: 'women-jeans',
-      title: "Women's Jeans",
-      subtitle: 'Wide Leg & Straight',
-      image: '/images/catalog/women_wide_leg_jeans_flat.jpg',
-      filter: 'women-jeans'
-    },
-    {
-      id: 'women-trousers',
-      title: "Women's Trousers",
-      subtitle: 'Pleated & Linen',
-      image: '/images/catalog/women_model_camel_trouser.jpg',
-      filter: 'women-trouser'
-    },
-    {
-      id: 'women-shirts',
-      title: "Women's Shirts",
-      subtitle: 'Crisp Poplin',
-      image: '/images/catalog/women_white_shirt_flat.jpg',
-      filter: 'women-shirt'
-    }
-  ];
 
   // Filtering logic matching realistic categories
   const filteredProducts = products.filter(p => {
@@ -289,78 +244,8 @@ export default function HomePage({
               <span>Shop Women</span>
             </Link>
 
-            {/* Little Motion Exp 038 & 009: Shimmer Sheen & Upward Arrow Runway */}
-            <Link
-              to="/lookbook"
-              className="btn-shimmer-sheen btn-tactile group inline-flex items-center gap-1.5 px-6 py-3.5 bg-neutral-100 hover:bg-neutral-200 text-neutral-800 dark:bg-onyx-800 dark:text-neutral-200 dark:hover:bg-onyx-700 text-xs font-bold uppercase tracking-wider transition-all border border-neutral-200 dark:border-onyx-700 active:scale-95"
-            >
-              <span>Lookbook</span>
-              <span className="arrow-runway-up text-xs text-neutral-500 dark:text-neutral-400">
-                <span>↗</span>
-                <span>↗</span>
-              </span>
-            </Link>
           </div>
         </ScrollReveal>
-      </section>
-
-      {/* =========================================================================
-          3. REALISTIC CLOTHING CATEGORY STRIP (SHARP SQUARES, WHITE STUDIO BG)
-      ========================================================================= */}
-      <section className="w-full max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12 pb-10 sm:pb-14">
-        <div className="relative group/strip">
-          
-          {/* Scroll Navigation Arrows */}
-          <button
-            onClick={() => scrollCategory('left')}
-            className="hidden sm:flex absolute -left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-none bg-white/95 dark:bg-onyx-900/95 shadow-md border border-neutral-300 dark:border-onyx-700 text-black dark:text-white items-center justify-center z-10 opacity-0 group-hover/strip:opacity-100 transition-opacity hover:scale-105"
-            aria-label="Scroll Categories Left"
-          >
-            ←
-          </button>
-          <button
-            onClick={() => scrollCategory('right')}
-            className="hidden sm:flex absolute -right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-none bg-white/95 dark:bg-onyx-900/95 shadow-md border border-neutral-300 dark:border-onyx-700 text-black dark:text-white items-center justify-center z-10 opacity-0 group-hover/strip:opacity-100 transition-opacity hover:scale-105"
-            aria-label="Scroll Categories Right"
-          >
-            →
-          </button>
-
-          {/* Thumbnails Container */}
-          <div
-            ref={categoryScrollRef}
-            className="flex items-center space-x-4 sm:space-x-6 overflow-x-auto py-2 px-1 scrollbar-none scroll-smooth"
-          >
-            {clothingThumbnails.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => setSelectedCategory(item.filter)}
-                className="group flex flex-col items-center flex-shrink-0 focus:outline-none transition-transform active:scale-95"
-              >
-                <div
-                  className={`relative w-28 h-20 sm:w-32 sm:h-24 rounded-none p-1 transition-all duration-300 bg-white dark:bg-onyx-900 ${
-                    selectedCategory === item.filter
-                      ? 'border-2 border-black dark:border-white shadow-sm'
-                      : 'border border-neutral-200 dark:border-onyx-800 group-hover:border-neutral-400'
-                  }`}
-                >
-                  <div className="w-full h-full rounded-none overflow-hidden bg-white dark:bg-onyx-950">
-                    <img
-                      src={item.image}
-                      alt={item.title}
-                      className="w-full h-full object-cover object-center"
-                      loading="lazy"
-                    />
-                  </div>
-                </div>
-                <span className="text-xs font-bold uppercase tracking-wider text-black dark:text-white mt-2 group-hover:underline">
-                  {item.title}
-                </span>
-              </button>
-            ))}
-          </div>
-
-        </div>
       </section>
 
       {/* =========================================================================

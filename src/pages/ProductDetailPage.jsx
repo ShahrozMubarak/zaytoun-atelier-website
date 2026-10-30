@@ -217,13 +217,13 @@ export default function ProductDetailPage({
                   <button
                     key={c.name}
                     onClick={() => setSelectedColor(c.name)}
-                    className={`flex items-center space-x-2 px-3.5 py-2 rounded-none border text-xs font-mono transition active:scale-95 ${
+                    className={`flex items-center space-x-2 px-3.5 py-2 rounded-xl border text-xs font-mono transition active:scale-95 ${
                       selectedColor === c.name
-                        ? 'border-black dark:border-white bg-neutral-100 dark:bg-onyx-800 font-bold shadow-sm'
+                        ? 'border-[#9A6E3E] bg-[#FAF6F0] dark:bg-[#201A16] font-bold shadow-xs'
                         : 'border-neutral-200 dark:border-onyx-700 text-neutral-700 dark:text-neutral-300'
                     }`}
                   >
-                    <span className="w-3.5 h-3.5 rounded-none border border-neutral-300 shrink-0" style={{ backgroundColor: c.hex }} />
+                    <span className="w-3.5 h-3.5 rounded-full border border-black/10 shrink-0" style={{ backgroundColor: c.hex }} />
                     <span>{c.name}</span>
                   </button>
                 ))}
@@ -233,15 +233,15 @@ export default function ProductDetailPage({
             {/* Size Selector */}
             <div>
               <div className="flex items-center justify-between text-xs font-mono mb-2.5">
-                <span className="text-neutral-800 dark:text-neutral-200">
-                  Select Size: <strong>{selectedSize}</strong>
+                <span className="text-neutral-800 dark:text-neutral-200 font-bold">
+                  Select Size: <strong className="text-[#9A6E3E] font-black">{selectedSize}</strong>
                 </span>
                 <span className="text-[11px] text-neutral-500 uppercase tracking-widest font-mono">
                   {currentStock > 0 ? (
                     currentStock <= 3 ? (
-                      <span className="text-amber-600 font-bold">Only {currentStock} left!</span>
+                      <span className="text-amber-600 font-black">Only {currentStock} left in atelier!</span>
                     ) : (
-                      <span className="text-emerald-600">{currentStock} in stock</span>
+                      <span className="text-emerald-600 font-bold">{currentStock} in stock</span>
                     )
                   ) : (
                     <span className="text-red-600 font-bold">Sold Out</span>
@@ -249,15 +249,15 @@ export default function ProductDetailPage({
                 </span>
               </div>
 
-              <div className="grid grid-cols-5 gap-2">
+              <div className="grid grid-cols-5 gap-2.5">
                 {sizes.map((s) => (
                   <button
                     key={s}
                     onClick={() => setSelectedSize(s)}
-                    className={`h-11 rounded-none text-xs font-mono font-bold border transition active:scale-95 flex items-center justify-center ${
+                    className={`h-12 rounded-xl text-xs font-mono font-black border transition-all active:scale-95 flex items-center justify-center shadow-xs ${
                       selectedSize === s
-                        ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white shadow-sm'
-                        : 'bg-white dark:bg-onyx-900 text-neutral-800 dark:text-neutral-200 border-neutral-300 dark:border-onyx-700 hover:border-black dark:hover:border-white'
+                        ? 'bg-[#1C1612] dark:bg-white text-white dark:text-black border-[#1C1612] dark:border-white shadow-sm ring-2 ring-[#9A6E3E]/30'
+                        : 'bg-white dark:bg-[#1A1613] text-neutral-800 dark:text-neutral-200 border-[#D8CEBF] dark:border-[#382F26] hover:border-[#9A6E3E]'
                     }`}
                   >
                     {s}
@@ -271,19 +271,19 @@ export default function ProductDetailPage({
               <div className="flex items-center space-x-3">
                 
                 {/* Quantity Pill */}
-                <div className="flex items-center border border-neutral-300 dark:border-onyx-700 rounded-none h-12 bg-white dark:bg-onyx-900">
+                <div className="flex items-center border border-[#D8CEBF] dark:border-[#382F26] rounded-xl h-12 bg-white dark:bg-[#1A1613] overflow-hidden shadow-2xs">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="w-10 h-full flex items-center justify-center text-sm font-bold hover:bg-neutral-100 dark:hover:bg-onyx-800 transition"
+                    className="w-10 h-full flex items-center justify-center text-sm font-black hover:bg-neutral-100 dark:hover:bg-[#251E18] transition"
                   >
                     -
                   </button>
-                  <span className="w-10 text-center font-mono text-xs font-bold">
+                  <span className="w-10 text-center font-mono text-xs font-black">
                     {quantity}
                   </span>
                   <button
                     onClick={() => setQuantity(quantity + 1)}
-                    className="w-10 h-full flex items-center justify-center text-sm font-bold hover:bg-neutral-100 dark:hover:bg-onyx-800 transition"
+                    className="w-10 h-full flex items-center justify-center text-sm font-black hover:bg-neutral-100 dark:hover:bg-[#251E18] transition"
                   >
                     +
                   </button>
@@ -295,12 +295,12 @@ export default function ProductDetailPage({
                   disabled={currentStock <= 0}
                   theme="camel"
                   containerClassName="flex-1"
-                  className={`w-full h-12 rounded-none font-black text-xs uppercase tracking-widest transition-all duration-300 shadow-md flex items-center justify-center space-x-2 active:scale-95 ${
+                  className={`w-full h-12 rounded-xl font-black text-xs uppercase tracking-widest transition-all duration-300 shadow-md flex items-center justify-center space-x-2 active:scale-95 ${
                     isAdded
                       ? 'bg-emerald-700 text-white'
                       : currentStock <= 0
                         ? 'bg-neutral-300 text-neutral-500 cursor-not-allowed'
-                        : 'bg-black hover:bg-neutral-900 dark:bg-white dark:hover:bg-neutral-100 text-white dark:text-black'
+                        : 'bg-[#1C1612] hover:bg-[#9A6E3E] text-white'
                   }`}
                 >
                   {isAdded ? (
@@ -321,10 +321,10 @@ export default function ProductDetailPage({
                 {/* Wishlist Heart Button */}
                 <button
                   onClick={() => onToggleWishlist && onToggleWishlist(product.id)}
-                  className={`w-12 h-12 rounded-none border-2 transition active:scale-90 flex items-center justify-center shrink-0 ${
+                  className={`w-12 h-12 rounded-xl border transition-all active:scale-90 flex items-center justify-center shrink-0 shadow-2xs ${
                     isWishlisted
                       ? 'bg-red-600 text-white border-red-600 shadow-sm'
-                      : 'border-neutral-300 dark:border-onyx-700 text-neutral-700 dark:text-neutral-300 hover:border-black dark:hover:border-white'
+                      : 'border-[#D8CEBF] dark:border-[#382F26] text-neutral-700 dark:text-neutral-300 hover:border-[#9A6E3E]'
                   }`}
                   title={isWishlisted ? "Wishlisted" : "Add to Wishlist"}
                 >
@@ -337,14 +337,14 @@ export default function ProductDetailPage({
             </div>
 
             {/* Trust Badges */}
-            <div className="grid grid-cols-2 gap-3 pt-3 border-t border-neutral-200 dark:border-onyx-800 text-xs font-mono">
-              <div className="p-3 bg-neutral-50 dark:bg-onyx-900 border-2 border-neutral-200 dark:border-onyx-800 rounded-none">
-                <p className="font-black uppercase text-xs text-neutral-900 dark:text-neutral-100">TCS EXPRESS DELIVERY</p>
-                <p className="text-xs font-bold uppercase text-[#C69F6F] mt-1">2-3 DAYS NATIONWIDE</p>
+            <div className="grid grid-cols-2 gap-3 pt-3 border-t border-[#E8E0D5] dark:border-[#332A22] text-xs font-mono">
+              <div className="p-3.5 bg-[#FAF6F0] dark:bg-[#1E1915] border border-[#E8E0D5] dark:border-[#332A22] rounded-2xl shadow-2xs">
+                <p className="font-black uppercase text-xs text-[#1C1612] dark:text-white">TCS EXPRESS DELIVERY</p>
+                <p className="text-xs font-bold uppercase text-[#9A6E3E] mt-1">2-3 DAYS NATIONWIDE</p>
               </div>
-              <div className="p-3 bg-neutral-50 dark:bg-onyx-900 border-2 border-neutral-200 dark:border-onyx-800 rounded-none">
-                <p className="font-black uppercase text-xs text-neutral-900 dark:text-neutral-100">14-DAY EXCHANGES</p>
-                <p className="text-xs font-bold uppercase text-[#C69F6F] mt-1">COMPLIMENTARY RESIZING</p>
+              <div className="p-3.5 bg-[#FAF6F0] dark:bg-[#1E1915] border border-[#E8E0D5] dark:border-[#332A22] rounded-2xl shadow-2xs">
+                <p className="font-black uppercase text-xs text-[#1C1612] dark:text-white">14-DAY EXCHANGES</p>
+                <p className="text-xs font-bold uppercase text-[#9A6E3E] mt-1">COMPLIMENTARY RESIZING</p>
               </div>
             </div>
 

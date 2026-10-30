@@ -3,6 +3,7 @@ import { NavLink, Link, useLocation } from 'react-router-dom';
 import { useCurrency } from '../context/CurrencyContext';
 import BrandLogo from './BrandLogo';
 import SymbioteButton from './SymbioteButton';
+import PullCordLamp from './PullCordLamp';
 
 /**
  * Navbar - Bold, modern luxury navigation bar.
@@ -60,13 +61,6 @@ export default function Navbar({
           <NavLink to="/shop" className={navLinkClass}>
             Collection
           </NavLink>
-          <NavLink to="/lookbook" className={navLinkClass}>
-            Lookbook
-          </NavLink>
-          
-          <NavLink to="/story" className={navLinkClass}>
-            Story
-          </NavLink>
           <NavLink to="/track" className={navLinkClass}>
             Track Order
           </NavLink>
@@ -102,24 +96,13 @@ export default function Navbar({
             {currency}
           </button>
 
-          {/* Theme Toggle Button (Desktop/Tablet) */}
-          <button
-            onClick={onToggleTheme}
-            className="hidden sm:inline-flex p-1.5 rounded-none text-neutral-700 dark:text-neutral-300 hover:text-black dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-900 transition items-center justify-center border border-transparent hover:border-neutral-300 dark:hover:border-neutral-700"
-            title={theme === 'dark' ? "Light Mode" : "Dark Mode"}
-            aria-label="Toggle Theme"
-          >
-            {theme === 'dark' ? (
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <circle cx="12" cy="12" r="4" />
-                <path strokeLinecap="round" d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M5 19l1.5-1.5M17.5 6.5L19 5" />
-              </svg>
-            ) : (
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-              </svg>
-            )}
-          </button>
+          {/* Little Motion Exp 001 Pull-Cord Lamp Model (Desktop/Tablet) */}
+          <PullCordLamp
+            compact={true}
+            theme={theme}
+            onToggleTheme={onToggleTheme}
+            className="hidden sm:inline-flex p-1 rounded-lg hover:bg-linen-100 dark:hover:bg-onyx-900 transition"
+          />
 
           {/* Google Sign In / User Profile */}
           {!user ? (
@@ -298,28 +281,14 @@ export default function Navbar({
             Collection
           </NavLink>
           <NavLink
-            to="/lookbook"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block text-black dark:text-white py-1"
-          >
-            Lookbook
-          </NavLink>
-          <NavLink
             to="/track"
             onClick={() => setMobileMenuOpen(false)}
             className="block text-black dark:text-white py-1"
           >
             Track Order
           </NavLink>
-          <NavLink
-            to="/story"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block text-black dark:text-white py-1"
-          >
-            Story
-          </NavLink>
 
-          {/* Mobile Currency & Theme Settings Row */}
+          {/* Mobile Currency & Lamp Theme Settings Row */}
           <div className="pt-4 border-t border-neutral-200 dark:border-onyx-800 flex items-center justify-between text-xs font-semibold normal-case">
             <div className="flex items-center space-x-2">
               <span className="text-neutral-500">Currency:</span>
@@ -336,13 +305,15 @@ export default function Navbar({
               </button>
             </div>
 
-            <button
-              type="button"
-              onClick={onToggleTheme}
-              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg border border-neutral-300 dark:border-onyx-700 bg-linen-100 dark:bg-onyx-900 text-onyx-950 dark:text-white text-xs font-bold"
-            >
-              <span>{theme === 'dark' ? '☀️ Light' : '🌙 Dark'}</span>
-            </button>
+            <div className="flex items-center space-x-2">
+              <span className="text-neutral-500 text-[11px] font-bold uppercase tracking-wider">Lamp Switch:</span>
+              <PullCordLamp
+                compact={true}
+                theme={theme}
+                onToggleTheme={onToggleTheme}
+                className="p-1 rounded-lg border border-neutral-200 dark:border-onyx-700 bg-linen-100 dark:bg-onyx-900"
+              />
+            </div>
           </div>
         </div>
       )}
