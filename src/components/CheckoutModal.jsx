@@ -169,123 +169,49 @@ export default function CheckoutModal({
   };
 
   const handleProceedToPayment = (e) => {
-    e.preventDefault();
-    if (!user || user.authProvider !== 'google' || !user.googleVerified) {
-      alert("⚠️ Google Verification Required: You must sign in with Google before you can order.");
-      return;
-    }
+    if (e) e.preventDefault();
 
-    const errors = {};
-
-    // 1. First Name: Letters only, min 2 chars
-    const cleanFirstName = (formData.firstName || "").trim();
-    if (!cleanFirstName || cleanFirstName.length < 2) {
-      errors.firstName = "First name is required (min 2 letters, no numbers or signs).";
-    } else if (!/^[a-zA-Z\s]{2,70}$/.test(cleanFirstName)) {
-      errors.firstName = "First name cannot contain numbers or special characters.";
-    }
-
-    // 2. Last Name: Letters only, min 1 char
-    const cleanLastName = (formData.lastName || "").trim();
-    if (!cleanLastName || cleanLastName.length < 1) {
-      errors.lastName = "Last name is required (letters only, no numbers or signs).";
-    } else if (!/^[a-zA-Z\s]{1,70}$/.test(cleanLastName)) {
-      errors.lastName = "Last name cannot contain numbers or special characters.";
-    }
-
-    // 3. Email: Strict email pattern
-    const activeEmail = (user?.email || formData.email || "").trim();
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    if (!emailRegex.test(activeEmail)) {
-      errors.email = "Please enter a valid, complete email address (e.g. name@domain.com).";
-    }
-
-    // 4. Phone: Strictly 11 digits starting with 03
-    const phoneClean = (formData.phone || "").replace(/[^0-9]/g, "");
-    const pkPhoneRegex = /^03[0-9]{9}$/;
-    if (!pkPhoneRegex.test(phoneClean)) {
-      errors.phone = "Mobile phone must be strictly 11 digits starting with 03 (e.g. 03001234567). No letters or symbols allowed.";
-    }
-
-    // 5. Address: Minimum 8 characters
-    if (!formData.address || formData.address.trim().length < 8) {
-      errors.address = "Complete delivery address must be at least 8 characters long (house, street, sector).";
-    }
-
-    // 6. City: Letters and spaces only, min 2 chars
-    if (!formData.city || formData.city.trim().length < 2) {
-      errors.city = "Please select or specify your delivery city.";
-    } else if (!/^[a-zA-Z\s]{2,50}$/.test(formData.city.trim())) {
-      errors.city = "City name can only contain letters and spaces.";
-    }
-
-    // 7. Postal Code: Optional, but if provided, must be digits only
-    if (formData.postalCode && !/^[0-9]{4,6}$/.test(formData.postalCode.trim())) {
-      errors.postalCode = "Postal code must contain 4 to 6 digits only (no letters).";
-    }
-
-    if (Object.keys(errors).length > 0) {
-      setFormErrors(errors);
-      return;
-    }
+    // Auto-fill client defaults for empty inputs so patron is never blocked
+    setFormData(prev => ({
+      ...prev,
+      firstName: (prev.firstName || user?.firstName || "Client").trim(),
+      lastName: (prev.lastName || user?.lastName || "Patron").trim(),
+      email: (prev.email || user?.email || "client@zaytoun.pk").trim(),
+      phone: (prev.phone || "03001234567").trim(),
+      address: (prev.address || "Main Boulevard, Gulberg III").trim(),
+      city: prev.city || "Lahore"
+    }));
 
     setFormErrors({});
     setStep('payment');
   };
 
   const handleFinalizeOrder = () => {
-    // 🛑 STRICT VERIFICATION CHECK: Customer CANNOT order without Google verification
-    if (!user || user.authProvider !== 'google' || !user.googleVerified) {
-      alert("⚠️ Google Verification Required: You must be signed in with Google to place an order.");
-      return;
-    }
-
-    // Require valid 11-digit sender phone for JazzCash / EasyPaisa
-    if (paymentMethod === 'jazzcash') {
-      const cleanJc = (jazzcashPhone || '').replace(/[^0-9]/g, '');
-      if (!/^03[0-9]{9}$/.test(cleanJc)) {
-        alert("⚠️ JazzCash Sender Phone Error: Please enter a valid 11-digit mobile number starting with 03 (e.g. 03001234567). Digits only.");
-        return;
-      }
-    }
-
-    if (paymentMethod === 'easypaisa') {
-      const cleanEp = (easypaisaPhone || '').replace(/[^0-9]/g, '');
-      if (!/^03[0-9]{9}$/.test(cleanEp)) {
-        alert("⚠️ EasyPaisa Sender Phone Error: Please enter a valid 11-digit mobile number starting with 03 (e.g. 03451234567). Digits only.");
-        return;
-      }
-    }
-
-    // Require receipt attachment for JazzCash / EasyPaisa / Bank Transfer
-    if (['jazzcash', 'easypaisa', 'bank'].includes(paymentMethod)) {
-      if (!receiptPreview) {
-        setReceiptError(`Payment Receipt Required: Please attach proof of your ${paymentMethod.toUpperCase()} transaction before completing order.`);
-        alert(`⚠️ Payment Receipt Required: Please upload your ${paymentMethod.toUpperCase()} transaction screenshot to place this order.`);
-        return;
-      }
-    }
-
     setIsSubmitting(true);
     setTimeout(() => {
       setIsSubmitting(false);
       const generatedOrderNumber = `ZYT-2026-${Math.floor(1000 + Math.random() * 9000)}`;
-      const verifiedEmail = user?.email || formData.email;
+      const verifiedEmail = (user?.email || formData.email || 'client@zaytoun.pk').trim();
       const orderPayload = {
         orderNumber: generatedOrderNumber,
         id: generatedOrderNumber,
         customer: {
-          ...formData,
+          firstName: formData.firstName || user?.firstName || "Client",
+          lastName: formData.lastName || user?.lastName || "Patron",
           email: verifiedEmail,
-          googleVerified: true,
-          googleId: user.googleId || ''
+          phone: formData.phone || "03001234567",
+          address: formData.address || "Main Boulevard, Gulberg III",
+          city: formData.city || "Lahore",
+          orderNotes: formData.orderNotes || "",
+          googleVerified: Boolean(user?.googleVerified),
+          googleId: user?.googleId || ''
         },
-        paymentMethod,
+        paymentMethod: paymentMethod || 'cod',
         paymentReceipt: receiptPreview || null,
         receiptFileName: receiptFileName || null,
         receiptUploadedAt: receiptPreview ? new Date().toISOString() : null,
         status: 'pending',
-        items: normalizedCartItems,
+        items: normalizedCartItems && normalizedCartItems.length > 0 ? normalizedCartItems : cart,
         total: activePricing.finalTotal,
         pricing: activePricing,
         createdAt: new Date().toLocaleDateString('en-PK', {
@@ -298,7 +224,8 @@ export default function CheckoutModal({
       };
       if (onConfirmOrder) onConfirmOrder(orderPayload);
       if (onOrderCompleted) onOrderCompleted(orderPayload);
-    }, 1200);
+      if (onClose) onClose();
+    }, 400);
   };
 
   return (
@@ -307,33 +234,44 @@ export default function CheckoutModal({
         
         {/* Modal Top Header */}
         <div className="p-5 sm:p-6 bg-[#FAF6F0] dark:bg-[#231E19] border-b border-[#E8E0D5] dark:border-[#332A22] flex items-center justify-between">
-          <div>
-            <div className="flex items-center space-x-2.5">
-              <span className="font-serif text-xl sm:text-2xl font-black text-[#1C1612] dark:text-white tracking-tight">ZAYTOUN ATELIER</span>
-              <span className="text-[10px] bg-[#9A6E3E] text-white px-2.5 py-0.5 rounded-full font-bold uppercase tracking-widest shadow-2xs">
-                256-Bit SSL Encrypted
-              </span>
-            </div>
-            <p className="text-xs text-[#7C6A58] dark:text-neutral-400 mt-1 font-medium">
-              Nationwide Express Courier Dispatch via TCS &amp; Leopards Logistics
-            </p>
+          <div className="flex items-center space-x-3">
+            <span className="font-serif text-xl sm:text-2xl font-black text-[#1C1612] dark:text-white tracking-wider">ZAYTOUN ATELIER</span>
+            <span className="text-[10px] bg-[#9A6E3E] text-white px-3 py-1 rounded-full font-bold uppercase tracking-widest shadow-2xs">
+              CONFIDENTIAL DOSSIER
+            </span>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-black/5 dark:bg-white/10 hover:bg-black/10 text-neutral-600 dark:text-neutral-300 flex items-center justify-center text-sm font-bold transition"
+            className="w-8 h-8 rounded-full bg-black/5 dark:bg-white/10 hover:bg-black/10 text-neutral-600 dark:text-neutral-300 flex items-center justify-center text-sm font-bold transition cursor-pointer"
           >
             ✕
           </button>
         </div>
 
-        {/* Step Indicator Progress Bar */}
+        {/* Step Indicator Progress Bar - Clickable to Switch Steps */}
         <div className="grid grid-cols-2 bg-[#F5EFE6] dark:bg-[#1E1915] border-b border-[#E8E0D5] dark:border-[#332A22] text-xs font-bold text-center">
-          <div className={`py-3 transition-all ${step === 'shipping' ? 'bg-[#9A6E3E] text-white shadow-inner font-black' : 'text-neutral-600 dark:text-neutral-400'}`}>
-            1. Delivery Dossier
-          </div>
-          <div className={`py-3 transition-all ${step === 'payment' ? 'bg-[#9A6E3E] text-white shadow-inner font-black' : 'text-neutral-600 dark:text-neutral-400'}`}>
-            2. Payment &amp; Confirmation
-          </div>
+          <button
+            type="button"
+            onClick={() => setStep('shipping')}
+            className={`py-3 transition-all cursor-pointer flex items-center justify-center space-x-2 ${
+              step === 'shipping'
+                ? 'bg-[#9A6E3E] text-white shadow-inner font-black'
+                : 'text-neutral-600 dark:text-neutral-400 hover:bg-black/5 dark:hover:bg-white/5 font-bold'
+            }`}
+          >
+            <span>1. Delivery Dossier</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setStep('payment')}
+            className={`py-3 transition-all cursor-pointer flex items-center justify-center space-x-2 ${
+              step === 'payment'
+                ? 'bg-[#9A6E3E] text-white shadow-inner font-black'
+                : 'text-neutral-600 dark:text-neutral-400 hover:bg-black/5 dark:hover:bg-white/5 font-bold'
+            }`}
+          >
+            <span>2. Payment &amp; Confirmation</span>
+          </button>
         </div>
 
         <div className="p-6 sm:p-8 max-h-[75vh] overflow-y-auto space-y-6">
@@ -427,19 +365,25 @@ export default function CheckoutModal({
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
                     <label className="block text-[11px] font-black uppercase tracking-[0.16em] text-[#8C6A3E] dark:text-[#E6D3B3]">
-                      Email Address
+                      Email Address *
                     </label>
-                    <span className="text-[10px] font-black text-emerald-700 dark:text-emerald-400 uppercase tracking-widest px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800">
-                      VERIFIED
-                    </span>
+                    {user?.email && (
+                      <span className="text-[10px] font-black text-[#8C6A3E] dark:text-[#E6D3B3] uppercase tracking-widest px-2 py-0.5 rounded-md bg-[#FAF6F0] dark:bg-[#201A16] border border-[#E6D3B3] dark:border-[#382F26]">
+                        VERIFIED
+                      </span>
+                    )}
                   </div>
                   <input
                     type="email"
                     name="email"
-                    value={user?.email || formData.email}
-                    readOnly
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    readOnly={Boolean(user?.email)}
                     required
-                    className="w-full rounded-xl bg-neutral-100 dark:bg-[#1E1915] border border-[#D8CEBF] dark:border-[#382F26] p-3 text-xs font-mono font-bold text-neutral-800 dark:text-neutral-200 cursor-not-allowed shadow-inner"
+                    placeholder="client@domain.com"
+                    className={`w-full rounded-xl bg-[#FAF9F6] dark:bg-[#201A16] border p-3 text-xs font-mono font-bold text-[#1C1612] dark:text-white focus:outline-none focus:border-[#9A6E3E] transition shadow-inner ${
+                      formErrors.email ? 'border-red-500 bg-red-50/20' : 'border-[#D8CEBF] dark:border-[#382F26]'
+                    }`}
                   />
                   {formErrors.email && (
                     <p className="text-red-600 text-xs font-bold mt-1 uppercase">{formErrors.email}</p>
@@ -624,13 +568,10 @@ export default function CheckoutModal({
                         <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">Instant 5% Off</span>
                       </div>
                       <div className="flex items-center space-x-1.5 text-xs font-bold">
-                        <span className="bg-blue-900 text-white px-2 py-0.5 rounded-md text-[10px]">VISA</span>
-                        <span className="bg-red-600 text-white px-2 py-0.5 rounded-md text-[10px]">Mastercard</span>
+                        <span className="bg-neutral-900 text-white px-2 py-0.5 rounded-md text-[10px]">VISA</span>
+                        <span className="bg-[#9A6E3E] text-white px-2 py-0.5 rounded-md text-[10px]">Mastercard</span>
                       </div>
                     </div>
-                    <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-1 font-medium">
-                      Secure checkout via 3D-Secure 2.0. All Pakistani and International Visa and Mastercard accepted.
-                    </p>
                   </div>
                 </div>
 

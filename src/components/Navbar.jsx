@@ -64,6 +64,19 @@ export default function Navbar({
           <NavLink to="/track" className={navLinkClass}>
             Track Order
           </NavLink>
+          <NavLink
+            to="/admin"
+            className={({ isActive }) =>
+              `text-xs sm:text-sm font-extrabold uppercase tracking-wider transition-all py-1.5 px-3 rounded-full flex items-center space-x-1.5 ${
+                isActive
+                  ? 'bg-[#9A6E3E] text-white shadow-sm'
+                  : 'text-[#9A6E3E] hover:text-black dark:hover:text-[#E6D3B3] hover:bg-[#FAF6F0] dark:hover:bg-white/5'
+              }`
+            }
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-[#C69F6F] animate-pulse"></span>
+            <span>Admin Panel</span>
+          </NavLink>
         </nav>
 
         {/* Right Header Utilities */}
@@ -132,7 +145,7 @@ export default function Navbar({
                     alt={user.name}
                     className="w-6 h-6 rounded-full object-cover border border-[#D8CEBF] dark:border-[#382F26]"
                   />
-                  <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-[#2563EB] ring-2 ring-white dark:ring-[#1A1613]" title="Verified Patron"></span>
+                  <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-[#C69F6F] ring-2 ring-white dark:ring-[#1A1613]" title="Verified Patron"></span>
                 </div>
                 <span className="hidden sm:inline max-w-[110px] truncate text-left">{user.firstName || user.name}</span>
                 <svg className="w-3 h-3 text-[#A6865A] hidden sm:block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -146,8 +159,8 @@ export default function Navbar({
                   <div className="px-4 py-2.5 border-b border-[#F0EAE1] dark:border-[#2C241D]">
                     <p className="font-bold text-neutral-900 dark:text-white truncate">{user.name}</p>
                     <p className="text-[11px] text-neutral-500 dark:text-neutral-400 truncate">{user.email}</p>
-                    <span className="inline-flex items-center space-x-1.5 mt-1 px-2 py-0.5 rounded-full bg-blue-50/80 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/50 text-[10px] font-bold uppercase tracking-wider text-blue-700 dark:text-blue-300">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#2563EB] animate-pulse"></span>
+                    <span className="inline-flex items-center space-x-1.5 mt-1 px-2.5 py-0.5 rounded-full bg-[#FAF6F0] dark:bg-[#201A16] border border-[#E6D3B3] dark:border-[#382F26] text-[10px] font-bold uppercase tracking-wider text-[#8C6A3E] dark:text-[#E6D3B3]">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#C69F6F] animate-pulse"></span>
                       <span>Atelier Verified Patron</span>
                     </span>
                   </div>
@@ -161,6 +174,18 @@ export default function Navbar({
                     <svg className="w-3.5 h-3.5 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
+                  </Link>
+
+                  <Link
+                    to="/admin"
+                    onClick={() => setUserMenuOpen(false)}
+                    className="block px-4 py-2.5 text-xs text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-onyx-900 transition flex items-center justify-between font-bold"
+                  >
+                    <span className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-[#C69F6F]"></span>
+                      <span>Admin Panel</span>
+                    </span>
+                    <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-[#FAF6F0] text-[#8C6A3E] font-bold">OS</span>
                   </Link>
 
                   <div className="border-t border-neutral-100 dark:border-onyx-800 my-1"></div>
@@ -289,6 +314,14 @@ export default function Navbar({
             className="block text-black dark:text-white py-1"
           >
             Track Order
+          </NavLink>
+          <NavLink
+            to="/admin"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block text-[#C69F6F] font-bold py-1 flex items-center justify-between"
+          >
+            <span>Admin Panel</span>
+            <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-[#FAF6F0] text-[#8C6A3E] font-bold">OS</span>
           </NavLink>
 
           {/* Mobile Currency & Lamp Theme Settings Row */}

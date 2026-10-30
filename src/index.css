@@ -601,8 +601,146 @@ a:hover .arrow-runway-up span:nth-child(2) {
   }
 }
 
+/* =========================================================================
+   LITTLE MOTION LUXURY ANIMATIONS (Tidy Delete, Cart Journey, Envelope)
+========================================================================= */
+
+/* 1. Tidy Delete Animation */
+.tidy-bin {
+  height: 16px;
+  width: 13px;
+  border: 1.5px solid currentColor;
+  border-radius: 0 0 3px 3px;
+  position: relative;
+  display: inline-block;
+  margin-right: 4px;
+}
+.tidy-bin i {
+  position: absolute;
+  left: -3px;
+  top: -4px;
+  width: 17px;
+  height: 1.5px;
+  background: currentColor;
+  transform-origin: left;
+  transition: 0.3s;
+}
+.tidy-bin b {
+  position: absolute;
+  left: 2px;
+  top: -18px;
+  width: 6px;
+  height: 9px;
+  background: currentColor;
+  opacity: 0;
+  border-radius: 1px;
+}
+.tidy-delete-active .tidy-bin i {
+  animation: tidyLid 0.9s cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+.tidy-delete-active .tidy-bin b {
+  animation: tidyPaper 0.9s cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+@keyframes tidyLid {
+  20%, 70% { transform: rotate(-45deg); }
+  100% { transform: rotate(0); }
+}
+@keyframes tidyPaper {
+  0%   { opacity: 0; transform: translateY(0); }
+  25%  { opacity: 1; }
+  70%  { transform: translateY(18px) rotate(15deg); opacity: 1; }
+  100% { transform: translateY(22px) scale(0); opacity: 0; }
+}
+
+.cart-item-deleting {
+  animation: cartItemSlideOut 0.45s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  pointer-events: none;
+}
+@keyframes cartItemSlideOut {
+  0% {
+    opacity: 1;
+    transform: translateX(0);
+    max-height: 140px;
+  }
+  60% {
+    opacity: 0;
+    transform: translateX(35px);
+    max-height: 140px;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(50px);
+    max-height: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    overflow: hidden;
+  }
+}
+
+/* 2. Add-to-Cart Journey Animation */
+.cart-journey-box {
+  position: absolute;
+  left: 18px;
+  opacity: 0;
+  font-size: 11px;
+  color: #C69F6F;
+}
+.cart-journey-active .cart-journey-box {
+  animation: dropcart 0.85s both;
+}
+.cart-journey-active .cart-journey-icon {
+  animation: rollcart 1s both;
+}
+@keyframes dropcart {
+  0%   { transform: translate(0, -20px); opacity: 0; }
+  40%  { opacity: 1; }
+  80%  { transform: translate(14px, 0); opacity: 1; }
+  100% { transform: translate(14px, 4px); opacity: 0; }
+}
+@keyframes rollcart {
+  60%  { transform: translateX(3px) rotate(-10deg); }
+  100% { transform: translateX(0); }
+}
+
+/* 3. Envelope Dispatch Animation */
+.envelope-icon {
+  position: relative;
+  width: 18px;
+  height: 13px;
+  background: #C69F6F;
+  border-radius: 2px;
+  display: inline-block;
+  margin-right: 6px;
+}
+.envelope-icon i {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 8px;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  background: #9A6E3E;
+  transform-origin: top;
+}
+.envelope-dispatch-active .envelope-icon {
+  animation: envelopeMail 1.2s both;
+}
+.envelope-dispatch-active .envelope-icon i {
+  animation: envelopeFlap 1.2s both;
+}
+@keyframes envelopeFlap {
+  20% { transform: rotateX(180deg); }
+  50% { transform: rotateX(0deg); }
+}
+@keyframes envelopeMail {
+  40%  { transform: translateX(-3px); }
+  100% { transform: translate(60px, -45px) rotate(-20deg); opacity: 0; }
+}
+
 @media (prefers-reduced-motion: reduce) { 
-  .page-enter, .animate-pop, .card-lift, .btn-press, .animate-video-fade, .subtle-pulse, .camel-glow, .animate-drawerSlide, .arrow-runway span, .arrow-runway-right span, .arrow-runway-up span, .thermal-invoice-slip.extruding { 
+  .page-enter, .animate-pop, .card-lift, .btn-press, .animate-video-fade, .subtle-pulse, .camel-glow, .animate-drawerSlide, .arrow-runway span, .arrow-runway-right span, .arrow-runway-up span, .thermal-invoice-slip.extruding, .cart-item-deleting { 
     animation: none !important; 
     transition: none !important; 
   } 

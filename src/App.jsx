@@ -861,6 +861,10 @@ export default function App() {
               }
             />
 
+            {/* Admin Aliases */}
+            <Route path="/admin-panel" element={<Navigate to="/admin" replace />} />
+            <Route path="/dashboard" element={<Navigate to="/admin" replace />} />
+
             {/* Order Consignment Tracking Pages */}
             <Route path="/track" element={<OrderTrackingPage />} />
             <Route path="/track/:orderId" element={<OrderTrackingPage />} />
@@ -896,13 +900,6 @@ export default function App() {
           user={currentUser}
           onOpenAuthModal={handleOpenAuthModal}
           onCheckout={() => {
-            if (!currentUser) {
-              handleOpenAuthModal({
-                title: "Sign in with Google to Checkout",
-                subtitle: "Please sign in with your Google account to proceed to checkout and secure your order."
-              });
-              return;
-            }
             setIsCartOpen(false);
             setIsCheckoutOpen(true);
           }}

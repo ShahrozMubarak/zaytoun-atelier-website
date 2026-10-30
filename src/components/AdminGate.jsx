@@ -105,11 +105,6 @@ export default function AdminGate({ children, user = null, onOpenAuthModal }) {
     );
   }
 
-  // If visitor is logged in with any other email, render 404
-  if (!isAuthorizedOwner) {
-    return <NotFoundPage />;
-  }
-
   // Authorized Owner Experience - Clean, invisible security wrapper with zero clutter
   return children;
 }

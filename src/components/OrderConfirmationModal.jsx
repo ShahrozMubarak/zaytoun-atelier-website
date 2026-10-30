@@ -31,7 +31,9 @@ export default function OrderConfirmationModal({ order, isOpen, onClose }) {
   const trackingNumber = order.trackingNumber || `TCS-${Math.floor(10000000 + Math.random() * 90000000)}-PK`;
   const trackingUrl = `${window.location.origin}/track/${orderId}`;
   const orderItems = order.items && order.items.length > 0 ? order.items : [];
-  const orderDate = new Date(order.date || order.createdAt || Date.now());
+  const rawDate = order.date || order.createdAt;
+  const parsedDate = rawDate ? new Date(rawDate) : new Date();
+  const orderDate = isNaN(parsedDate.getTime()) ? new Date() : parsedDate;
   const formattedDate = orderDate.toLocaleDateString('en-PK', {
     day: '2-digit',
     month: 'short',
@@ -551,7 +553,7 @@ Track Order: ${trackingUrl}`;
                     className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded border-2 font-bold text-[10px] tracking-widest uppercase"
                     style={{ borderColor: '#C69F6F', color: '#A6865A' }}
                   >
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#2563EB]"></span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#C69F6F]"></span>
                     <span>AUTHENTIC • TCS</span>
                   </span>
                 </div>

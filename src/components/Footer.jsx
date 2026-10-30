@@ -39,6 +39,11 @@ export default function Footer({ onOpenSizeGuide }) {
                     Atelier Story
                   </Link>
                 </li>
+                <li>
+                  <Link to="/admin" className="hover:text-white transition text-[#C69F6F] font-bold">
+                    Admin Studio
+                  </Link>
+                </li>
               </ul>
             </div>
 

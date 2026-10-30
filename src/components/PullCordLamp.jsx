@@ -98,13 +98,13 @@ export default function PullCordLamp({
                 cx="14.5"
                 cy="17"
                 r="1.2"
-                className={isLit ? 'fill-[#C69F6F]' : 'fill-[#2563EB]'}
+                className={isLit ? 'fill-[#C69F6F]' : 'fill-[#8C6A3E]'}
               />
               <circle
                 cx="14.5"
                 cy="17"
                 r="0.45"
-                className="fill-[#93C5FD]"
+                className={isLit ? 'fill-[#FAF6F0]' : 'fill-[#D8CEBF]'}
               />
             </g>
           </svg>
@@ -190,19 +190,19 @@ export default function PullCordLamp({
               backgroundSize: '2px 4px'
             }}
           />
-          {/* Hanging Brass & Sapphire Acorn Drop Bead */}
+          {/* Hanging Brass & Camel Acorn Drop Bead */}
           <span
             className={`w-2.5 h-4 rounded-full transition-colors duration-300 shadow-sm flex items-center justify-center ${
-              isLit ? 'bg-[#C69F6F] border border-[#8C6A3E]' : 'bg-[#1E3A8A] border border-[#2563EB]'
+              isLit ? 'bg-[#C69F6F] border border-[#8C6A3E]' : 'bg-[#2E241D] border border-[#8C6A3E]/60'
             }`}
           >
-            <span className="w-1 h-1 rounded-full bg-[#60A5FA]/80"></span>
+            <span className="w-1 h-1 rounded-full bg-[#E6D3B3]"></span>
           </span>
         </button>
       </div>
 
       <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-neutral-500 dark:text-neutral-400 mt-1">
-        {isLit ? 'LIGHT MODE' : 'DARK MODE'} (PULL CORD)
+        {isLit ? 'LIGHT MODE' : 'DARK MODE'}
       </span>
     </div>
   );

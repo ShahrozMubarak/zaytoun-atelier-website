@@ -17,7 +17,17 @@ export default function CartDrawer({
   const [promoCode, setPromoCode] = useState("");
   const [appliedPromo, setAppliedPromo] = useState(null);
   const [promoError, setPromoError] = useState("");
+  const [deletingKey, setDeletingKey] = useState(null);
   const { formatPrice } = useCurrency();
+
+  const handleDeleteItem = (itemId, size, color) => {
+    const key = `${itemId}-${size}-${color}`;
+    setDeletingKey(key);
+    setTimeout(() => {
+      if (onRemoveItem) onRemoveItem(itemId, size);
+      setDeletingKey(null);
+    }, 450);
+  };
 
   if (!isOpen) return null;
 
@@ -78,13 +88,6 @@ export default function CartDrawer({
   const remainingForFree = Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal);
 
   const handleCheckoutClick = () => {
-    if ((!user || user.authProvider !== 'google' || !user.googleVerified) && onOpenAuthModal) {
-      onOpenAuthModal({
-        title: "Sign in with Google to Checkout",
-        subtitle: "Please sign in with your Google account to proceed to checkout and secure your order."
-      });
-      return;
-    }
     const payload = {
       subtotal,
       discountAmount,
@@ -159,75 +162,90 @@ export default function CartDrawer({
               </button>
             </div>
           ) : (
-            normalizedCartItems.map((item) => (
-              <div 
-                key={`${item.id}-${item.size}-${item.color}`}
-                className="flex items-start space-x-3 p-3 rounded-none border border-neutral-200 dark:border-onyx-800 bg-white dark:bg-onyx-950 transition"
-              >
-                {/* Thumbnail */}
-                <img
-                  src={item.images[0]}
-                  alt={item.name}
-                  className="w-16 h-20 object-cover object-top rounded-none bg-neutral-100 dark:bg-onyx-800 flex-shrink-0"
-                />
+            normalizedCartItems.map((item) => {
+              const itemKey = `${item.id}-${item.size}-${item.color}`;
+              const isDeleting = deletingKey === itemKey;
+              return (
+                <div 
+                  key={itemKey}
+                  className={`flex items-start space-x-3.5 p-3.5 rounded-2xl border border-neutral-200 dark:border-onyx-800 bg-white dark:bg-onyx-950 transition-all duration-300 shadow-2xs ${
+                    isDeleting ? 'cart-item-deleting' : ''
+                  }`}
+                >
+                  {/* Thumbnail */}
+                  <img
+                    src={item.images[0]}
+                    alt={item.name}
+                    className="w-16 h-20 object-cover object-top rounded-xl bg-neutral-100 dark:bg-onyx-800 flex-shrink-0 border border-[#E8E0D5] dark:border-onyx-800"
+                  />
 
-                {/* Info */}
-                <div className="flex-1 min-w-0">
-                  <h4 className="text-xs font-bold text-neutral-900 dark:text-neutral-100 truncate uppercase">
-                    {item.name}
-                  </h4>
-                  <div className="flex items-center space-x-2 text-[11px] text-neutral-500 mt-0.5">
-                    <span>Size: <strong className="text-black dark:text-white">{item.size}</strong></span>
-                    <span>•</span>
-                    <span>Color: <strong>{item.color}</strong></span>
-                  </div>
-                  <div className="text-xs font-bold text-black dark:text-white mt-1">
-                    {formatPrice(item.price * item.quantity)}
-                  </div>
-
-                  {/* Quantity controls */}
-                  <div className="flex items-center justify-between mt-2">
-                    <div className="flex items-center border border-neutral-300 dark:border-onyx-800 rounded-none bg-white dark:bg-onyx-900">
-                      <button
-                        onClick={() => {
-                          if (onUpdateQuantity) {
-                            onUpdateQuantity(item.id, item.size, -1);
-                          }
-                        }}
-                        className="px-2 py-0.5 text-xs text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-onyx-800 font-bold"
-                      >
-                        -
-                      </button>
-                      <span className="px-2.5 text-xs font-semibold text-black dark:text-white">
-                        {item.quantity}
-                      </span>
-                      <button
-                        onClick={() => {
-                          if (onUpdateQuantity) {
-                            onUpdateQuantity(item.id, item.size, 1);
-                          }
-                        }}
-                        className="px-2 py-0.5 text-xs text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-onyx-800 font-bold"
-                      >
-                        +
-                      </button>
+                  {/* Info */}
+                  <div className="flex-1 min-w-0">
+                    <h4 className="text-xs font-black text-neutral-900 dark:text-neutral-100 truncate uppercase tracking-tight">
+                      {item.name}
+                    </h4>
+                    <div className="flex items-center space-x-2 text-[11px] text-neutral-500 mt-1">
+                      <span>SIZE: <strong className="text-black dark:text-white font-black">{item.size}</strong></span>
+                      <span>•</span>
+                      <span>COLOR: <strong className="text-black dark:text-white font-bold">{item.color}</strong></span>
+                    </div>
+                    <div className="text-xs font-black text-[#9A6E3E] mt-1.5 font-mono">
+                      {formatPrice(item.price * item.quantity)}
                     </div>
 
-                    <button
-                      onClick={() => {
-                        if (onRemoveItem) {
-                          onRemoveItem(item.id, item.size);
-                        }
-                      }}
-                      className="text-xs text-red-500 hover:text-red-700 transition"
-                      title="Remove item"
-                    >
-                      Delete
-                    </button>
+                    {/* Quantity & Tidy Delete controls */}
+                    <div className="flex items-center justify-between mt-2.5 pt-2 border-t border-neutral-100 dark:border-onyx-900">
+                      <div className="flex items-center border border-neutral-300 dark:border-onyx-800 rounded-lg bg-neutral-50 dark:bg-onyx-900 overflow-hidden">
+                        <button
+                          onClick={() => {
+                            if (onUpdateQuantity) {
+                              onUpdateQuantity(item.id, item.size, -1);
+                            }
+                          }}
+                          className="px-2.5 py-1 text-xs text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-onyx-800 font-bold transition"
+                          aria-label="Decrease quantity"
+                        >
+                          -
+                        </button>
+                        <span className="px-3 text-xs font-black text-black dark:text-white">
+                          {item.quantity}
+                        </span>
+                        <button
+                          onClick={() => {
+                            if (onUpdateQuantity) {
+                              onUpdateQuantity(item.id, item.size, 1);
+                            }
+                          }}
+                          className="px-2.5 py-1 text-xs text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-onyx-800 font-bold transition"
+                          aria-label="Increase quantity"
+                        >
+                          +
+                        </button>
+                      </div>
+
+                      {/* Little Motion Tidy Delete Button */}
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteItem(item.id, item.size, item.color)}
+                        disabled={isDeleting}
+                        className={`text-[11px] font-black uppercase tracking-wider flex items-center transition py-1 px-2 rounded-lg cursor-pointer ${
+                          isDeleting
+                            ? 'text-[#C69F6F] tidy-delete-active'
+                            : 'text-neutral-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20'
+                        }`}
+                        title="Remove item"
+                      >
+                        <span className="tidy-bin">
+                          <i></i>
+                          <b></b>
+                        </span>
+                        <span>{isDeleting ? 'Clearing...' : 'Delete'}</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           )}
         </div>
 

@@ -267,19 +267,21 @@ export default function ProductModal({
                   onClick={handleAddToCart}
                   theme="camel"
                   containerClassName="flex-1"
-                  className={`w-full py-4 rounded-none font-black text-xs uppercase tracking-widest transition-all duration-300 shadow-md flex items-center justify-center space-x-2 active:scale-95 ${
+                  className={`w-full py-4 rounded-xl font-black text-xs uppercase tracking-widest transition-all duration-300 shadow-md flex items-center justify-center space-x-2 active:scale-95 ${
                     isAdded
-                      ? 'bg-emerald-700 text-white'
-                      : 'bg-black hover:bg-neutral-900 dark:bg-white dark:hover:bg-neutral-100 text-white dark:text-black'
+                      ? 'bg-[#9A6E3E] text-white cart-journey-active'
+                      : 'bg-[#1C1612] hover:bg-[#9A6E3E] dark:bg-white dark:hover:bg-neutral-200 text-white dark:text-black'
                   }`}
                 >
                   {isAdded ? (
-                    <>
+                    <span className="inline-flex items-center gap-1.5">
+                      <span className="cart-journey-box">◇</span>
                       <span>ADDED TO BAG ✓</span>
-                    </>
+                    </span>
                   ) : (
                     <>
-                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                      <span className="cart-journey-box">◇</span>
+                      <svg className="w-4 h-4 cart-journey-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
                         <path d="M6 7h12l2 14H4L6 7Z" />
                         <path d="M9 8V6a3 3 0 0 1 6 0v2" />
                       </svg>

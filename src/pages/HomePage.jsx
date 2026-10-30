@@ -4,7 +4,6 @@ import ProductCard from '../components/ProductCard';
 import ScrollReveal from '../components/ScrollReveal';
 import TypewriterHeadline from '../components/TypewriterHeadline';
 import { subscribeNewsletter } from '../services/api';
-import useMagnetic from '../hooks/useMagnetic';
 import SymbioteButton from '../components/SymbioteButton';
 
 /**
@@ -32,9 +31,6 @@ export default function HomePage({
   const [homeSubscribed, setHomeSubscribed] = useState(false);
   const [homeLoading, setHomeLoading] = useState(false);
   const videoRef = useRef(null);
-
-  // Little Motion hooks & handlers
-  const magneticCtaRef = useMagnetic(0.22);
 
   const handleSpotlight = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -199,7 +195,7 @@ export default function HomePage({
       <section className="w-full max-w-4xl mx-auto text-center py-10 sm:py-14 px-4 space-y-5">
         <ScrollReveal distance={20}>
           <div className="flex items-center justify-center space-x-2.5 mb-3">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#1D4ED8] animate-pulse"></span>
+            <span className="w-1.5 h-1.5 rounded-full bg-[#C69F6F] animate-pulse"></span>
             <span className="text-[10px] uppercase font-bold tracking-[0.25em] text-[#8C6A3E] dark:text-[#E6D3B3]">
               ATELIER RAW FIBERS
             </span>
@@ -224,7 +220,6 @@ export default function HomePage({
             {/* Little Motion Exp 008: Orbit Border Glow CTA */}
             <Link
               to="/shop"
-              ref={magneticCtaRef}
               className="btn-orbit-border btn-tactile group shadow-sm active:scale-95"
             >
               <span className="btn-orbit-inner">
@@ -587,17 +582,23 @@ export default function HomePage({
                 disabled={homeLoading}
                 theme="camel"
                 containerClassName="w-full sm:w-auto"
-                className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-[#1C1612] hover:bg-[#9A6E3E] text-white text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap disabled:opacity-50 shadow-md flex items-center justify-center gap-2 active:scale-95"
+                className={`w-full sm:w-auto px-8 py-3.5 rounded-xl bg-[#1C1612] hover:bg-[#9A6E3E] text-white text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap disabled:opacity-50 shadow-md flex items-center justify-center gap-2 active:scale-95 ${
+                  homeLoading ? 'envelope-dispatch-active' : ''
+                }`}
               >
                 {homeSubscribed ? (
-                  <span className="inline-flex items-center gap-1.5 text-emerald-400 dark:text-emerald-600 font-black uppercase">
+                  <span className="inline-flex items-center gap-1.5 text-emerald-400 dark:text-emerald-300 font-black uppercase">
                     <span>✓</span>
                     <span>SUBSCRIBED</span>
                   </span>
                 ) : homeLoading ? (
-                  <span className="font-black uppercase">SUBSCRIBING...</span>
+                  <span className="inline-flex items-center gap-1 font-black uppercase">
+                    <span className="envelope-icon"><i></i></span>
+                    <span>DISPATCHING...</span>
+                  </span>
                 ) : (
                   <>
+                    <span className="envelope-icon"><i></i></span>
                     <span className="font-black uppercase">SUBSCRIBE</span>
                     <span className="arrow-runway-right text-xs">
                       <span>→</span>

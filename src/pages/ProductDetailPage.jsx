@@ -289,7 +289,7 @@ export default function ProductDetailPage({
                   </button>
                 </div>
 
-                {/* Primary Add to Bag CTA with Symbiote Tether */}
+                {/* Primary Add to Bag CTA with Little Motion Cart Journey */}
                 <SymbioteButton
                   onClick={handleAddToCart}
                   disabled={currentStock <= 0}
@@ -297,19 +297,23 @@ export default function ProductDetailPage({
                   containerClassName="flex-1"
                   className={`w-full h-12 rounded-xl font-black text-xs uppercase tracking-widest transition-all duration-300 shadow-md flex items-center justify-center space-x-2 active:scale-95 ${
                     isAdded
-                      ? 'bg-emerald-700 text-white'
+                      ? 'bg-[#9A6E3E] text-white cart-journey-active'
                       : currentStock <= 0
                         ? 'bg-neutral-300 text-neutral-500 cursor-not-allowed'
                         : 'bg-[#1C1612] hover:bg-[#9A6E3E] text-white'
                   }`}
                 >
                   {isAdded ? (
-                    <span>ADDED TO BAG ✓</span>
+                    <span className="inline-flex items-center gap-1.5">
+                      <span className="cart-journey-box">◇</span>
+                      <span>ADDED TO BAG ✓</span>
+                    </span>
                   ) : currentStock <= 0 ? (
                     <span>OUT OF STOCK</span>
                   ) : (
                     <>
-                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                      <span className="cart-journey-box">◇</span>
+                      <svg className="w-4 h-4 cart-journey-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
                         <path d="M6 7h12l2 14H4L6 7Z" />
                         <path d="M9 8V6a3 3 0 0 1 6 0v2" />
                       </svg>

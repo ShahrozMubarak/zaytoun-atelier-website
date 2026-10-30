@@ -122,29 +122,29 @@ const ADMIN_THEMES = [
     catData: [58, 27, 15]
   },
   {
-    id: "cobalt-saas",
-    shortName: "04: Royal Cobalt Cloud SaaS",
-    company: "SYNAPSE ZAYTOUN",
+    id: "camel-ivory-minimal",
+    shortName: "04: Warm Ivory & Camel Minimal",
+    company: "ZAYTOUN ATELIER",
     welcome: "Welcome back, Shahroz",
-    sub: "Here are today's recurring orders & bespoke concierge stats!",
-    bgOuter: "#DDE3F0",
-    bgCanvas: "#F2F5FA",
-    sidebar: "#0D1528",
-    sidebarActive: "#1B294B",
-    featuredCard: "#1D4ED8",
+    sub: "Live atelier performance, bespoke orders & customer telemetry",
+    bgOuter: "#EFE8DC",
+    bgCanvas: "#FAF7F2",
+    sidebar: "#1A1511",
+    sidebarActive: "#2E241D",
+    featuredCard: "#9A6E3E",
     featuredText: "#FFFFFF",
     cardBg: "#FFFFFF",
-    textMain: "#0F172A",
-    textMuted: "#64748B",
-    accent: "#1D4ED8",
-    accentSoft: "#E6EEFF",
-    kpi1: { title: "Monthly ARR", sub: "984 Subscriptions", val: "$41,210.00", delta: "+31.2%", week: "+5.6k this week" },
-    kpi2: { title: "Active Teams", sub: "Avg. session: 18m", val: "21,480", delta: "+14.8%", week: "+1.9k this week" },
-    kpi3: { title: "Churned Seats", sub: "3 Downgrades", val: "118", delta: "-9.4%", week: "-28" },
+    textMain: "#1A1511",
+    textMuted: "#7C6A58",
+    accent: "#9A6E3E",
+    accentSoft: "#F3EDE4",
+    kpi1: { title: "Monthly Gross", sub: "984 Orders", val: "Rs. 4,120,000", delta: "+31.2%", week: "+380k this week" },
+    kpi2: { title: "Active Patrons", sub: "Avg. session: 18m", val: "21,480", delta: "+14.8%", week: "+1.9k this week" },
+    kpi3: { title: "Conversion Rate", sub: "Atelier Checkout", val: "4.8%", delta: "+1.2%", week: "+0.4%" },
     earnings: [28, 35, 42, 40, 46, 50, 48, 54, 52, 45, 53, 58, 55, 64],
     costs:    [14, 16, 18, 17, 19, 21, 20, 22, 21, 18, 20, 23, 21, 24],
-    donutVal: "$29.8k",
-    cats: ["Bespoke Orders", "Atelier Ready", "Custom Tailoring"],
+    donutVal: "Rs. 2.9M",
+    cats: ["Bespoke Tailoring", "Atelier Ready", "Luxury Linen"],
     catData: [60, 25, 15]
   },
   {
@@ -2136,6 +2136,23 @@ Zaytoun Atelier Lahore | contact@zaytoun.pk
                   Automated Official Transcript
                 </span>
                 <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const text = generateTranscriptText(selectedOrderDetails);
+                      if (navigator.share) {
+                        navigator.share({
+                          title: `Zaytoun Atelier Order #${selectedOrderDetails.orderNumber || selectedOrderDetails.id}`,
+                          text: text
+                        }).catch(() => {});
+                      } else {
+                        handleCopyTranscript(selectedOrderDetails);
+                      }
+                    }}
+                    className="px-3 py-1 rounded-lg bg-neutral-100 hover:bg-neutral-200 text-xs font-bold text-neutral-800 transition"
+                  >
+                    🔗 Share
+                  </button>
                   <button
                     type="button"
                     onClick={() => handleCopyTranscript(selectedOrderDetails)}
