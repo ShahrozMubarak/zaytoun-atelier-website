@@ -372,56 +372,23 @@ export default function StudioPage({
     navigate('/shop');
   };
 
-  if (!user) {
+  const activeUser = user || (() => {
+    try {
+      const stored = localStorage.getItem('zaytoun_client_user');
+      return stored ? JSON.parse(stored) : null;
+    } catch {
+      return null;
+    }
+  })();
+
+  if (!activeUser) {
     return <UltraPremiumSignInPrompt onOpenAuthModal={onOpenAuthModal} />;
   }
 
   return (
-    <AdminGate user={user} onOpenAuthModal={onOpenAuthModal}>
-      <div className="min-h-screen bg-stone-950 px-4 sm:px-6 lg:px-8 py-8">
+    <AdminGate user={activeUser} onOpenAuthModal={onOpenAuthModal}>
+      <div className="min-h-screen bg-stone-950 px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         <Executive3DAnalytics orders={orders} products={products} />
-        <AdminDashboard
-          orders={orders}
-          onUpdateOrderStatus={onUpdateOrderStatus}
-          products={products}
-          onAddProduct={onAddProduct}
-          onUpdateProductStock={onUpdateProductStock}
-          onDeleteProduct={onDeleteProduct}
-          onImportCatalog={onImportCatalog}
-          themeConfig={themeConfig}
-          onUpdateTheme={onUpdateTheme}
-          onCloseAdmin={handleCloseAdmin}
-          onTryOnProduct={handleTryOn}
-        />
-      </div>
-    </AdminGate>
-  );
-},
-  onUpdateProductPrice,
-  onDeleteProduct,
-  onImportCatalog,
-  themeConfig,
-  onUpdateTheme,
-  onTryOnProduct,
-  user = null,
-  onOpenAuthModal
-}) {
-  const navigate = useNavigate();
-
-  const handleCloseAdmin = () => {
-    navigate('/shop');
-  };
-
-  const handleTryOn = (product) => {
-    if (onTryOnProduct) {
-      onTryOnProduct(product);
-    }
-    navigate('/shop');
-  };
-
-  return (
-    <div className="min-h-screen w-full bg-white dark:bg-onyx-950 text-onyx-950 dark:text-neutral-100 transition-colors">
-      <AdminGate user={user} onOpenAuthModal={onOpenAuthModal}>
         <AdminDashboard
           orders={orders}
           onUpdateOrderStatus={onUpdateOrderStatus}
@@ -435,9 +402,9 @@ export default function StudioPage({
           onUpdateTheme={onUpdateTheme}
           onCloseAdmin={handleCloseAdmin}
           onTryOnProduct={handleTryOn}
-          user={user}
+          user={activeUser}
         />
-      </AdminGate>
-    </div>
+      </div>
+    </AdminGate>
   );
 }

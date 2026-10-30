@@ -807,6 +807,9 @@ export default function App() {
             {/* Fitting Room Redirect */}
             <Route path="/fitting-room" element={<Navigate to="/shop" replace />} />
 
+            {/* Lookbook Route */}
+            <Route path="/lookbook" element={<Navigate to="/shop" replace />} />
+
             {/* Story & Palette Page */}
             <Route path="/story" element={<AboutPage />} />
             <Route path="/about" element={<Navigate to="/story" replace />} />
