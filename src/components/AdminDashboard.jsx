@@ -13,30 +13,8 @@ import {
   fetchInquiriesFromDB
 } from '../services/api';
 import { notifyOrderApproved, notifyOrderStatusChange } from '../services/notificationService';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  ArcElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler
-} from 'chart.js';
+import ChartJS from 'chart.js/auto';
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  ArcElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler
-);
 
 /**
  * 5 Admin Dashboard Themes from the user-provided template suite.
@@ -706,12 +684,13 @@ Zaytoun Atelier Lahore | contact@zaytoun.pk
   };
 
   const adminName = user?.firstName || user?.name || "Shahroz";
-  const userInitials = (user?.name || "Shahroz Mubarak")
+  const userInitials = String(user?.name || "Shahroz Mubarak")
     .split(' ')
+    .filter(Boolean)
     .map(n => n[0])
     .join('')
     .slice(0, 2)
-    .toUpperCase();
+    .toUpperCase() || "SM";
 
   return (
     <div

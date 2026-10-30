@@ -40,8 +40,10 @@ export default function ProductDetailPage({
     window.scrollTo({ top: 0, behavior: 'smooth' });
     if (product) {
       setActiveImageIndex(0);
-      setSelectedColor(product.colors?.[0]?.name || product.primaryColor || "");
-      setSelectedSize(product.sizes?.[0] || "32");
+      const firstColor = product.colors?.[0];
+      const initialColor = typeof firstColor === 'string' ? firstColor : (firstColor?.name || product.primaryColor || "");
+      setSelectedColor(initialColor);
+      setSelectedSize(product.sizes?.[0] || "M");
       setQuantity(1);
     }
   }, [id, product]);
@@ -70,12 +72,12 @@ export default function ProductDetailPage({
     : [product.image || "/images/catalog/men_barrel_jeans_flat.jpg"];
 
   const colors = Array.isArray(product.colors) && product.colors.length > 0
-    ? product.colors
+    ? product.colors.map(c => typeof c === 'string' ? { name: c, hex: '#C69F6F' } : c)
     : [{ name: product.colorName || product.primaryColor || 'Default', hex: product.color || '#1E2A38' }];
 
   const sizes = Array.isArray(product.sizes) && product.sizes.length > 0
     ? product.sizes
-    : ['28', '30', '32', '34', '36'];
+    : ['XS', 'S', 'M', 'L', 'XL'];
 
   const isWishlisted = wishlist.includes(product.id);
   const currentStock = product.stockPerSize?.[selectedSize] !== undefined
@@ -94,7 +96,7 @@ export default function ProductDetailPage({
 
   // Related garments
   const relatedProducts = products
-    .filter(p => p.id !== product.id && (p.person === product.person || p.slot === product.slot))
+    .filter(p => p && p.id && p.id !== product.id && (p.person === product.person || p.slot === product.slot))
     .slice(0, 4);
 
   return (
@@ -106,7 +108,7 @@ export default function ProductDetailPage({
           <Link to="/" className="hover:text-black dark:hover:text-white transition">Home</Link>
           <span>/</span>
           <Link to="/shop" className="hover:text-black dark:hover:text-white transition">
-            {product.person ? product.person.toUpperCase() : "COLLECTION"}
+            {String(product.person || "COLLECTION").toUpperCase()}
           </Link>
           <span>/</span>
           <span className="text-black dark:text-white font-bold line-clamp-1">{product.name}</span>
@@ -171,13 +173,13 @@ export default function ProductDetailPage({
             {/* Subtitle & Title */}
             <div>
               <p className="text-xs font-mono font-bold tracking-widest text-neutral-500 uppercase mb-1">
-                {product.fitLine || `${(product.fit || 'REGULAR').toUpperCase()} FIT | ${(product.person || 'MEN').toUpperCase()}`}
+                {product.fitLine || `${String(product.fit || 'REGULAR').toUpperCase()} FIT | ${String(product.person || 'MEN').toUpperCase()}`}
               </p>
               <h1 className="text-2xl sm:text-3xl font-extrabold uppercase tracking-wide text-neutral-900 dark:text-neutral-100">
                 {product.name}
               </h1>
               <p className="text-xs font-mono text-neutral-400 mt-1 uppercase">
-                SKU: {product.id.toUpperCase()} • EDITION 2026
+                SKU: {String(product.id || '').toUpperCase()} • EDITION 2026
               </p>
             </div>
 
@@ -213,20 +215,24 @@ export default function ProductDetailPage({
                 </span>
               </div>
               <div className="flex items-center space-x-2.5">
-                {colors.map((c) => (
-                  <button
-                    key={c.name}
-                    onClick={() => setSelectedColor(c.name)}
-                    className={`flex items-center space-x-2 px-3.5 py-2 rounded-xl border text-xs font-mono transition active:scale-95 ${
-                      selectedColor === c.name
-                        ? 'border-[#9A6E3E] bg-[#FAF6F0] dark:bg-[#201A16] font-bold shadow-xs'
-                        : 'border-neutral-200 dark:border-onyx-700 text-neutral-700 dark:text-neutral-300'
-                    }`}
-                  >
-                    <span className="w-3.5 h-3.5 rounded-full border border-black/10 shrink-0" style={{ backgroundColor: c.hex }} />
-                    <span>{c.name}</span>
-                  </button>
-                ))}
+                {colors.map((c, idx) => {
+                  const colorName = c?.name || (typeof c === 'string' ? c : `Color ${idx + 1}`);
+                  const colorHex = c?.hex || '#C69F6F';
+                  return (
+                    <button
+                      key={colorName}
+                      onClick={() => setSelectedColor(colorName)}
+                      className={`flex items-center space-x-2 px-3.5 py-2 rounded-xl border text-xs font-mono transition active:scale-95 cursor-pointer ${
+                        selectedColor === colorName
+                          ? 'border-[#9A6E3E] bg-[#FAF6F0] dark:bg-[#201A16] font-bold shadow-xs'
+                          : 'border-neutral-200 dark:border-onyx-700 text-neutral-700 dark:text-neutral-300'
+                      }`}
+                    >
+                      <span className="w-3.5 h-3.5 rounded-full border border-black/10 shrink-0" style={{ backgroundColor: colorHex }} />
+                      <span>{colorName}</span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
@@ -404,9 +410,13 @@ export default function ProductDetailPage({
               </div>
               <Link
                 to="/shop"
-                className="text-xs font-mono uppercase tracking-widest underline underline-offset-4 text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white"
+                className="arrow-runway text-xs font-mono font-bold uppercase tracking-widest text-neutral-700 dark:text-neutral-300 hover:text-[#9A6E3E] dark:hover:text-[#E6D3B3] flex items-center space-x-1.5 group transition"
               >
-                View All Pieces →
+                <span>View All Pieces</span>
+                <span className="arrow-runway-box">
+                  <b>→</b>
+                  <b>→</b>
+                </span>
               </Link>
             </div>
 

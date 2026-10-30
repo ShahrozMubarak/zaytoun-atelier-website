@@ -486,9 +486,13 @@ export default function CheckoutModal({
                 </button>
                 <button
                   type="submit"
-                  className="bg-[#9A6E3E] hover:bg-[#835d34] text-white font-black px-7 py-3.5 rounded-xl text-xs uppercase tracking-wider transition-all shadow-md active:scale-95"
+                  className="arrow-runway bg-[#9A6E3E] hover:bg-[#835d34] text-white font-black px-7 py-3.5 rounded-xl text-xs uppercase tracking-wider transition-all shadow-md active:scale-95 flex items-center gap-2 cursor-pointer"
                 >
-                  Continue to Payment Options →
+                  <span>Continue to Payment Options</span>
+                  <span className="arrow-runway-box">
+                    <b>→</b>
+                    <b>→</b>
+                  </span>
                 </button>
               </div>
             </form>
@@ -908,22 +912,29 @@ export default function CheckoutModal({
                 >
                   ← BACK TO DOSSIER
                 </button>
-                <SymbioteButton
+                <button
                   type="button"
                   onClick={handleFinalizeOrder}
                   disabled={isSubmitting}
-                  theme="camel"
-                  className="bg-[#1C1612] hover:bg-[#9A6E3E] text-white font-black px-8 py-4 rounded-xl text-xs uppercase tracking-widest transition-all shadow-xl flex items-center space-x-2 active:scale-95"
+                  className={`btn-confirm-payment bg-[#1C1612] text-white font-black px-8 py-4 rounded-xl text-xs uppercase tracking-widest transition-all shadow-xl flex items-center space-x-2 active:scale-95 cursor-pointer disabled:cursor-not-allowed ${
+                    isSubmitting ? 'confirming' : ''
+                  }`}
                 >
                   {isSubmitting ? (
-                    <>
+                    <span className="inline-flex items-center gap-2">
                       <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                      <span>REGISTERING ORDER...</span>
-                    </>
+                      <span>AUTHORIZING TRANSACTION...</span>
+                    </span>
                   ) : (
-                    <span>CONFIRM &amp; PLACE ORDER • RS. {activePricing.finalTotal.toLocaleString()} →</span>
+                    <span className="inline-flex items-center gap-2">
+                      <span>CONFIRM PAYMENT • RS. {activePricing.finalTotal.toLocaleString()}</span>
+                      <span className="arrow-runway-box">
+                        <b>→</b>
+                        <b>→</b>
+                      </span>
+                    </span>
                   )}
-                </SymbioteButton>
+                </button>
               </div>
             </div>
           )}

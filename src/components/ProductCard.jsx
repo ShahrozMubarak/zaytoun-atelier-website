@@ -30,20 +30,25 @@ export default function ProductCard({
   const [justAdded, setJustAdded] = useState(false);
   const { formatPrice } = useCurrency();
 
+  if (!product) return null;
+
   const primaryImage =
     product.images?.[0] ||
+    product.image ||
     "/images/catalog/men_barrel_jeans_flat.jpg";
   const hoverImage = product.images?.[1] || primaryImage;
 
   // Fit & demographic subtitle
   const fitSubtitle = product.fitLine || 
-    `${(product.fit || product.style || 'REGULAR FIT').toUpperCase().replace(' FIT', '')} FIT | ${(product.person || product.gender || 'MEN').toUpperCase()}`;
+    `${String(product.fit || product.style || 'REGULAR FIT').toUpperCase().replace(' FIT', '')} FIT | ${String(product.person || product.gender || 'MEN').toUpperCase()}`;
 
   // Denim & garment color swatches
-  const swatches = product.colors || [
-    { name: 'Light Blue', hex: '#8FA9C4' },
-    { name: 'Dark Indigo', hex: '#1E2A38' }
-  ];
+  const swatches = Array.isArray(product.colors) && product.colors.length > 0
+    ? product.colors.map(c => typeof c === 'string' ? { name: c, hex: '#C69F6F' } : c)
+    : [
+        { name: 'Light Blue', hex: '#8FA9C4' },
+        { name: 'Dark Indigo', hex: '#1E2A38' }
+      ];
 
   const handleQuickAdd = (e) => {
     e.stopPropagation();
@@ -102,10 +107,10 @@ export default function ProductCard({
         {product.badge && (
           <div className="absolute top-2.5 left-2.5 z-10 pointer-events-none">
             <span className="text-xs uppercase tracking-widest font-black bg-black text-white dark:bg-white dark:text-black px-2.5 py-1 rounded-none shadow-sm flex items-center gap-1.5 border-l-2 border-[#C69F6F]">
-              {['EXCLUSIVE', 'ATELIER', 'RAW SILK'].some(b => (product.badge || '').toUpperCase().includes(b)) && (
+              {typeof product.badge === 'string' && ['EXCLUSIVE', 'ATELIER', 'RAW SILK'].some(b => product.badge.toUpperCase().includes(b)) && (
                 <span className="w-1.5 h-1.5 rounded-full bg-[#C69F6F]"></span>
               )}
-              <span>{product.badge}</span>
+              <span>{typeof product.badge === 'string' ? product.badge : (product.badge?.text || '')}</span>
             </span>
           </div>
         )}
@@ -133,7 +138,7 @@ export default function ProductCard({
               type="button"
               onClick={handleQuickAdd}
               aria-label={`Add ${product.name} to bag`}
-              className={`w-full py-2.5 px-3 rounded-none font-black text-[11px] uppercase tracking-wider transition-all duration-200 shadow-md flex items-center justify-center space-x-1.5 active:scale-95 cursor-pointer ${
+              className={`btn-ripple-pulse w-full py-2.5 px-3 rounded-none font-black text-[11px] uppercase tracking-wider transition-all duration-200 shadow-md flex items-center justify-center space-x-1.5 active:scale-95 cursor-pointer ${
                 justAdded
                   ? 'bg-[#9A6E3E] text-white'
                   : 'bg-black/90 hover:bg-[#9A6E3E] text-white backdrop-blur-xs'
@@ -141,7 +146,7 @@ export default function ProductCard({
             >
               {justAdded ? (
                 <>
-                  <span className="text-white text-xs">✓</span>
+                  <span className="text-white text-xs font-black animate-bounce">✓</span>
                   <span>Added to Bag</span>
                 </>
               ) : isAdding ? (

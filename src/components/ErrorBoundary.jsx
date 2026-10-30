@@ -18,6 +18,10 @@ export default class ErrorBoundary extends React.Component {
     console.error("ErrorBoundary caught an uncaught exception:", error, errorInfo);
   }
 
+  handleRetry = () => {
+    this.setState({ hasError: false, error: null });
+  };
+
   handleReload = () => {
     this.setState({ hasError: false, error: null });
     window.location.href = '/';
@@ -35,12 +39,20 @@ export default class ErrorBoundary extends React.Component {
             <p className="text-xs text-neutral-600 dark:text-neutral-300 font-light leading-relaxed mb-6">
               A temporary display glitch occurred while loading garments. Our atelier engine has prevented a blank screen.
             </p>
-            <button
-              onClick={this.handleReload}
-              className="w-full py-3 bg-black dark:bg-white text-white dark:text-black font-bold uppercase text-xs tracking-widest hover:bg-neutral-800 transition rounded-none"
-            >
-              Reload Atelier Catalog
-            </button>
+            <div className="flex flex-col sm:flex-row gap-2.5">
+              <button
+                onClick={this.handleRetry}
+                className="flex-1 py-3 bg-[#9A6E3E] text-white font-bold uppercase text-xs tracking-widest hover:bg-[#835d34] transition rounded-none cursor-pointer"
+              >
+                Retry View
+              </button>
+              <button
+                onClick={this.handleReload}
+                className="flex-1 py-3 bg-black dark:bg-white text-white dark:text-black font-bold uppercase text-xs tracking-widest hover:bg-neutral-800 transition rounded-none cursor-pointer"
+              >
+                Return Home
+              </button>
+            </div>
           </div>
         </div>
       );

@@ -29,8 +29,8 @@ export default function OrderConfirmationModal({ order, isOpen, onClose }) {
 
   const orderId = order.orderNumber || order.id || `ZYT-2026-${Math.floor(1000 + Math.random() * 9000)}`;
   const trackingNumber = order.trackingNumber || `TCS-${Math.floor(10000000 + Math.random() * 90000000)}-PK`;
-  const trackingUrl = `${window.location.origin}/track/${orderId}`;
-  const orderItems = order.items && order.items.length > 0 ? order.items : [];
+  const trackingUrl = typeof window !== 'undefined' ? `${window.location.origin}/track/${orderId}` : `/track/${orderId}`;
+  const orderItems = Array.isArray(order.items) ? order.items : [];
   const rawDate = order.date || order.createdAt;
   const parsedDate = rawDate ? new Date(rawDate) : new Date();
   const orderDate = isNaN(parsedDate.getTime()) ? new Date() : parsedDate;
@@ -494,15 +494,19 @@ Track Order: ${trackingUrl}`;
                 <div className="space-y-1 text-[11px] border-b border-dashed border-black/25 pb-3">
                   <div className="flex justify-between">
                     <span className="text-neutral-500">CLIENT:</span>
-                    <span className="font-bold text-black uppercase">{order.customer?.firstName} {order.customer?.lastName || ''}</span>
+                    <span className="font-bold text-black uppercase">
+                      {typeof order.customer === 'string'
+                        ? order.customer
+                        : `${order.customer?.firstName || order.customer?.name || 'Valued Patron'} ${order.customer?.lastName || ''}`.trim()}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-neutral-500">EMAIL:</span>
-                    <span className="text-black">{order.customer?.email}</span>
+                    <span className="text-black">{typeof order.customer === 'object' ? (order.customer?.email || 'client@zaytoun.pk') : 'client@zaytoun.pk'}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-neutral-500">DESTINATION:</span>
-                    <span className="font-bold text-black">{order.customer?.city || 'Karachi, PK'}</span>
+                    <span className="font-bold text-black">{typeof order.customer === 'object' ? (order.customer?.city || order.customer?.address || 'Lahore, PK') : 'Lahore, PK'}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-neutral-500">PAYMENT:</span>

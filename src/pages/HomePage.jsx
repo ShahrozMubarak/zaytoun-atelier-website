@@ -362,9 +362,13 @@ export default function HomePage({
             </div>
             <Link
               to="/shop"
-              className="text-xs font-bold uppercase tracking-wider text-black dark:text-white px-4 py-1.5 border border-neutral-300 dark:border-onyx-800 hover:border-black dark:hover:border-white rounded-none transition"
+              className="arrow-runway text-xs font-mono font-bold uppercase tracking-widest text-black dark:text-white px-4 py-2 border border-neutral-300 dark:border-onyx-800 hover:border-[#9A6E3E] hover:text-[#9A6E3E] dark:hover:text-[#E6D3B3] rounded-none flex items-center space-x-2 transition cursor-pointer"
             >
-              View All
+              <span>View All Pieces</span>
+              <span className="arrow-runway-box">
+                <b>→</b>
+                <b>→</b>
+              </span>
             </Link>
           </div>
         </div>

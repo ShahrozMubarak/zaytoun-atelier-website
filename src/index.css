@@ -739,6 +739,91 @@ a:hover .arrow-runway-up span:nth-child(2) {
   100% { transform: translate(60px, -45px) rotate(-20deg); opacity: 0; }
 }
 
+/* 4. Little Motion 15: Arrow Runway */
+.arrow-runway-box {
+  width: 18px;
+  height: 18px;
+  overflow: hidden;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+}
+.arrow-runway-box b {
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-weight: 900;
+  line-height: 18px;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.arrow-runway-box b:nth-child(2) {
+  transform: translate(-20px, 20px);
+}
+.group:hover .arrow-runway-box b:first-child,
+.arrow-runway:hover .arrow-runway-box b:first-child {
+  transform: translate(20px, -20px);
+}
+.group:hover .arrow-runway-box b:nth-child(2),
+.arrow-runway:hover .arrow-runway-box b:nth-child(2) {
+  transform: translate(0, 0);
+}
+
+/* 5. Little Motion 11: Concentric Ripple Pulse */
+.btn-ripple-pulse {
+  position: relative;
+  overflow: hidden;
+}
+.btn-ripple-pulse::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  background-image: radial-gradient(circle, #C69F6F 10%, transparent 10.01%);
+  background-repeat: no-repeat;
+  background-position: 50%;
+  transform: scale(10, 10);
+  opacity: 0;
+  transition: transform 0.5s, opacity 0.8s;
+}
+.btn-ripple-pulse:active::after {
+  transform: scale(0, 0);
+  opacity: 0.35;
+  transition: 0s;
+}
+
+/* 6. Little Motion 14: Liquid Fill to Confirm */
+.btn-confirm-payment {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.btn-confirm-payment::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, #9A6E3E 0%, #C69F6F 50%, #B58F5F 100%);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 0;
+}
+.btn-confirm-payment:hover::before {
+  transform: scaleX(0.2);
+}
+.btn-confirm-payment.confirming::before {
+  transform: scaleX(1);
+  transition: transform 0.85s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.btn-confirm-payment > * {
+  position: relative;
+  z-index: 1;
+}
+
 @media (prefers-reduced-motion: reduce) { 
   .page-enter, .animate-pop, .card-lift, .btn-press, .animate-video-fade, .subtle-pulse, .camel-glow, .animate-drawerSlide, .arrow-runway span, .arrow-runway-right span, .arrow-runway-up span, .thermal-invoice-slip.extruding, .cart-item-deleting { 
     animation: none !important; 
