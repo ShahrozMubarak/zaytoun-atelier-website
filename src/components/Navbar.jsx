@@ -58,7 +58,9 @@ export default function Navbar({
           </NavLink>
           <NavLink to="/shop" className={navLinkClass}>
             Collection
-          </NavLink>
+          </NavLink><NavLink to="/lookbook" className={navLinkClass}>Lookbook</NavLink>
+          <NavLink to="/studio" className="bg-amber-500 hover:bg-amber-400 text-black dark:text-black font-bold px-3 py-1.5 rounded text-xs uppercase tracking-wider shadow-sm transition-all">STUDIO 3D</NavLink>
+          
           <NavLink to="/story" className={navLinkClass}>
             Story
           </NavLink>
