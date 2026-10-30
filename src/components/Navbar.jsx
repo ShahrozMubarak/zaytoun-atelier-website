@@ -62,12 +62,6 @@ export default function Navbar({
           <NavLink to="/lookbook" className={navLinkClass}>
             Lookbook
           </NavLink>
-          <NavLink
-            to="/studio"
-            className="bg-amber-500 hover:bg-amber-400 text-black dark:text-black font-bold px-3 py-1.5 rounded text-xs uppercase tracking-wider shadow-sm transition-all"
-          >
-            STUDIO 3D
-          </NavLink>
           
           <NavLink to="/story" className={navLinkClass}>
             Story
@@ -307,13 +301,6 @@ export default function Navbar({
             className="block text-black dark:text-white py-1"
           >
             Lookbook
-          </NavLink>
-          <NavLink
-            to="/studio"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block text-amber-500 font-bold py-1"
-          >
-            STUDIO 3D
           </NavLink>
           <NavLink
             to="/track"
