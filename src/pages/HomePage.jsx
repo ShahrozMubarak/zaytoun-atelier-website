@@ -31,68 +31,6 @@ export default function HomePage({
   const [homeLoading, setHomeLoading] = useState(false);
   const videoRef = useRef(null);
 
-  // Cinema Video Campaign Ad Overlay State
-  const [adVisible, setAdVisible] = useState(false);
-  const [adIndex, setAdIndex] = useState(0);
-
-  const adCards = [
-    {
-      kicker: 'ZAYTOUN ATELIER',
-      title: 'WEAR LESS, WEAR LONGER',
-      domain: 'zaytounatelier.com',
-      subtitle: 'CAMPAIGN 2026'
-    },
-    {
-      kicker: 'SLOW ATELIER',
-      title: 'TIMELESS SILHOUETTES',
-      domain: 'zaytounatelier.com',
-      subtitle: 'PURE RAW COTTON & LINEN'
-    },
-    {
-      kicker: 'HAUTE COUTURE',
-      title: 'WEAR LESS, WEAR LONGER',
-      domain: 'zaytounatelier.com',
-      subtitle: 'HANDCRAFTED IN PAKISTAN'
-    }
-  ];
-
-  useEffect(() => {
-    let showTimer;
-    let hideTimer;
-    let waitTimer;
-    let isMounted = true;
-
-    const cycleAd = () => {
-      // 1. Appear after 900ms
-      showTimer = setTimeout(() => {
-        if (!isMounted) return;
-        setAdVisible(true);
-
-        // 2. Stay visible for 4.5s
-        hideTimer = setTimeout(() => {
-          if (!isMounted) return;
-          setAdVisible(false);
-
-          // 3. Stay hidden for 3.5s, advance ad card, then repeat
-          waitTimer = setTimeout(() => {
-            if (!isMounted) return;
-            setAdIndex(prev => (prev + 1) % adCards.length);
-            cycleAd();
-          }, 3500);
-        }, 4500);
-      }, 900);
-    };
-
-    cycleAd();
-
-    return () => {
-      isMounted = false;
-      clearTimeout(showTimer);
-      clearTimeout(hideTimer);
-      clearTimeout(waitTimer);
-    };
-  }, [adCards.length]);
-
   // Panoramic Banner Carousel State
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isSlidePaused, setIsSlidePaused] = useState(false);
@@ -286,37 +224,13 @@ export default function HomePage({
             />
           </video>
 
-          {/* Luxury Video Campaign Ad Lower-Third Overlay */}
-          <div
-            className={`absolute bottom-6 sm:bottom-10 left-4 sm:left-10 lg:left-14 z-20 pointer-events-none transition-all duration-1000 ease-out transform ${
-              adVisible
-                ? 'opacity-100 translate-y-0 scale-100 filter-none'
-                : 'opacity-0 translate-y-4 scale-95 blur-[2px]'
-            }`}
-          >
-            <div className="bg-white/90 dark:bg-black/85 backdrop-blur-md px-5 py-3.5 border border-black/10 dark:border-white/15 shadow-xl max-w-xs sm:max-w-sm rounded-none">
-              <div className="flex items-center space-x-2 mb-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#A6865A] dark:bg-[#E6D3B3] animate-pulse" />
-                <span className="text-[10px] uppercase font-mono tracking-[0.25em] text-[#A6865A] dark:text-[#E6D3B3] font-bold">
-                  {adCards[adIndex].kicker}
-                </span>
-              </div>
-              <p className="text-sm sm:text-base font-black tracking-tight text-black dark:text-white uppercase leading-none font-sans">
-                {adCards[adIndex].title}
-              </p>
-              <div className="flex items-center justify-between pt-2 mt-2 border-t border-black/5 dark:border-white/10 text-[10px] text-neutral-500 dark:text-neutral-400 font-mono tracking-widest uppercase">
-                <span>{adCards[adIndex].domain}</span>
-                <span>{adCards[adIndex].subtitle}</span>
-              </div>
-            </div>
-          </div>
         </div>
       </section>
 
       {/* =========================================================================
           2. BOLD HEADLINE & RECTANGULAR CTAS
       ========================================================================= */}
-      <section className="w-full max-w-4xl mx-auto text-center py-10 sm:py-14 px-4 space-y-4">
+      <section className="w-full max-w-4xl mx-auto text-center py-10 sm:py-14 px-4 space-y-5">
         <ScrollReveal distance={20}>
           <h1 className="text-3xl sm:text-5xl md:text-6xl font-black uppercase tracking-tight text-black dark:text-white leading-tight min-h-[1.25em] flex items-center justify-center">
             <TypewriterHeadline
@@ -331,24 +245,35 @@ export default function HomePage({
               cursorClassName="bg-[#A6865A] dark:bg-[#E6D3B3]"
             />
           </h1>
-          <p className="text-xs sm:text-sm font-medium text-neutral-600 dark:text-neutral-300 max-w-lg mx-auto pt-1">
-            Authentic ring-spun cotton denim, 280 GSM heavyweight tees, and breathable European linen shirts.
-          </p>
         </ScrollReveal>
 
         <ScrollReveal delay={0.15} distance={16}>
-          <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+          <div className="flex flex-wrap items-center justify-center gap-3 pt-1">
+            <Link
+              to="/shop"
+              className="group inline-flex items-center gap-2.5 px-7 py-3.5 bg-black hover:bg-neutral-800 text-white dark:bg-white dark:text-black dark:hover:bg-neutral-200 text-xs font-bold uppercase tracking-wider transition-all shadow-sm active:scale-95"
+            >
+              <span>Explore Collection</span>
+              <span className="text-sm transition-transform duration-200 group-hover:translate-x-0.5 group-hover:translate-y-0.5">↘</span>
+            </Link>
             <Link
               to="/shop?cat=men"
-              className="px-8 py-3 rounded-none bg-black hover:bg-neutral-800 text-white dark:bg-white dark:text-black dark:hover:bg-neutral-200 text-xs font-bold uppercase tracking-wider transition-all shadow-sm active:scale-95"
+              className="px-6 py-3.5 bg-white hover:bg-neutral-50 text-black dark:bg-onyx-900 dark:text-white dark:hover:bg-onyx-800 text-xs font-bold uppercase tracking-wider transition-all border border-neutral-300 dark:border-onyx-700 active:scale-95 shadow-sm"
             >
               Shop Men
             </Link>
             <Link
               to="/shop?cat=women"
-              className="px-8 py-3 rounded-none bg-white hover:bg-neutral-100 text-black dark:bg-onyx-900 dark:text-white dark:hover:bg-onyx-800 text-xs font-bold uppercase tracking-wider transition-all border border-neutral-400 dark:border-onyx-700 active:scale-95"
+              className="px-6 py-3.5 bg-white hover:bg-neutral-50 text-black dark:bg-onyx-900 dark:text-white dark:hover:bg-onyx-800 text-xs font-bold uppercase tracking-wider transition-all border border-neutral-300 dark:border-onyx-700 active:scale-95 shadow-sm"
             >
               Shop Women
+            </Link>
+            <Link
+              to="/lookbook"
+              className="inline-flex items-center gap-1.5 px-6 py-3.5 bg-neutral-100 hover:bg-neutral-200 text-neutral-800 dark:bg-onyx-800 dark:text-neutral-200 dark:hover:bg-onyx-700 text-xs font-bold uppercase tracking-wider transition-all border border-neutral-200 dark:border-onyx-700 active:scale-95"
+            >
+              <span>Lookbook</span>
+              <span className="text-xs text-neutral-500 dark:text-neutral-400">↗</span>
             </Link>
           </div>
         </ScrollReveal>
@@ -388,7 +313,7 @@ export default function HomePage({
                 className="group flex flex-col items-center flex-shrink-0 focus:outline-none transition-transform active:scale-95"
               >
                 <div
-                  className={`relative w-24 h-28 sm:w-28 sm:h-32 rounded-none p-1 transition-all duration-300 bg-white dark:bg-onyx-900 ${
+                  className={`relative w-28 h-20 sm:w-32 sm:h-24 rounded-none p-1 transition-all duration-300 bg-white dark:bg-onyx-900 ${
                     selectedCategory === item.filter
                       ? 'border-2 border-black dark:border-white shadow-sm'
                       : 'border border-neutral-200 dark:border-onyx-800 group-hover:border-neutral-400'
@@ -405,9 +330,6 @@ export default function HomePage({
                 </div>
                 <span className="text-xs font-bold uppercase tracking-wider text-black dark:text-white mt-2 group-hover:underline">
                   {item.title}
-                </span>
-                <span className="text-xs text-neutral-500 font-medium uppercase mt-0.5">
-                  {item.subtitle}
                 </span>
               </button>
             ))}
@@ -464,16 +386,13 @@ export default function HomePage({
             <p className="text-xs sm:text-sm font-bold uppercase tracking-wider text-neutral-200">
               {bannerSlides[currentSlide].subtitle}
             </p>
-            <p className="text-xs sm:text-sm text-neutral-300 font-light max-w-lg hidden sm:block leading-relaxed">
-              {bannerSlides[currentSlide].description}
-            </p>
             <div className="pt-2">
               <Link
                 to={bannerSlides[currentSlide].ctaLink}
-                className="inline-flex items-center px-7 py-3 rounded-none bg-white text-black hover:bg-neutral-200 font-bold text-xs uppercase tracking-wider transition-all active:scale-95 shadow-sm"
+                className="group inline-flex items-center gap-2 px-7 py-3 rounded-none bg-white text-black hover:bg-[#E6D3B3] font-bold text-xs uppercase tracking-wider transition-all active:scale-95 shadow-sm"
               >
                 <span>{bannerSlides[currentSlide].ctaText}</span>
-                <span className="ml-2">→</span>
+                <span className="text-xs transition-transform duration-200 group-hover:translate-x-0.5 group-hover:translate-y-0.5">↘</span>
               </Link>
             </div>
           </div>
@@ -559,7 +478,7 @@ export default function HomePage({
       </section>
 
       {/* =========================================================================
-          6. 3 FEATURED POSTURES (SHARP RECTANGULAR BLOCKS, NO ZOOM)
+          6. 3 FEATURED POSTURES (SHARP RECTANGULAR BLOCKS, NO CLUTTER)
       ========================================================================= */}
       <section className="w-full max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12 pb-14 sm:pb-20">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
@@ -568,7 +487,7 @@ export default function HomePage({
           <ScrollReveal delay={0.1} distance={20}>
             <Link
               to="/shop?cat=men"
-              className="group relative h-[420px] sm:h-[480px] rounded-none overflow-hidden block border border-neutral-300 dark:border-onyx-800 bg-white"
+              className="group relative h-[250px] sm:h-[280px] md:h-[300px] rounded-none overflow-hidden block border border-neutral-300 dark:border-onyx-800 bg-white shadow-sm hover:border-black dark:hover:border-white transition-colors"
             >
               <img
                 src="/images/catalog/men_barrel_jeans_flat.jpg"
@@ -576,18 +495,16 @@ export default function HomePage({
                 className="w-full h-full object-cover object-center transition-opacity duration-500"
                 loading="lazy"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent pointer-events-none" />
 
-              <div className="absolute bottom-6 left-6 right-6 text-white space-y-2">
-                <span className="text-xs font-mono uppercase tracking-widest text-neutral-300 font-semibold">
-                  Denim Edit
-                </span>
-                <h3 className="text-2xl sm:text-3xl font-black uppercase tracking-tight">
+              <div className="absolute bottom-5 left-5 right-5 text-white flex items-end justify-between gap-3">
+                <h3 className="text-xl sm:text-2xl font-black uppercase tracking-tight">
                   BARREL JEANS
                 </h3>
-                <p className="text-xs text-neutral-300 font-light">
-                  13.5oz ring-spun denim with ergonomic curved silhouette.
-                </p>
+                <span className="inline-flex items-center gap-1.5 px-4 py-2 bg-white text-black text-xs font-bold uppercase tracking-wider rounded-none group-hover:bg-[#E6D3B3] transition-all shrink-0 shadow-sm">
+                  <span>Shop</span>
+                  <span className="text-xs transition-transform duration-200 group-hover:translate-x-0.5 group-hover:translate-y-0.5">↘</span>
+                </span>
               </div>
             </Link>
           </ScrollReveal>
@@ -596,7 +513,7 @@ export default function HomePage({
           <ScrollReveal delay={0.2} distance={20}>
             <Link
               to="/shop?cat=men"
-              className="group relative h-[420px] sm:h-[480px] rounded-none overflow-hidden block border border-neutral-300 dark:border-onyx-800 bg-white"
+              className="group relative h-[250px] sm:h-[280px] md:h-[300px] rounded-none overflow-hidden block border border-neutral-300 dark:border-onyx-800 bg-white shadow-sm hover:border-black dark:hover:border-white transition-colors"
             >
               <img
                 src="/images/catalog/men_model_carpenter.jpg"
@@ -604,18 +521,16 @@ export default function HomePage({
                 className="w-full h-full object-cover object-top transition-opacity duration-500"
                 loading="lazy"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent pointer-events-none" />
 
-              <div className="absolute bottom-6 left-6 right-6 text-white space-y-2">
-                <span className="text-xs font-mono uppercase tracking-widest text-neutral-300 font-semibold">
-                  Workwear Edit
-                </span>
-                <h3 className="text-2xl sm:text-3xl font-black uppercase tracking-tight">
+              <div className="absolute bottom-5 left-5 right-5 text-white flex items-end justify-between gap-3">
+                <h3 className="text-xl sm:text-2xl font-black uppercase tracking-tight">
                   CARPENTER FIT
                 </h3>
-                <p className="text-xs text-neutral-300 font-light">
-                  Straight cut with utility hammer loops & 280 GSM tees.
-                </p>
+                <span className="inline-flex items-center gap-1.5 px-4 py-2 bg-white text-black text-xs font-bold uppercase tracking-wider rounded-none group-hover:bg-[#E6D3B3] transition-all shrink-0 shadow-sm">
+                  <span>Shop</span>
+                  <span className="text-xs transition-transform duration-200 group-hover:translate-x-0.5 group-hover:translate-y-0.5">↘</span>
+                </span>
               </div>
             </Link>
           </ScrollReveal>
@@ -624,7 +539,7 @@ export default function HomePage({
           <ScrollReveal delay={0.3} distance={20}>
             <Link
               to="/shop?cat=women"
-              className="group relative h-[420px] sm:h-[480px] rounded-none overflow-hidden block border border-neutral-300 dark:border-onyx-800 bg-white"
+              className="group relative h-[250px] sm:h-[280px] md:h-[300px] rounded-none overflow-hidden block border border-neutral-300 dark:border-onyx-800 bg-white shadow-sm hover:border-black dark:hover:border-white transition-colors"
             >
               <img
                 src="/images/catalog/women_model_camel_trouser.jpg"
@@ -632,18 +547,16 @@ export default function HomePage({
                 className="w-full h-full object-cover object-top transition-opacity duration-500"
                 loading="lazy"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent pointer-events-none" />
 
-              <div className="absolute bottom-6 left-6 right-6 text-white space-y-2">
-                <span className="text-xs font-mono uppercase tracking-widest text-neutral-300 font-semibold">
-                  Women's Pret
-                </span>
-                <h3 className="text-2xl sm:text-3xl font-black uppercase tracking-tight">
+              <div className="absolute bottom-5 left-5 right-5 text-white flex items-end justify-between gap-3">
+                <h3 className="text-xl sm:text-2xl font-black uppercase tracking-tight">
                   TAILORED PRET
                 </h3>
-                <p className="text-xs text-neutral-300 font-light">
-                  High-waisted pleated wide-leg trousers in fluid camel twill.
-                </p>
+                <span className="inline-flex items-center gap-1.5 px-4 py-2 bg-white text-black text-xs font-bold uppercase tracking-wider rounded-none group-hover:bg-[#E6D3B3] transition-all shrink-0 shadow-sm">
+                  <span>Shop</span>
+                  <span className="text-xs transition-transform duration-200 group-hover:translate-x-0.5 group-hover:translate-y-0.5">↘</span>
+                </span>
               </div>
             </Link>
           </ScrollReveal>
@@ -668,21 +581,21 @@ export default function HomePage({
               </p>
             </div>
 
-            <div className="flex items-center space-x-6 text-xs sm:text-sm font-bold uppercase tracking-wider overflow-x-auto pb-1 scrollbar-none">
+            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider overflow-x-auto pb-1 scrollbar-none">
               {[
-                { id: 'all', label: 'All' },
+                { id: 'all', label: 'All Items' },
                 { id: 'men', label: 'Men' },
                 { id: 'women', label: 'Women' },
-                { id: 'jeans', label: 'Jeans' },
+                { id: 'jeans', label: 'Denim' },
                 { id: 'shirts', label: 'Tees & Shirts' }
               ].map(tab => (
                 <button
                   key={tab.id}
                   onClick={() => setSelectedCategory(tab.id)}
-                  className={`transition-colors whitespace-nowrap py-1 ${
+                  className={`px-4 py-2 rounded-full border text-xs font-bold tracking-wider uppercase transition-all whitespace-nowrap active:scale-95 ${
                     selectedCategory === tab.id
-                      ? 'text-black dark:text-white border-b-2 border-black dark:border-white font-black'
-                      : 'text-neutral-400 hover:text-black dark:hover:text-white font-medium'
+                      ? 'bg-black text-white dark:bg-white dark:text-black border-black dark:border-white shadow-sm'
+                      : 'bg-transparent text-neutral-600 dark:text-neutral-400 border-neutral-300 dark:border-onyx-700 hover:border-black dark:hover:border-white hover:text-black dark:hover:text-white'
                   }`}
                 >
                   {tab.label}
