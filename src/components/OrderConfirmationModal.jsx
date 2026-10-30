@@ -179,7 +179,7 @@ export default function OrderConfirmationModal({ order, isOpen, onClose }) {
   // Download Plaintext Receipt File
   const handleDownloadInvoiceFile = () => {
     const textContent = `=====================================================
-ZAYTOUN ATELIER — OFFICIAL TAX INVOICE & CONSIGNMENT SLIP
+FOOLISH ARC — OFFICIAL TAX INVOICE & CONSIGNMENT SLIP
 =====================================================
 Invoice #: ${orderId}
 Timestamp: ${formattedDate} at ${formattedTime}
@@ -207,7 +207,7 @@ ${trackingUrl}
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `Zaytoun-Invoice-${orderId}.txt`;
+    a.download = `FoolishArc-Invoice-${orderId}.txt`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -216,12 +216,12 @@ ${trackingUrl}
 
   // Share Invoice via Web Share API or WhatsApp
   const handleShareInvoice = async () => {
-    const shareText = `Assalam-o-Alaikum! My Zaytoun Atelier order #${orderId} has been confirmed. Total: Rs. ${orderTotal.toLocaleString()}. Track consignment with TCS Express: ${trackingUrl}`;
+    const shareText = `Assalam-o-Alaikum! My Foolish Arc order #${orderId} has been confirmed. Total: Rs. ${orderTotal.toLocaleString()}. Track consignment with TCS Express: ${trackingUrl}`;
 
     if (navigator.share) {
       try {
         await navigator.share({
-          title: `Zaytoun Atelier Invoice #${orderId}`,
+          title: `Foolish Arc Invoice #${orderId}`,
           text: shareText,
           url: trackingUrl
         });
@@ -242,7 +242,7 @@ ${trackingUrl}
 
   // WhatsApp Direct Share
   const handleWhatsAppShare = () => {
-    const msg = `*ZAYTOUN ATELIER — ORDER RECEIPT*
+    const msg = `*FOOLISH ARC — ORDER RECEIPT*
 Order ID: #${orderId}
 Client: ${order.customer?.firstName} ${order.customer?.lastName || ''}
 Total: Rs. ${orderTotal.toLocaleString()}
@@ -433,7 +433,7 @@ Track Order: ${trackingUrl}`;
                     ledStatus === 'emerald' ? 'bg-emerald-500' : 'bg-amber-500 animate-pulse'
                   }`}
                 />
-                <span className="font-bold tracking-wider text-black">ZAYTOUN ATELIER POS</span>
+                <span className="font-bold tracking-wider text-black">FOOLISH ARC POS</span>
               </div>
               <button
                 type="button"
@@ -479,8 +479,11 @@ Track Order: ${trackingUrl}`;
                 
                 {/* Invoice Header */}
                 <div className="text-center border-b border-dashed border-black/25 pb-3">
+                  <div className="flex justify-center mb-1">
+                    <img src="/images/brand/foolish/arc_emblem.png" alt="Foolish Arc" className="h-6 w-auto object-contain" />
+                  </div>
                   <div className="font-black text-sm tracking-tight text-black uppercase">
-                    ZAYTOUN ATELIER
+                    FOOLISH ARC
                   </div>
                   <div className="text-[10px] text-neutral-500 uppercase tracking-wider font-bold">
                     Official Serialized Tax Invoice
@@ -502,7 +505,7 @@ Track Order: ${trackingUrl}`;
                   </div>
                   <div className="flex justify-between">
                     <span className="text-neutral-500">EMAIL:</span>
-                    <span className="text-black">{typeof order.customer === 'object' ? (order.customer?.email || 'client@zaytoun.pk') : 'client@zaytoun.pk'}</span>
+                    <span className="text-black">{typeof order.customer === 'object' ? (order.customer?.email || 'client@foolisharc.com') : 'client@foolisharc.com'}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-neutral-500">DESTINATION:</span>

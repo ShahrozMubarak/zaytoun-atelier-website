@@ -79,14 +79,18 @@ export default function GoogleAuthModal({
 
           {/* Luxury Brand Crest & Monogram */}
           <div className="text-center mb-7 relative z-10">
-            <div className="inline-flex items-center justify-center w-14 h-14 mb-4 rounded-none border border-[#C69F6F] bg-gradient-to-br from-[#E6D3B3] via-[#C69F6F] to-[#8C6D45] text-black shadow-lg shadow-[#C69F6F]/20">
-              <span className="font-serif font-black text-xl tracking-widest pl-0.5">ZA</span>
+            <div className="inline-flex items-center justify-center w-16 h-14 mb-4 rounded-none border border-[#C69F6F] bg-gradient-to-br from-[#E6D3B3] via-[#C69F6F] to-[#8C6D45] text-black shadow-lg shadow-[#C69F6F]/20 p-2">
+              <img 
+                src="/images/brand/foolish/arc_emblem.png" 
+                alt="FOOLISH ARC" 
+                className="w-full h-full object-contain filter brightness-0"
+              />
             </div>
 
             <div className="flex items-center justify-center space-x-2 mb-1.5">
               <span className="h-px w-6 bg-[#C69F6F]/40" />
               <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#E6D3B3]">
-                Zaytoun Atelier • Private Portal
+                FOOLISH ARC • Private Portal
               </span>
               <span className="h-px w-6 bg-[#C69F6F]/40" />
             </div>
@@ -199,7 +203,7 @@ export default function GoogleAuthModal({
           <div className="mt-6 pt-3 text-center">
             <span className="inline-flex items-center space-x-1.5 text-[10px] font-mono font-bold tracking-wider text-[#C69F6F]/70">
               <span className="w-1.5 h-1.5 rounded-none bg-[#C69F6F]" />
-              <span>Zaytoun Atelier Protocol • Encrypted Client Session</span>
+              <span>FOOLISH ARC Protocol • Encrypted Client Session</span>
             </span>
           </div>
 

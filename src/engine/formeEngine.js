@@ -100,7 +100,7 @@ export function validateCatalog(data) {
   return {
     version: 1,
     theme: {
-      brand: String(theme.brand || 'ZAYTOUN & CO.').trim().slice(0, 24) || 'ZAYTOUN & CO.',
+      brand: String(theme.brand || 'FOOLISH ARC').trim().slice(0, 24) || 'FOOLISH ARC',
       olive: hex(theme.olive) ? theme.olive : '#364634',
       camel: hex(theme.camel) ? theme.camel : '#C69F6F'
     },

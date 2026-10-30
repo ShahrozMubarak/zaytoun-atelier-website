@@ -51,13 +51,13 @@ export default function App() {
     try {
       const saved = localStorage.getItem('zaytoun_theme_config');
       return saved ? JSON.parse(saved) : {
-        brand: "ZAYTOUN ATELIER",
+        brand: "FOOLISH ARC",
         olive: "#E6D3B3",
         camel: "#C69F6F"
       };
     } catch {
       return {
-        brand: "ZAYTOUN ATELIER",
+        brand: "FOOLISH ARC",
         olive: "#E6D3B3",
         camel: "#C69F6F"
       };
@@ -350,7 +350,7 @@ export default function App() {
   const handleOpenAuthModal = (config = {}) => {
     setAuthModalConfig({
       title: config.title || "Sign in with Google",
-      subtitle: config.subtitle || "Welcome to Zaytoun Atelier. Please sign in with your Google account.",
+      subtitle: config.subtitle || "Welcome to FOOLISH ARC. Please sign in with your Google account.",
       pendingItem: config.pendingItem || null
     });
     setIsAuthModalOpen(true);
@@ -386,7 +386,7 @@ export default function App() {
     } else {
       setToastNotification({
         title: "Signed In with Google",
-        message: `Welcome back to Zaytoun Atelier, ${googleUser.firstName || googleUser.name}!`
+        message: `Welcome back to FOOLISH ARC, ${googleUser.firstName || googleUser.name}!`
       });
     }
 
@@ -602,6 +602,13 @@ export default function App() {
       createdAt: new Date().toISOString()
     };
 
+    // Save synchronously to local storage cache so it loads instantly in OrderTrackingPage & receipts
+    try {
+      const existing = JSON.parse(localStorage.getItem('zaytoun_orders') || '[]');
+      const filtered = existing.filter(o => o.orderNumber !== orderNumber && o.id !== orderNumber);
+      localStorage.setItem('zaytoun_orders', JSON.stringify([newOrder, ...filtered]));
+    } catch {}
+
     setOrders(prev => [newOrder, ...prev]);
     setCart([]);
     setIsCheckoutOpen(false);
@@ -616,14 +623,13 @@ export default function App() {
       message: `Order received! Status: Pending Studio Verification.`
     });
 
-    // Save directly to MongoDB Atlas with full unhashed customer details & proof screenshot
+    // Save directly to MongoDB Atlas in background
     try {
       const savedDoc = await API.saveOrderToDB(newOrder);
       if (savedDoc && savedDoc._id) {
-        console.log("✅ [MongoDB] Order and unhashed customer profile successfully written to Atlas:", savedDoc.orderNumber);
+        console.log("✅ [MongoDB] Order and customer profile written to Atlas:", savedDoc.orderNumber);
       } else if (savedDoc && savedDoc.error) {
-        console.warn("⚠️ [MongoDB] Order save warning:", savedDoc.error);
-        alert("⚠️ Notice from Atelier DB: " + savedDoc.error);
+        console.warn("⚠️ [MongoDB] Order save notice:", savedDoc.error);
       }
     } catch (dbErr) {
       console.warn("⚠️ [MongoDB] Order sync note:", dbErr.message);

@@ -208,8 +208,15 @@ export default function FittingRoom({
             <div className="relative w-full h-[580px] sm:h-[630px] bg-gradient-to-b from-[#E7E8DC] via-[#DCE0CF] to-[#CCD1BE] dark:from-[#2B3224] dark:via-[#242B1E] dark:to-[#1A2015] rounded-3xl border border-linen-300 dark:border-onyx-800 overflow-hidden shadow-2xl flex flex-col justify-between p-6">
               
               {/* Subtle Atelier Watermark */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[110px] sm:text-[160px] font-editorial text-onyx-950/6 dark:text-white/5 select-none pointer-events-none font-bold">
-                zaytoun.
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center pointer-events-none select-none opacity-[0.07] dark:opacity-[0.06]">
+                <img 
+                  src="/images/brand/foolish/arc_emblem.png" 
+                  alt="" 
+                  className="w-48 sm:w-64 object-contain invert dark:invert-0" 
+                />
+                <span className="text-2xl sm:text-4xl font-editorial tracking-[0.2em] font-bold mt-2 text-onyx-950 dark:text-white">
+                  FOOLISH ARC
+                </span>
               </div>
 
               {/* Stage Top Bar: Eyebrow + Live Indicator */}

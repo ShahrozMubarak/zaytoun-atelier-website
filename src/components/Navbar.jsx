@@ -14,7 +14,7 @@ export default function Navbar({
   onOpenCart,
   theme,
   onToggleTheme,
-  brandName = "ZAYTOUN",
+  brandName = "FOOLISH ARC",
   user = null,
   onOpenAuthModal,
   onLogout,

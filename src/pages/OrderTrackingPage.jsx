@@ -53,8 +53,8 @@ export default function OrderTrackingPage() {
         console.warn("Local storage lookup error:", e);
       }
 
-      // 3. Fallback sample demo order if ID begins with ZYT-
-      if (orderId.startsWith('ZYT-') && isMounted) {
+      // 3. Fallback sample demo order if ID begins with ARC- or ZYT-
+      if ((orderId.startsWith('ARC-') || orderId.startsWith('ZYT-')) && isMounted) {
         setOrder({
           orderNumber: orderId,
           id: orderId,
@@ -178,7 +178,7 @@ export default function OrderTrackingPage() {
                 type="text"
                 value={searchId}
                 onChange={(e) => setSearchId(e.target.value)}
-                placeholder="Enter Consignment or Order ID (e.g. TCS-99482104-LHE)"
+                placeholder="Enter Consignment or Order ID (e.g. ARC-2026-1042 or TCS-99482104-PK)"
                 aria-label="Order Tracking ID"
                 className="w-full pl-11 pr-4 py-3.5 bg-[#FAF9F6] dark:bg-[#201A16] border border-[#D8CEBF] dark:border-[#382F26] rounded-xl text-xs sm:text-sm font-mono font-bold uppercase tracking-wider text-[#1C1612] dark:text-white focus:outline-none focus:border-[#9A6E3E] focus:ring-2 focus:ring-[#9A6E3E]/20 transition shadow-inner"
               />

@@ -181,7 +181,7 @@ export default function HomePage({
             <source src="/videos/hero_white_model_2.mp4" type="video/mp4" />
             <img
               src="/images/catalog/men_model_white_tee_jeans.jpg"
-              alt="Zaytoun Atelier Model"
+              alt="Foolish Arc Model"
               className="w-full h-full object-cover object-top sm:object-center"
             />
           </video>

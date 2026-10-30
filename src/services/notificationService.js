@@ -40,7 +40,7 @@ export async function requestSystemNotificationPermission() {
 
     if (permission === 'granted') {
       sendSystemNotification({
-        title: "ZAYTOUN ATELIER",
+        title: "FOOLISH ARC",
         body: "Notifications enabled. You will receive live updates on order verification & courier tracking.",
         tag: "welcome-system-alert"
       });
@@ -57,7 +57,7 @@ export async function requestSystemNotificationPermission() {
  * Send an authentic system/browser notification via Web Notification API.
  */
 export function sendSystemNotification({
-  title = "ZAYTOUN ATELIER",
+  title = "FOOLISH ARC",
   body = "",
   icon = "/images/catalog/men_barrel_jeans_flat.jpg",
   tag = "atelier-notification",
@@ -123,7 +123,7 @@ export function notifyOrderPlaced(order) {
   const total = Number(order.total || order.pricing?.finalTotal || 0).toLocaleString();
   
   return sendSystemNotification({
-    title: `ZAYTOUN ATELIER • Order #${orderNum}`,
+    title: `FOOLISH ARC • Order #${orderNum}`,
     body: `Your order for Rs. ${total} has been placed. Studio concierge verification is in progress.`,
     tag: `order-placed-${orderNum}`,
     url: `/track/${orderNum}`
@@ -138,7 +138,7 @@ export function notifyOrderApproved(order) {
   const trackingNum = order.trackingNumber || `TCS-${Math.floor(10000000 + Math.random() * 90000000)}-PK`;
 
   return sendSystemNotification({
-    title: `ZAYTOUN ATELIER • Order Approved #${orderNum}`,
+    title: `FOOLISH ARC • Order Approved #${orderNum}`,
     body: `Your consignment is verified and approved. TCS Express Tracking #: ${trackingNum}.`,
     tag: `order-approved-${orderNum}`,
     url: `/track/${orderNum}`
@@ -154,11 +154,11 @@ export function notifyOrderStatusChange(orderNum, status) {
   if (status === 'dispatched') {
     message = `Order #${orderNum} has been handed to TCS Express courier for priority delivery.`;
   } else if (status === 'delivered') {
-    message = `Order #${orderNum} has been delivered. Thank you for choosing Zaytoun slow fashion.`;
+    message = `Order #${orderNum} has been delivered. Thank you for choosing Foolish Arc slow fashion.`;
   }
 
   return sendSystemNotification({
-    title: `ZAYTOUN ATELIER • Status: ${statusUpper}`,
+    title: `FOOLISH ARC • Status: ${statusUpper}`,
     body: message,
     tag: `order-status-${orderNum}-${status}`,
     url: `/track/${orderNum}`
@@ -170,7 +170,7 @@ export function notifyOrderStatusChange(orderNum, status) {
  */
 export function notifyGazetteSubscribed(email) {
   return sendSystemNotification({
-    title: "ZAYTOUN ATELIER • Gazette Active",
+    title: "FOOLISH ARC • Gazette Active",
     body: `Welcome ${email}. You will receive private drop notices, restock receipts, and editorial digests.`,
     tag: "gazette-subscribed"
   });

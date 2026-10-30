@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import SymbioteButton from './SymbioteButton';
 
 export default function CheckoutModal({
@@ -11,6 +12,7 @@ export default function CheckoutModal({
   onConfirmOrder,
   user = null
 }) {
+  const navigate = useNavigate();
   if (!isOpen) return null;
 
   const rawList = propCartItems || cart || [];
@@ -176,7 +178,7 @@ export default function CheckoutModal({
       ...prev,
       firstName: (prev.firstName || user?.firstName || "Client").trim(),
       lastName: (prev.lastName || user?.lastName || "Patron").trim(),
-      email: (prev.email || user?.email || "client@zaytoun.pk").trim(),
+      email: (prev.email || user?.email || "client@foolisharc.com").trim(),
       phone: (prev.phone || "03001234567").trim(),
       address: (prev.address || "Main Boulevard, Gulberg III").trim(),
       city: prev.city || "Lahore"
@@ -190,8 +192,8 @@ export default function CheckoutModal({
     setIsSubmitting(true);
     setTimeout(() => {
       setIsSubmitting(false);
-      const generatedOrderNumber = `ZYT-2026-${Math.floor(1000 + Math.random() * 9000)}`;
-      const verifiedEmail = (user?.email || formData.email || 'client@zaytoun.pk').trim();
+      const generatedOrderNumber = `ARC-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+      const verifiedEmail = (user?.email || formData.email || 'client@foolisharc.com').trim();
       const orderPayload = {
         orderNumber: generatedOrderNumber,
         id: generatedOrderNumber,
@@ -225,6 +227,7 @@ export default function CheckoutModal({
       if (onConfirmOrder) onConfirmOrder(orderPayload);
       if (onOrderCompleted) onOrderCompleted(orderPayload);
       if (onClose) onClose();
+      navigate(`/track/${generatedOrderNumber}`);
     }, 400);
   };
 
@@ -235,7 +238,7 @@ export default function CheckoutModal({
         {/* Modal Top Header */}
         <div className="p-5 sm:p-6 bg-[#FAF6F0] dark:bg-[#231E19] border-b border-[#E8E0D5] dark:border-[#332A22] flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <span className="font-serif text-xl sm:text-2xl font-black text-[#1C1612] dark:text-white tracking-wider">ZAYTOUN ATELIER</span>
+            <span className="font-serif text-xl sm:text-2xl font-black text-[#1C1612] dark:text-white tracking-wider">FOOLISH ARC</span>
             <span className="text-[10px] bg-[#9A6E3E] text-white px-3 py-1 rounded-full font-bold uppercase tracking-widest shadow-2xs">
               CONFIDENTIAL DOSSIER
             </span>

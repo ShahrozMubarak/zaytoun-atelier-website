@@ -85,9 +85,13 @@ export default function AboutPage() {
         ========================================================================= */}
         <section className="relative overflow-hidden pt-4 pb-8 border-b border-linen-300 dark:border-onyx-800">
           <div className="max-w-4xl space-y-6">
-            <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-linen-200/80 dark:bg-onyx-900/80 text-olive-900 dark:text-camel-300 border border-linen-300 dark:border-onyx-800 text-xs font-mono tracking-widest uppercase">
-              <span className="w-2 h-2 rounded-full bg-olive-700 dark:bg-camel-400" />
-              <span>Atelier Manifesto • Slow Luxury</span>
+            <div className="inline-flex items-center space-x-3 px-4 py-2 rounded-full bg-linen-200/80 dark:bg-onyx-900/80 text-olive-900 dark:text-camel-300 border border-linen-300 dark:border-onyx-800 text-xs font-mono tracking-widest uppercase shadow-xs">
+              <img 
+                src="/images/brand/foolish/arc_emblem.png" 
+                alt="FOOLISH ARC Emblem" 
+                className="w-5 h-2.5 object-contain opacity-90 invert dark:invert-0" 
+              />
+              <span>FOOLISH ARC Manifesto • Slow Luxury</span>
             </div>
 
             <h1 className="font-editorial text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-onyx-950 dark:text-linen-50 leading-[1.05]">
@@ -95,7 +99,7 @@ export default function AboutPage() {
             </h1>
 
             <p className="text-base sm:text-lg text-onyx-700 dark:text-linen-300 font-light leading-relaxed max-w-3xl">
-              ZAYTOUN was founded in Lahore as an unapologetic antidote to fast fashion disposable culture. 
+              FOOLISH ARC was founded as an unapologetic antidote to fast fashion disposable culture. 
               We craft high-character, permanent garments in an intentional four-tone palette: Olive Green, Desert Camel, 
               Obsidian Black, and Alabaster Linen White. Every silhouette is sculpted to be worn, loved, and passed down across decades.
             </p>

@@ -22,7 +22,7 @@ function UltraPremiumSignInPrompt({ onOpenAuthModal }) {
 
           <div className="space-y-2">
             <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-black">
-              ZAYTOUN ATELIER
+              FOOLISH ARC
             </h2>
             <p className="text-xs uppercase tracking-[0.25em] text-[#A6865A] font-bold">
               PRIVATE STUDIO PORTAL

@@ -62,7 +62,7 @@ export default function CartDrawer({
   const handleApplyPromo = (e) => {
     e.preventDefault();
     const clean = promoCode.trim().toUpperCase();
-    if (clean === "EARTH10" || clean === "ZAYTOUN10") {
+    if (clean === "EARTH10" || clean === "FOOLISH10" || clean === "ARC10" || clean === "ZAYTOUN10") {
       setAppliedPromo({ code: clean, discountPercent: 10 });
       setPromoError("");
     } else if (clean === "WELCOME15") {
@@ -72,7 +72,7 @@ export default function CartDrawer({
       setAppliedPromo({ code: "FREESHIP", freeShipping: true });
       setPromoError("");
     } else {
-      setPromoError("Invalid code. Try ZAYTOUN10 or WELCOME15");
+      setPromoError("Invalid code. Try FOOLISH10 or WELCOME15");
     }
   };
 

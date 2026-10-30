@@ -72,13 +72,13 @@ export default function ContactPage() {
               </a>
 
               <a
-                href="mailto:concierge@zaytoun.com"
+                href="mailto:concierge@foolisharc.com"
                 className="p-5 rounded-2xl bg-linen-200/50 dark:bg-onyx-900 border border-linen-300 dark:border-onyx-800 hover:border-onyx-950 dark:hover:border-linen-200 transition block group"
               >
                 <div className="flex items-center space-x-2 text-camel-600 dark:text-camel-400 mb-1">
                   <span className="font-bold text-sm">✉ Concierge Email</span>
                 </div>
-                <p className="text-[11px] font-mono text-onyx-900 dark:text-linen-100">atelier@zaytoun.pk</p>
+                <p className="text-[11px] font-mono text-onyx-900 dark:text-linen-100">atelier@foolisharc.com</p>
                 <p className="text-[10px] text-onyx-500 dark:text-linen-400 mt-1">Replies within 4 business hours</p>
               </a>
             </div>

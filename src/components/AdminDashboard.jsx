@@ -23,10 +23,10 @@ import ChartJS from 'chart.js/auto';
 const ADMIN_THEMES = [
   {
     id: "camel-atelier",
-    shortName: "01: Camel & Espresso Luxury",
-    company: "ZAYTOUN ATELIER",
+    shortName: "Warm Camel & Sand Atelier",
+    company: "FOOLISH ARC",
     welcome: "Welcome back, Shahroz",
-    sub: "Here are today's luxury atelier & boutique metrics!",
+    sub: "Live atelier telemetry, bespoke client commissions & global logistics",
     bgOuter: "#E6DDD0",
     bgCanvas: "#FAF6F0",
     sidebar: "#1C1612",
@@ -46,110 +46,6 @@ const ADMIN_THEMES = [
     donutVal: "$18.4k",
     cats: ["Luxury Outerwear", "Pleated Trousers", "Poplin Shirts"],
     catData: [50, 32, 18]
-  },
-  {
-    id: "matthew-ecom",
-    shortName: "02: Matthew E-Com (Screenshot)",
-    company: "ZAYTOUN ATELIER",
-    welcome: "Welcome back, Matthew",
-    sub: "Here are today's stats from your online store!",
-    bgOuter: "#E8E9EC",
-    bgCanvas: "#F4F5F7",
-    sidebar: "#161618",
-    sidebarActive: "#27272A",
-    featuredCard: "#161618",
-    featuredText: "#FFFFFF",
-    cardBg: "#FFFFFF",
-    textMain: "#18181B",
-    textMuted: "#71717A",
-    accent: "#161618",
-    accentSoft: "#F1F2F4",
-    kpi1: { title: "Total Sales", sub: "731 Orders", val: "$9,328.55", delta: "+15.6%", week: "+1.4k this week" },
-    kpi2: { title: "Visitors", sub: "Avg. time: 4:30m", val: "12,302", delta: "+12.7%", week: "+1.2k this week" },
-    kpi3: { title: "Refunds", sub: "2 Disputed", val: "963", delta: "-12.7%", week: "-213" },
-    earnings: [36, 45, 31, 38, 12, 39, 43, 46, 30, 14, 29, 35, 22, 48],
-    costs:    [20, 26, 22, 16, 24, 15, 28, 34, 42, 31, 24, 30, 19, 33],
-    donutVal: "$6.2k",
-    cats: ["Outerwear", "Linen Trousers", "Couture Silks"],
-    catData: [55, 30, 15]
-  },
-  {
-    id: "emerald-fintech",
-    shortName: "03: Emerald & Obsidian FinTech",
-    company: "ZAYTOUN KRONOS",
-    welcome: "Welcome back, Shahroz",
-    sub: "Here are today's institutional settlement & store stats!",
-    bgOuter: "#DCE5E1",
-    bgCanvas: "#F0F5F3",
-    sidebar: "#0B1914",
-    sidebarActive: "#142E24",
-    featuredCard: "#059669",
-    featuredText: "#FFFFFF",
-    cardBg: "#FFFFFF",
-    textMain: "#091712",
-    textMuted: "#527065",
-    accent: "#059669",
-    accentSoft: "#E2F2EC",
-    kpi1: { title: "Net Volume", sub: "1,492 Settlements", val: "$64,890.20", delta: "+28.9%", week: "+8.2k this week" },
-    kpi2: { title: "Active Buyers", sub: "Avg. time: 5:10m", val: "34,120", delta: "+16.4%", week: "+4.1k this week" },
-    kpi3: { title: "Chargebacks", sub: "1 Disputed", val: "42", delta: "-18.5%", week: "-19" },
-    earnings: [30, 42, 38, 49, 41, 53, 47, 56, 48, 39, 51, 57, 50, 62],
-    costs:    [15, 19, 17, 22, 18, 21, 23, 26, 20, 18, 22, 24, 21, 25],
-    donutVal: "$42.1k",
-    cats: ["Instant Checkout", "POS Orders", "Direct Transfers"],
-    catData: [58, 27, 15]
-  },
-  {
-    id: "camel-ivory-minimal",
-    shortName: "04: Warm Ivory & Camel Minimal",
-    company: "ZAYTOUN ATELIER",
-    welcome: "Welcome back, Shahroz",
-    sub: "Live atelier performance, bespoke orders & customer telemetry",
-    bgOuter: "#EFE8DC",
-    bgCanvas: "#FAF7F2",
-    sidebar: "#1A1511",
-    sidebarActive: "#2E241D",
-    featuredCard: "#9A6E3E",
-    featuredText: "#FFFFFF",
-    cardBg: "#FFFFFF",
-    textMain: "#1A1511",
-    textMuted: "#7C6A58",
-    accent: "#9A6E3E",
-    accentSoft: "#F3EDE4",
-    kpi1: { title: "Monthly Gross", sub: "984 Orders", val: "Rs. 4,120,000", delta: "+31.2%", week: "+380k this week" },
-    kpi2: { title: "Active Patrons", sub: "Avg. session: 18m", val: "21,480", delta: "+14.8%", week: "+1.9k this week" },
-    kpi3: { title: "Conversion Rate", sub: "Atelier Checkout", val: "4.8%", delta: "+1.2%", week: "+0.4%" },
-    earnings: [28, 35, 42, 40, 46, 50, 48, 54, 52, 45, 53, 58, 55, 64],
-    costs:    [14, 16, 18, 17, 19, 21, 20, 22, 21, 18, 20, 23, 21, 24],
-    donutVal: "Rs. 2.9M",
-    cats: ["Bespoke Tailoring", "Atelier Ready", "Luxury Linen"],
-    catData: [60, 25, 15]
-  },
-  {
-    id: "crimson-velvet",
-    shortName: "05: Crimson Velvet Streetwear",
-    company: "ZAYTOUN OUTFITTERS",
-    welcome: "Welcome back, Shahroz",
-    sub: "Here are today's limited drop conversions & order stats!",
-    bgOuter: "#EAE0E2",
-    bgCanvas: "#F9F4F5",
-    sidebar: "#1A0B0F",
-    sidebarActive: "#33161E",
-    featuredCard: "#BE123C",
-    featuredText: "#FFFFFF",
-    cardBg: "#FFFFFF",
-    textMain: "#1C0D12",
-    textMuted: "#7A5C64",
-    accent: "#BE123C",
-    accentSoft: "#FCE7EB",
-    kpi1: { title: "Drop Sales", sub: "1,120 Orders", val: "$19,840.75", delta: "+42.1%", week: "+4.9k this week" },
-    kpi2: { title: "Store Visitors", sub: "Avg. time: 5:45m", val: "45,890", delta: "+24.6%", week: "+6.2k this week" },
-    kpi3: { title: "Returns", sub: "4 Size Swaps", val: "312", delta: "-11.2%", week: "-48" },
-    earnings: [35, 52, 44, 56, 38, 49, 58, 61, 47, 36, 50, 55, 48, 63],
-    costs:    [19, 25, 21, 27, 20, 24, 28, 30, 25, 19, 24, 27, 23, 29],
-    donutVal: "$14.6k",
-    cats: ["Limited Drops", "Heavy Linen", "Atelier Jackets"],
-    catData: [52, 31, 17]
   }
 ];
 
@@ -473,7 +369,7 @@ export default function AdminDashboard({
         ? '92' + cleanPhone.slice(1)
         : (cleanPhone.startsWith('92') ? cleanPhone : '92' + cleanPhone);
 
-      const msg = `Assalam-o-Alaikum ${order.customer?.firstName || 'Valued Client'},\n\nYour Zaytoun Atelier order #${order.orderNumber || order.id} has been verified and APPROVED.\n\nConsignment Tracking: ${trackingNumber}\nCourier: TCS Express\nLive Track: ${window.location.origin}/track/${order.orderNumber || order.id}\n\nThank you for choosing Zaytoun Atelier.`;
+      const msg = `Assalam-o-Alaikum ${order.customer?.firstName || 'Valued Client'},\n\nYour FOOLISH ARC order #${order.orderNumber || order.id} has been verified and APPROVED.\n\nConsignment Tracking: ${trackingNumber}\nCourier: TCS Express\nLive Track: ${window.location.origin}/track/${order.orderNumber || order.id}\n\nThank you for choosing FOOLISH ARC.`;
 
       const waUrl = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(msg)}`;
       showToast("Order Approved! Opening WhatsApp dispatch message...");
@@ -495,7 +391,7 @@ export default function AdminDashboard({
     ).join('\n');
 
     return `=======================================================
-ZAYTOUN ATELIER — VERIFIED ORDER TRANSCRIPT
+FOOLISH ARC — VERIFIED ORDER TRANSCRIPT
 =======================================================
 Order Reference: #${order.orderNumber || order.id || 'N/A'}
 Date & Time:    ${dateStr}
@@ -517,7 +413,7 @@ Consignment No: ${order.trackingNumber || 'Pending Dispatch Assignment'}
 ITEMS MANIFEST:
 ${itemsList || '  Standard Couture Selection'}
 =======================================================
-Zaytoun Atelier Lahore | contact@zaytoun.pk
+FOOLISH ARC Atelier | contact@foolisharc.com
 =======================================================`;
   };
 
@@ -535,7 +431,7 @@ Zaytoun Atelier Lahore | contact@zaytoun.pk
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `order-transcript-${order.orderNumber || order.id || 'zaytoun'}.txt`;
+    a.download = `order-transcript-${order.orderNumber || order.id || 'foolisharc'}.txt`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -711,28 +607,10 @@ Zaytoun Atelier Lahore | contact@zaytoun.pk
           <span className="hidden sm:inline text-xs text-neutral-300 font-semibold">{activeTheme.shortName}</span>
         </div>
 
-        {/* Center: Quick 5 Style Switcher Pills */}
-        <div className="flex items-center gap-1.5 overflow-x-auto max-w-full py-0.5">
-          {ADMIN_THEMES.map((themeItem, idx) => {
-            const isActive = idx === activeThemeIdx;
-            return (
-              <button
-                key={themeItem.id}
-                type="button"
-                onClick={() => {
-                  setActiveThemeIdx(idx);
-                  showToast(`Theme switched to ${themeItem.shortName}`);
-                }}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
-                  isActive
-                    ? 'bg-white text-[#111113] shadow-md'
-                    : 'bg-white/10 text-neutral-300 hover:text-white hover:bg-white/20'
-                }`}
-              >
-                {themeItem.shortName.split(':')[0]}
-              </button>
-            );
-          })}
+        {/* Center: Brand Badge */}
+        <div className="flex items-center gap-2">
+          <img src="/images/brand/foolish/arc_emblem.png" alt="Foolish Arc" className="h-5 w-auto object-contain" />
+          <span className="text-xs font-black tracking-widest text-[#E6D3B3] uppercase">FOOLISH ARC ATELIER</span>
         </div>
 
         {/* Right: Refresh & Close Admin */}
@@ -775,15 +653,15 @@ Zaytoun Atelier Lahore | contact@zaytoun.pk
           <div className="space-y-7">
             {/* Brand Header */}
             <div className="flex items-center gap-3 px-2 pt-1 border-b border-white/10 pb-4">
-              <div className="w-8 h-8 rounded-full border border-white/30 flex items-center justify-center text-xs font-bold bg-white/10">
-                @
+              <div className="w-9 h-9 rounded-xl border border-white/20 flex items-center justify-center p-1 bg-white/5 shrink-0">
+                <img src="/images/brand/foolish/arc_emblem.png" alt="Foolish Arc" className="h-full w-auto object-contain" />
               </div>
-              <div>
-                <span className="font-bold text-[14px] tracking-tight text-white block">
-                  {activeTheme.company}
+              <div className="min-w-0">
+                <span className="font-bold text-[14px] tracking-tight text-white block truncate">
+                  FOOLISH ARC
                 </span>
-                <span className="text-[10px] text-neutral-400 font-semibold tracking-wider uppercase block">
-                  Couture Suite
+                <span className="text-[10px] text-[#C69F6F] font-semibold tracking-wider uppercase block">
+                  Studio • New York
                 </span>
               </div>
             </div>
@@ -947,34 +825,14 @@ Zaytoun Atelier Lahore | contact@zaytoun.pk
               </div>
             </nav>
 
-            {/* 5 Admin Theme Switcher directly in sidebar */}
-            <div className="pt-4 border-t border-white/10 space-y-1.5">
-              <span className="text-[10px] uppercase tracking-wider text-neutral-400 px-2 block font-bold">
-                5 Admin Theme Styles
+            {/* Fixed Atelier Brand Signature */}
+            <div className="pt-4 border-t border-white/10 px-2 space-y-1">
+              <span className="text-[10px] uppercase tracking-wider text-[#C69F6F] block font-bold">
+                Atelier Signature
               </span>
-              <div className="space-y-1">
-                {ADMIN_THEMES.map((themeItem, i) => (
-                  <button
-                    key={themeItem.id}
-                    type="button"
-                    onClick={() => {
-                      setActiveThemeIdx(i);
-                      showToast(`Active Theme: ${themeItem.shortName}`);
-                    }}
-                    className={`w-full text-left px-3 py-1.5 rounded-xl text-[11px] flex items-center justify-between transition ${
-                      i === activeThemeIdx
-                        ? 'bg-white/20 text-white font-bold'
-                        : 'text-neutral-400 hover:text-white hover:bg-white/5'
-                    }`}
-                  >
-                    <span className="truncate">{themeItem.shortName.replace(/0\d: /, '')}</span>
-                    <span
-                      className="w-2.5 h-2.5 rounded-full shrink-0 border border-white/40"
-                      style={{ background: themeItem.featuredCard }}
-                    />
-                  </button>
-                ))}
-              </div>
+              <p className="text-[11px] text-neutral-400 font-medium">
+                Warm Camel &amp; Sand Luxury Palette
+              </p>
             </div>
           </div>
 
@@ -1731,7 +1589,7 @@ Zaytoun Atelier Lahore | contact@zaytoun.pk
                             {ord.customer?.firstName} {ord.customer?.lastName}
                           </td>
                           <td className="py-3 px-3 text-neutral-600 font-mono">
-                            {ord.customer?.email || 'client@zaytoun.pk'}
+                            {ord.customer?.email || 'client@foolisharc.com'}
                           </td>
                           <td className="py-3 px-3 text-neutral-800">
                             {ord.customer?.phone || 'N/A'}
@@ -1777,7 +1635,7 @@ Zaytoun Atelier Lahore | contact@zaytoun.pk
                   </label>
                   <input
                     type="text"
-                    defaultValue="ZAYTOUN ATELIER"
+                    defaultValue="FOOLISH ARC"
                     className="w-full px-4 py-3 rounded-xl bg-[#FAF6F0] border border-[#E8E0D5] text-xs font-bold text-neutral-900 focus:outline-none focus:border-[#9A6E3E]"
                   />
                 </div>
@@ -2121,7 +1979,7 @@ Zaytoun Atelier Lahore | contact@zaytoun.pk
                       const text = generateTranscriptText(selectedOrderDetails);
                       if (navigator.share) {
                         navigator.share({
-                          title: `Zaytoun Atelier Order #${selectedOrderDetails.orderNumber || selectedOrderDetails.id}`,
+                          title: `FOOLISH ARC Order #${selectedOrderDetails.orderNumber || selectedOrderDetails.id}`,
                           text: text
                         }).catch(() => {});
                       } else {
