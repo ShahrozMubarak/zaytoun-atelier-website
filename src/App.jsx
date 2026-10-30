@@ -606,7 +606,7 @@ export default function App() {
     setCart([]);
     setIsCheckoutOpen(false);
     setConfirmedOrder(newOrder);
-    setIsAutomatedOrderModalOpen(true);
+    setIsAutomatedOrderModalOpen(false);
 
     // Real System/Browser Push Notification on Buy
     notifyOrderPlaced(newOrder);
@@ -925,7 +925,7 @@ export default function App() {
 
         <OrderConfirmationModal
           order={confirmedOrder}
-          isOpen={Boolean(confirmedOrder) && !isAutomatedOrderModalOpen}
+          isOpen={Boolean(confirmedOrder)}
           onClose={() => setConfirmedOrder(null)}
         />
 
