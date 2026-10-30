@@ -5,7 +5,7 @@ import { launchGooglePopupLogin } from '../utils/googleAuth';
 /**
  * GoogleAuthModal - Luxury Editorial Authentication Portal for Zaytoun Atelier
  * High-end slow fashion aesthetic with desert camel accents, obsidian glassmorphism,
- * brand monogram crest, and official Google Identity Services SSO.
+ * brand monogram crest, an minimalist luxury modal UI,d official Google Identity Services SSO.
  */
 export default function GoogleAuthModal({
   isOpen,
