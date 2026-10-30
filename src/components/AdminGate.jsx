@@ -83,22 +83,22 @@ export default function AdminGate({ children, user = null, onOpenAuthModal }) {
           <h1 className="text-2xl md:text-3xl font-serif text-[#1A1A1A] font-light tracking-wide mb-3">
             Admin Studio
           </h1>
-          <p className="text-neutral-600 text-xs leading-relaxed max-w-xs mx-auto mb-8 tracking-wide">
-            Private owner portal. Please sign in with authorized owner credentials to access management console.
-          </p>
+          <div className="text-xs font-black uppercase tracking-widest text-[#C69F6F] mb-8">
+            AUTHENTICATED ATELIER ACCESS ONLY
+          </div>
 
           <button
             onClick={() => onOpenAuthModal && onOpenAuthModal()}
-            className="luxury-button-camel w-full py-4 px-6 rounded-xl text-xs font-bold tracking-[0.2em] uppercase flex items-center justify-center gap-3 cursor-pointer group shadow-sm"
+            className="luxury-button-camel w-full py-4 px-6 rounded-none text-xs font-black tracking-[0.2em] uppercase flex items-center justify-center gap-3 cursor-pointer group shadow-sm"
           >
             <svg className="w-4 h-4 text-white group-hover:scale-110 transition-transform duration-300" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.545,6.477,2.545,12s4.476,10,10,10c5.768,0,9.545-4.056,9.545-9.727c0-0.652-0.065-1.282-0.183-1.884H12.545z" />
             </svg>
-            <span>Sign In with Google</span>
+            <span>SIGN IN WITH GOOGLE</span>
           </button>
 
-          <div className="mt-8 pt-6 border-t border-[#EFE9DF] text-[10px] tracking-[0.25em] text-neutral-400 uppercase">
-            Protected Area • Authorized Personnel Only
+          <div className="mt-8 pt-6 border-t border-[#EFE9DF] text-[10px] tracking-[0.25em] text-neutral-400 uppercase font-black">
+            PROTECTED AREA • CONCIERGE ACCESS ONLY
           </div>
         </div>
       </div>

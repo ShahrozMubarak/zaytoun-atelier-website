@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useCurrency } from '../context/CurrencyContext';
 import ProductCard from '../components/ProductCard';
+import SymbioteButton from '../components/SymbioteButton';
 
 /**
  * ProductDetailPage - Outfitters-Style Full-Page Product Detail View
@@ -288,37 +289,39 @@ export default function ProductDetailPage({
                   </button>
                 </div>
 
-                {/* Primary Add to Bag CTA */}
-                <button
+                {/* Primary Add to Bag CTA with Symbiote Tether */}
+                <SymbioteButton
                   onClick={handleAddToCart}
                   disabled={currentStock <= 0}
-                  className={`flex-1 h-12 rounded-none font-bold text-xs uppercase tracking-widest transition-all duration-300 shadow-md flex items-center justify-center space-x-2 active:scale-95 ${
+                  theme="camel"
+                  containerClassName="flex-1"
+                  className={`w-full h-12 rounded-none font-black text-xs uppercase tracking-widest transition-all duration-300 shadow-md flex items-center justify-center space-x-2 active:scale-95 ${
                     isAdded
                       ? 'bg-emerald-700 text-white'
                       : currentStock <= 0
                         ? 'bg-neutral-300 text-neutral-500 cursor-not-allowed'
-                        : 'bg-black hover:bg-neutral-800 dark:bg-white dark:hover:bg-neutral-200 text-white dark:text-black'
+                        : 'bg-black hover:bg-neutral-900 dark:bg-white dark:hover:bg-neutral-100 text-white dark:text-black'
                   }`}
                 >
                   {isAdded ? (
-                    <span>Added to Bag ✓</span>
+                    <span>ADDED TO BAG ✓</span>
                   ) : currentStock <= 0 ? (
-                    <span>Out of Stock</span>
+                    <span>OUT OF STOCK</span>
                   ) : (
                     <>
                       <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
                         <path d="M6 7h12l2 14H4L6 7Z" />
                         <path d="M9 8V6a3 3 0 0 1 6 0v2" />
                       </svg>
-                      <span>Add to Bag • {formatPrice(product.price * quantity)}</span>
+                      <span>ADD TO BAG • {formatPrice(product.price * quantity)}</span>
                     </>
                   )}
-                </button>
+                </SymbioteButton>
 
                 {/* Wishlist Heart Button */}
                 <button
                   onClick={() => onToggleWishlist && onToggleWishlist(product.id)}
-                  className={`w-12 h-12 rounded-none border transition active:scale-90 flex items-center justify-center shrink-0 ${
+                  className={`w-12 h-12 rounded-none border-2 transition active:scale-90 flex items-center justify-center shrink-0 ${
                     isWishlisted
                       ? 'bg-red-600 text-white border-red-600 shadow-sm'
                       : 'border-neutral-300 dark:border-onyx-700 text-neutral-700 dark:text-neutral-300 hover:border-black dark:hover:border-white'
@@ -335,13 +338,13 @@ export default function ProductDetailPage({
 
             {/* Trust Badges */}
             <div className="grid grid-cols-2 gap-3 pt-3 border-t border-neutral-200 dark:border-onyx-800 text-xs font-mono">
-              <div className="p-3 bg-neutral-50 dark:bg-onyx-900 border border-neutral-200 dark:border-onyx-800 rounded-none">
-                <p className="font-bold uppercase text-xs text-neutral-900 dark:text-neutral-100">TCS Express Delivery</p>
-                <p className="text-xs text-neutral-500 mt-1">2-3 business days across Pakistan</p>
+              <div className="p-3 bg-neutral-50 dark:bg-onyx-900 border-2 border-neutral-200 dark:border-onyx-800 rounded-none">
+                <p className="font-black uppercase text-xs text-neutral-900 dark:text-neutral-100">TCS EXPRESS DELIVERY</p>
+                <p className="text-xs font-bold uppercase text-[#C69F6F] mt-1">2-3 DAYS NATIONWIDE</p>
               </div>
-              <div className="p-3 bg-neutral-50 dark:bg-onyx-900 border border-neutral-200 dark:border-onyx-800 rounded-none">
-                <p className="font-bold uppercase text-xs text-neutral-900 dark:text-neutral-100">14-Day Exchanges</p>
-                <p className="text-xs text-neutral-500 mt-1">Hassle-free size adjustments</p>
+              <div className="p-3 bg-neutral-50 dark:bg-onyx-900 border-2 border-neutral-200 dark:border-onyx-800 rounded-none">
+                <p className="font-black uppercase text-xs text-neutral-900 dark:text-neutral-100">14-DAY EXCHANGES</p>
+                <p className="text-xs font-bold uppercase text-[#C69F6F] mt-1">COMPLIMENTARY RESIZING</p>
               </div>
             </div>
 
@@ -350,33 +353,33 @@ export default function ProductDetailPage({
               <div className="flex border-b border-neutral-200 dark:border-onyx-800 space-x-6 mb-3 pb-1 font-mono uppercase text-xs">
                 <button
                   onClick={() => setActiveTab('fabric')}
-                  className={`pb-2 transition ${activeTab === 'fabric' ? 'text-black dark:text-white border-b-2 border-black dark:border-white font-bold' : 'text-neutral-400'}`}
+                  className={`pb-2 transition ${activeTab === 'fabric' ? 'text-black dark:text-white border-b-2 border-black dark:border-white font-black' : 'text-neutral-400'}`}
                 >
                   Fabric & Weave
                 </button>
                 <button
                   onClick={() => setActiveTab('care')}
-                  className={`pb-2 transition ${activeTab === 'care' ? 'text-black dark:text-white border-b-2 border-black dark:border-white font-bold' : 'text-neutral-400'}`}
+                  className={`pb-2 transition ${activeTab === 'care' ? 'text-black dark:text-white border-b-2 border-black dark:border-white font-black' : 'text-neutral-400'}`}
                 >
                   Wash & Care
                 </button>
                 <button
                   onClick={() => setActiveTab('delivery')}
-                  className={`pb-2 transition ${activeTab === 'delivery' ? 'text-black dark:text-white border-b-2 border-black dark:border-white font-bold' : 'text-neutral-400'}`}
+                  className={`pb-2 transition ${activeTab === 'delivery' ? 'text-black dark:text-white border-b-2 border-black dark:border-white font-black' : 'text-neutral-400'}`}
                 >
                   Courier & Delivery
                 </button>
               </div>
 
-              <div className="text-xs text-neutral-600 dark:text-neutral-300 font-light leading-relaxed">
+              <div className="text-xs font-mono font-bold uppercase tracking-wider text-neutral-800 dark:text-neutral-200 leading-relaxed">
                 {activeTab === 'fabric' && (
-                  <p><strong>Fabric:</strong> {product.fabric || "100% Authentic Ring-Spun Cotton Denim (13.5oz)."}</p>
+                  <p>{product.fabric ? product.fabric.toUpperCase() : "100% AUTHENTIC RING-SPUN COTTON DENIM (13.5OZ SELVEDGE)"}</p>
                 )}
                 {activeTab === 'care' && (
-                  <p><strong>Care:</strong> {product.care || "Machine wash cold inside out with similar colors. Line dry."}</p>
+                  <p>{product.care ? product.care.toUpperCase() : "MACHINE WASH COLD INSIDE OUT • LINE DRY • ZERO TUMBLE"}</p>
                 )}
                 {activeTab === 'delivery' && (
-                  <p><strong>Courier:</strong> Standard courier delivery via TCS Express (2-3 business days across Pakistan). Automated consignment tracking provided upon checkout.</p>
+                  <p>TCS WHITE-GLOVE COURIER • SAME-DAY DISPATCH • REAL-TIME CONSIGNMENT TRACKING</p>
                 )}
               </div>
             </div>

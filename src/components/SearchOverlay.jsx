@@ -35,7 +35,7 @@ export default function SearchOverlay({ products = [], onSelect }) {
           <div className="w-full max-w-xl rounded-3xl bg-linen-50 dark:bg-onyx-900 border border-linen-300 dark:border-onyx-800 shadow-2xl overflow-hidden animate-pop" onClick={e => e.stopPropagation()}>
             <div className="relative">
               <input ref={input} value={q} onChange={e => setQ(e.target.value)} onKeyDown={e => e.key === 'Enter' && results[0] && pick(results[0])}
-                placeholder="Search collection by name, category, or tone..." className="w-full px-6 py-5 text-base sm:text-lg bg-transparent outline-none border-b border-linen-200 dark:border-onyx-800 text-onyx-950 dark:text-linen-100" />
+                aria-label="Search collection" className="w-full px-6 py-5 text-base sm:text-lg font-bold uppercase tracking-wider bg-transparent outline-none border-b border-linen-200 dark:border-onyx-800 text-onyx-950 dark:text-linen-100" />
               <div className="absolute right-5 top-1/2 -translate-y-1/2 flex items-center gap-1.5 text-[10px] tracking-widest uppercase text-onyx-400 dark:text-linen-500 font-mono">
                 <span>ESC</span>
               </div>

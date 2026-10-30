@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { submitContactInquiry } from '../services/api';
+import SymbioteButton from '../components/SymbioteButton';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({ name: '', email: '', orderNumber: '', message: '' });
@@ -113,7 +114,7 @@ export default function ContactPage() {
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-[11px] font-mono uppercase tracking-wider text-onyx-600 dark:text-linen-400 mb-1">
+                      <label className="block text-xs font-black uppercase tracking-wider text-black dark:text-white mb-1.5">
                         Full Name *
                       </label>
                       <input
@@ -121,12 +122,11 @@ export default function ContactPage() {
                         required
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        placeholder="e.g. Zainab Khan"
-                        className="w-full px-4 py-2.5 rounded-xl bg-linen-200/70 dark:bg-onyx-950 border border-linen-300 dark:border-onyx-800 text-xs focus:outline-none focus:border-olive-800 dark:focus:border-camel-400 transition"
+                        className="w-full px-4 py-3 rounded-none bg-neutral-50 dark:bg-onyx-950 border-2 border-neutral-300 dark:border-onyx-800 text-xs font-bold text-black dark:text-white focus:outline-none focus:border-black dark:focus:border-white transition"
                       />
                     </div>
                     <div>
-                      <label className="block text-[11px] font-mono uppercase tracking-wider text-onyx-600 dark:text-linen-400 mb-1">
+                      <label className="block text-xs font-black uppercase tracking-wider text-black dark:text-white mb-1.5">
                         Email Address *
                       </label>
                       <input
@@ -134,27 +134,25 @@ export default function ContactPage() {
                         required
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        placeholder="zainab@example.com"
-                        className="w-full px-4 py-2.5 rounded-xl bg-linen-200/70 dark:bg-onyx-950 border border-linen-300 dark:border-onyx-800 text-xs focus:outline-none focus:border-olive-800 dark:focus:border-camel-400 transition"
+                        className="w-full px-4 py-3 rounded-none bg-neutral-50 dark:bg-onyx-950 border-2 border-neutral-300 dark:border-onyx-800 text-xs font-bold text-black dark:text-white focus:outline-none focus:border-black dark:focus:border-white transition"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-mono uppercase tracking-wider text-onyx-600 dark:text-linen-400 mb-1">
+                    <label className="block text-xs font-black uppercase tracking-wider text-black dark:text-white mb-1.5">
                       Order / Tracking Number (Optional)
                     </label>
                     <input
                       type="text"
                       value={formData.orderNumber}
                       onChange={(e) => setFormData({ ...formData, orderNumber: e.target.value })}
-                      placeholder="e.g. ZYT-2026-8941"
-                      className="w-full px-4 py-2.5 rounded-xl bg-linen-200/70 dark:bg-onyx-950 border border-linen-300 dark:border-onyx-800 text-xs focus:outline-none focus:border-olive-800 dark:focus:border-camel-400 transition"
+                      className="w-full px-4 py-3 rounded-none bg-neutral-50 dark:bg-onyx-950 border-2 border-neutral-300 dark:border-onyx-800 text-xs font-mono font-bold text-black dark:text-white focus:outline-none focus:border-black dark:focus:border-white transition"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-mono uppercase tracking-wider text-onyx-600 dark:text-linen-400 mb-1">
+                    <label className="block text-xs font-black uppercase tracking-wider text-black dark:text-white mb-1.5">
                       Message / Sizing Question *
                     </label>
                     <textarea
@@ -162,17 +160,23 @@ export default function ContactPage() {
                       rows={5}
                       value={formData.message}
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                      placeholder="Tell us what you're looking for, or ask about fit and alterations..."
-                      className="w-full px-4 py-2.5 rounded-xl bg-linen-200/70 dark:bg-onyx-950 border border-linen-300 dark:border-onyx-800 text-xs focus:outline-none focus:border-olive-800 dark:focus:border-camel-400 transition resize-none"
+                      className="w-full px-4 py-3 rounded-none bg-neutral-50 dark:bg-onyx-950 border-2 border-neutral-300 dark:border-onyx-800 text-xs font-medium text-black dark:text-white focus:outline-none focus:border-black dark:focus:border-white transition resize-none"
                     />
                   </div>
 
-                  <button
+                  <SymbioteButton
                     type="submit"
-                    className="w-full py-3.5 rounded-full bg-olive-800 hover:bg-olive-900 dark:bg-camel-500 dark:hover:bg-camel-600 text-linen-100 dark:text-onyx-950 font-medium text-xs uppercase tracking-widest transition shadow-md active:scale-95"
+                    disabled={loading}
+                    theme="camel"
+                    containerClassName="w-full"
+                    className="w-full py-4 rounded-none bg-black hover:bg-neutral-900 text-white dark:bg-white dark:text-black dark:hover:bg-neutral-100 font-black text-xs uppercase tracking-widest transition shadow-md active:scale-95 flex items-center justify-center space-x-2"
                   >
-                    Send to Atelier Concierge
-                  </button>
+                    {loading ? (
+                      <span>SENDING INQUIRY...</span>
+                    ) : (
+                      <span>TRANSMIT TO ATELIER CONCIERGE →</span>
+                    )}
+                  </SymbioteButton>
                 </form>
               )}
             </div>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { NavLink, Link, useLocation } from 'react-router-dom';
 import { useCurrency } from '../context/CurrencyContext';
 import BrandLogo from './BrandLogo';
+import SymbioteButton from './SymbioteButton';
 
 /**
  * Navbar - Bold, modern luxury navigation bar.
@@ -195,21 +196,22 @@ export default function Navbar({
             </div>
           )}
 
-          {/* Shopping Bag Button (Sharp Luxury) */}
-          <button
+          {/* Shopping Bag Button with Symbiote Tether */}
+          <SymbioteButton
             onClick={onOpenCart}
-            className="flex items-center space-x-1.5 px-2.5 py-1.5 sm:px-3.5 sm:py-1.5 rounded-none bg-black hover:bg-neutral-800 text-white dark:bg-[#E6D3B3] dark:hover:bg-[#d9c19b] dark:text-black transition-all font-bold text-xs uppercase tracking-wider shadow-sm active:scale-95"
+            theme="camel"
+            className="flex items-center space-x-1.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-none bg-black hover:bg-neutral-900 text-white dark:bg-[#E6D3B3] dark:hover:bg-[#d9c19b] dark:text-black transition-all font-black text-xs uppercase tracking-wider shadow-sm active:scale-95"
             title="Shopping Bag"
-            aria-label="Shopping Bag"
+            ariaLabel="Shopping Bag"
           >
             <svg className="w-4 h-4 fill-none stroke-current" viewBox="0 0 24 24" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
             </svg>
-            <span className="hidden sm:inline">Bag</span>
+            <span className="hidden sm:inline">BAG</span>
             <span className="w-4 h-4 rounded-none bg-[#E6D3B3] text-black dark:bg-black dark:text-[#E6D3B3] text-[10px] flex items-center justify-center font-black shadow-sm">
               {cartCount}
             </span>
-          </button>
+          </SymbioteButton>
 
           {/* Mobile Menu Toggle */}
           <button

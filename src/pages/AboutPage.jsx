@@ -100,18 +100,18 @@ export default function AboutPage() {
               Obsidian Black, and Alabaster Linen White. Every silhouette is sculpted to be worn, loved, and passed down across decades.
             </p>
 
-            <div className="pt-2 flex flex-wrap items-center gap-4">
+            <div className="pt-2 flex flex-wrap items-center gap-3">
               <Link
                 to="/shop"
-                className="px-7 py-3.5 rounded-full bg-olive-800 hover:bg-olive-900 dark:bg-camel-500 dark:hover:bg-camel-600 text-linen-100 dark:text-onyx-950 font-medium text-xs sm:text-sm tracking-widest uppercase transition shadow-lg"
+                className="px-8 py-3.5 rounded-none bg-black hover:bg-neutral-900 text-white dark:bg-white dark:text-black font-black text-xs uppercase tracking-widest transition shadow-md"
               >
-                Explore Current Capsule
+                EXPLORE COLLECTION
               </Link>
               <Link
                 to="/shop?cat=women"
-                className="px-7 py-3.5 rounded-full border border-onyx-300 dark:border-onyx-700 hover:border-onyx-950 dark:hover:border-linen-100 text-onyx-900 dark:text-linen-100 font-medium text-xs sm:text-sm tracking-widest uppercase transition"
+                className="px-8 py-3.5 rounded-none border-2 border-black dark:border-white text-black dark:text-white font-black text-xs uppercase tracking-widest transition hover:bg-neutral-100 dark:hover:bg-onyx-900"
               >
-                View Women's Pret →
+                WOMEN'S COLLECTION →
               </Link>
             </div>
           </div>
@@ -123,16 +123,13 @@ export default function AboutPage() {
         <section className="space-y-8">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-linen-300 dark:border-onyx-800 pb-5">
             <div>
-              <span className="text-xs font-mono uppercase tracking-widest text-camel-600 dark:text-camel-400 font-semibold">
-                Color Architecture
+              <span className="text-xs font-black uppercase tracking-widest text-[#C69F6F] block">
+                COLOR ARCHITECTURE
               </span>
-              <h2 className="font-editorial text-3xl sm:text-4xl font-bold mt-1 text-onyx-950 dark:text-linen-50">
-                The 4-Tone Earth Spectrum
+              <h2 className="text-2xl sm:text-4xl font-black uppercase tracking-tight mt-1 text-black dark:text-white">
+                THE 4-TONE EARTH SPECTRUM
               </h2>
             </div>
-            <p className="text-xs font-mono text-onyx-600 dark:text-linen-400">
-              Click any color swatch to copy its exact HEX code to clipboard.
-            </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">

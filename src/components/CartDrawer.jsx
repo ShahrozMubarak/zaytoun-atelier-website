@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useCurrency } from '../context/CurrencyContext';
+import SymbioteButton from './SymbioteButton';
 
 export default function CartDrawer({
   isOpen,
@@ -145,18 +146,16 @@ export default function CartDrawer({
         <div className="flex-1 overflow-y-auto p-5 space-y-4">
           {normalizedCartItems.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center text-center p-6 space-y-4 text-onyx-500 dark:text-linen-400">
-              <div className="w-16 h-16 rounded-full bg-linen-200 dark:bg-onyx-800 flex items-center justify-center text-2xl">
+              <div className="w-16 h-16 rounded-none bg-neutral-100 dark:bg-onyx-800 flex items-center justify-center text-2xl border border-neutral-300 dark:border-onyx-700">
                 🛍️
               </div>
-              <h4 className="font-editorial text-lg font-bold text-onyx-900 dark:text-linen-100">Your bag is empty</h4>
-              <p className="text-xs text-onyx-600 dark:text-linen-400 max-w-xs">
-                Explore our olive heritage trenches, camel cashmere knits, and pleated trousers in the seasonal collection.
-              </p>
+              <h4 className="text-sm font-black uppercase tracking-widest text-black dark:text-white">YOUR BAG IS EMPTY</h4>
+              <span className="text-xs font-mono uppercase tracking-wider text-neutral-400 font-bold">NO PIECES SELECTED</span>
               <button
                 onClick={onClose}
-                className="bg-black hover:bg-neutral-800 text-white dark:bg-white dark:text-black dark:hover:bg-neutral-200 px-6 py-2.5 rounded-none text-xs font-bold uppercase tracking-wider transition shadow-sm"
+                className="bg-black hover:bg-neutral-800 text-white dark:bg-white dark:text-black dark:hover:bg-neutral-200 px-7 py-3 rounded-none text-xs font-black uppercase tracking-widest transition shadow-sm"
               >
-                Start Shopping
+                START SHOPPING
               </button>
             </div>
           ) : (
@@ -238,18 +237,20 @@ export default function CartDrawer({
             
             {/* Promo Code Input */}
             <form onSubmit={handleApplyPromo} className="flex gap-2">
-              <input
-                type="text"
-                placeholder="Promo Code (ZAYTOUN10)"
-                value={promoCode}
-                onChange={(e) => setPromoCode(e.target.value)}
-                className="flex-1 bg-neutral-50 dark:bg-onyx-900 border border-neutral-300 dark:border-onyx-800 rounded-none px-3 py-2 text-xs text-black dark:text-white focus:outline-none focus:border-black dark:focus:border-white uppercase"
-              />
+              <div className="flex-1 relative">
+                <input
+                  type="text"
+                  value={promoCode}
+                  onChange={(e) => setPromoCode(e.target.value)}
+                  aria-label="Promo code"
+                  className="w-full bg-neutral-50 dark:bg-onyx-900 border-2 border-neutral-300 dark:border-onyx-800 rounded-none px-3 py-2 text-xs font-bold text-black dark:text-white focus:outline-none focus:border-black dark:focus:border-white uppercase tracking-wider"
+                />
+              </div>
               <button
                 type="submit"
-                className="bg-black dark:bg-white text-white dark:text-black px-4 py-2 rounded-none text-xs font-bold uppercase tracking-wider hover:opacity-90 transition whitespace-nowrap"
+                className="bg-black dark:bg-white text-white dark:text-black px-5 py-2 rounded-none text-xs font-black uppercase tracking-wider hover:opacity-90 transition whitespace-nowrap shadow-sm"
               >
-                Apply
+                APPLY
               </button>
             </form>
 
@@ -302,22 +303,24 @@ export default function CartDrawer({
               </div>
             </div>
 
-            {/* Checkout Action Button */}
-            <button
+            {/* Checkout Action Button with Symbiote Tether */}
+            <SymbioteButton
               onClick={handleCheckoutClick}
-              className="group w-full bg-black hover:bg-neutral-800 dark:bg-white dark:hover:bg-neutral-200 text-white dark:text-black font-bold py-3.5 rounded-none shadow-sm transition active:scale-95 flex items-center justify-center space-x-2 text-xs uppercase tracking-widest"
+              theme="camel"
+              containerClassName="w-full"
+              className="w-full bg-black hover:bg-neutral-900 dark:bg-white dark:hover:bg-neutral-100 text-white dark:text-black font-black py-4 rounded-none shadow-md transition active:scale-95 flex items-center justify-center space-x-2 text-xs uppercase tracking-widest"
             >
-              <span>Proceed to Checkout</span>
+              <span>PROCEED TO CHECKOUT</span>
               <span className="arrow-runway-right text-xs">
                 <span>→</span>
                 <span>→</span>
               </span>
-            </button>
+            </SymbioteButton>
 
             {/* Secure Atelier Checkout Note */}
-            <div className="flex items-center justify-center space-x-2 text-[10px] text-neutral-400 font-mono tracking-wider pt-1 uppercase">
-              <span className="w-1.5 h-1.5 rounded-none bg-emerald-500" />
-              <span>Complimentary TCS Express & Secure Checkout</span>
+            <div className="flex items-center justify-center space-x-2 text-[10px] text-neutral-500 font-mono tracking-widest pt-1 uppercase font-bold">
+              <span className="w-2 h-2 rounded-none bg-emerald-500" />
+              <span className="text-black dark:text-white font-bold">TCS EXPRESS • SECURE DISPATCH</span>
             </div>
           </div>
         )}

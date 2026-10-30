@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import SymbioteButton from './SymbioteButton';
 
 export default function CheckoutModal({
   isOpen,
@@ -363,67 +364,62 @@ export default function CheckoutModal({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-onyx-800 mb-1">First Name (Letters only) *</label>
+                  <label className="block text-xs font-black uppercase tracking-wider text-black dark:text-white mb-1.5">First Name *</label>
                   <input
                     type="text"
                     name="firstName"
                     value={formData.firstName}
                     onChange={handleInputChange}
-                    placeholder="e.g. Shahroz"
                     required
-                    className={`w-full bg-linen-50 border rounded-none p-2.5 text-xs text-onyx-900 focus:outline-none focus:ring-1 focus:ring-olive-700 ${
-                      formErrors.firstName ? 'border-red-500 bg-red-50/20' : 'border-linen-300'
+                    className={`w-full bg-linen-50 border-2 rounded-none p-2.5 text-xs font-bold text-onyx-900 focus:outline-none focus:border-black ${
+                      formErrors.firstName ? 'border-red-500 bg-red-50/20' : 'border-neutral-300'
                     }`}
                   />
                   {formErrors.firstName && (
-                    <p className="text-red-600 text-xs font-medium mt-1">{formErrors.firstName}</p>
+                    <p className="text-red-600 text-xs font-bold mt-1 uppercase">{formErrors.firstName}</p>
                   )}
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-onyx-800 mb-1">Last Name (Letters only) *</label>
+                  <label className="block text-xs font-black uppercase tracking-wider text-black dark:text-white mb-1.5">Last Name *</label>
                   <input
                     type="text"
                     name="lastName"
                     value={formData.lastName}
                     onChange={handleInputChange}
-                    placeholder="e.g. Mubarak"
                     required
-                    className={`w-full bg-linen-50 border rounded-none p-2.5 text-xs text-onyx-900 focus:outline-none focus:ring-1 focus:ring-olive-700 ${
-                      formErrors.lastName ? 'border-red-500 bg-red-50/20' : 'border-linen-300'
+                    className={`w-full bg-linen-50 border-2 rounded-none p-2.5 text-xs font-bold text-onyx-900 focus:outline-none focus:border-black ${
+                      formErrors.lastName ? 'border-red-500 bg-red-50/20' : 'border-neutral-300'
                     }`}
                   />
                   {formErrors.lastName && (
-                    <p className="text-red-600 text-xs font-medium mt-1">{formErrors.lastName}</p>
+                    <p className="text-red-600 text-xs font-bold mt-1 uppercase">{formErrors.lastName}</p>
                   )}
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-onyx-800 mb-1">Mobile Phone (11 Digits, e.g. 03001234567) *</label>
+                  <label className="block text-xs font-black uppercase tracking-wider text-black dark:text-white mb-1.5">Mobile Phone *</label>
                   <input
                     type="tel"
                     name="phone"
                     value={formData.phone}
                     onChange={handleInputChange}
-                    placeholder="03001234567"
                     maxLength={11}
                     required
-                    className={`w-full bg-linen-50 border rounded-none p-2.5 text-xs text-onyx-900 focus:outline-none focus:ring-1 focus:ring-olive-700 font-mono font-medium ${
-                      formErrors.phone ? 'border-red-500 bg-red-50/20' : 'border-linen-300'
+                    className={`w-full bg-linen-50 border-2 rounded-none p-2.5 text-xs text-onyx-900 focus:outline-none focus:border-black font-mono font-bold ${
+                      formErrors.phone ? 'border-red-500 bg-red-50/20' : 'border-neutral-300'
                     }`}
                   />
-                  {formErrors.phone ? (
-                    <p className="text-red-600 text-xs font-medium mt-1">{formErrors.phone}</p>
-                  ) : (
-                    <span className="text-xs text-onyx-500 block mt-1">Digits only (03XXXXXXXXX). Required for courier delivery updates</span>
+                  {formErrors.phone && (
+                    <p className="text-red-600 text-xs font-bold mt-1 uppercase">{formErrors.phone}</p>
                   )}
                 </div>
                 <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <label className="block text-xs font-semibold text-onyx-800">Email Address (Google Account)</label>
-                    <span className="text-[10px] font-bold text-neutral-600 dark:text-neutral-300 uppercase tracking-widest px-2 py-0.5 border border-neutral-300 dark:border-neutral-700">
-                      Verified
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="block text-xs font-black uppercase tracking-wider text-black dark:text-white">Email Address</label>
+                    <span className="text-[10px] font-black text-black dark:text-white uppercase tracking-widest px-2 py-0.5 border border-black dark:border-white">
+                      VERIFIED
                     </span>
                   </div>
                   <input
@@ -432,40 +428,39 @@ export default function CheckoutModal({
                     value={user?.email || formData.email}
                     readOnly
                     required
-                    className="w-full bg-neutral-100 dark:bg-onyx-800 border border-linen-300 dark:border-onyx-700 rounded-none p-2.5 text-xs text-onyx-700 dark:text-neutral-300 font-mono cursor-not-allowed"
+                    className="w-full bg-neutral-100 dark:bg-onyx-800 border-2 border-neutral-300 dark:border-onyx-700 rounded-none p-2.5 text-xs text-onyx-900 dark:text-neutral-100 font-mono font-bold cursor-not-allowed"
                   />
                   {formErrors.email && (
-                    <p className="text-red-600 text-xs font-medium mt-1">{formErrors.email}</p>
+                    <p className="text-red-600 text-xs font-bold mt-1 uppercase">{formErrors.email}</p>
                   )}
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-onyx-800 mb-1">Complete Street Address (House/Apartment, Street, Area) *</label>
+                <label className="block text-xs font-black uppercase tracking-wider text-black dark:text-white mb-1.5">Delivery Address *</label>
                 <input
                   type="text"
                   name="address"
                   value={formData.address}
                   onChange={handleInputChange}
-                  placeholder="e.g. House 42-B, Street 14, Phase 6, DHA"
                   required
-                  className={`w-full bg-linen-50 border rounded-none p-2.5 text-xs text-onyx-900 focus:outline-none focus:ring-1 focus:ring-olive-700 ${
-                    formErrors.address ? 'border-red-500 bg-red-50/20' : 'border-linen-300'
+                  className={`w-full bg-linen-50 border-2 rounded-none p-2.5 text-xs font-bold text-onyx-900 focus:outline-none focus:border-black ${
+                    formErrors.address ? 'border-red-500 bg-red-50/20' : 'border-neutral-300'
                   }`}
                 />
                 {formErrors.address && (
-                  <p className="text-red-600 text-xs font-medium mt-1">{formErrors.address}</p>
+                  <p className="text-red-600 text-xs font-bold mt-1 uppercase">{formErrors.address}</p>
                 )}
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-onyx-800 mb-1">City *</label>
+                  <label className="block text-xs font-black uppercase tracking-wider text-black dark:text-white mb-1.5">City *</label>
                   <select
                     name="city"
                     value={formData.city}
                     onChange={handleInputChange}
-                    className="w-full bg-linen-50 border border-linen-300 rounded-none p-2.5 text-xs text-onyx-900 focus:outline-none focus:ring-1 focus:ring-olive-700 font-medium"
+                    className="w-full bg-linen-50 border-2 border-neutral-300 rounded-none p-2.5 text-xs text-onyx-900 focus:outline-none focus:border-black font-bold uppercase"
                   >
                     {PAKISTANI_CITIES.map(c => (
                       <option key={c} value={c}>{c}</option>
@@ -473,44 +468,42 @@ export default function CheckoutModal({
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-onyx-800 mb-1">Province</label>
+                  <label className="block text-xs font-black uppercase tracking-wider text-black dark:text-white mb-1.5">Province</label>
                   <input
                     type="text"
                     name="province"
                     value={formData.province}
                     onChange={handleInputChange}
-                    className="w-full bg-linen-50 border border-linen-300 rounded-none p-2.5 text-xs text-onyx-900 focus:outline-none focus:ring-1 focus:ring-olive-700"
+                    className="w-full bg-linen-50 border-2 border-neutral-300 rounded-none p-2.5 text-xs font-bold text-onyx-900 focus:outline-none focus:border-black uppercase"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-onyx-800 mb-1">Postal Code (Digits only)</label>
+                  <label className="block text-xs font-black uppercase tracking-wider text-black dark:text-white mb-1.5">Postal Code</label>
                   <input
                     type="text"
                     name="postalCode"
                     value={formData.postalCode}
                     onChange={handleInputChange}
-                    placeholder="54000"
                     maxLength={6}
-                    className={`w-full bg-linen-50 border rounded-none p-2.5 text-xs text-onyx-900 focus:outline-none focus:ring-1 focus:ring-olive-700 font-mono ${
-                      formErrors.postalCode ? 'border-red-500 bg-red-50/20' : 'border-linen-300'
+                    className={`w-full bg-linen-50 border-2 rounded-none p-2.5 text-xs text-onyx-900 focus:outline-none focus:border-black font-mono font-bold ${
+                      formErrors.postalCode ? 'border-red-500 bg-red-50/20' : 'border-neutral-300'
                     }`}
                   />
                   {formErrors.postalCode && (
-                    <p className="text-red-600 text-xs font-medium mt-1">{formErrors.postalCode}</p>
+                    <p className="text-red-600 text-xs font-bold mt-1 uppercase">{formErrors.postalCode}</p>
                   )}
                 </div>
               </div>
 
               {/* Order Notes */}
               <div>
-                <label className="block text-xs font-semibold text-onyx-800 mb-1">Delivery Instructions (Optional)</label>
+                <label className="block text-xs font-black uppercase tracking-wider text-black dark:text-white mb-1.5">Delivery Instructions (Optional)</label>
                 <input
                   type="text"
                   name="orderNotes"
                   value={formData.orderNotes}
                   onChange={handleInputChange}
-                  placeholder="e.g. Ring bell twice, deliver to security guard"
-                  className="w-full bg-linen-50 border border-linen-300 rounded-none p-2.5 text-xs text-onyx-900 focus:outline-none focus:ring-1 focus:ring-olive-700"
+                  className="w-full bg-linen-50 border-2 border-neutral-300 rounded-none p-2.5 text-xs font-bold text-onyx-900 focus:outline-none focus:border-black"
                 />
               </div>
 
@@ -762,25 +755,23 @@ export default function CheckoutModal({
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                       <div>
-                        <label className="block text-xs font-semibold text-onyx-700 mb-1">Your Sender Mobile Number (11 Digits) *</label>
+                        <label className="block text-xs font-black uppercase tracking-wider text-black mb-1">Sender Mobile Number *</label>
                         <input
                           type="tel"
                           value={jazzcashPhone}
                           onChange={(e) => setJazzcashPhone(e.target.value.replace(/[^0-9]/g, '').slice(0, 11))}
-                          placeholder="03001234567"
                           maxLength={11}
-                          className="w-full bg-white border border-linen-300 rounded-none p-2 text-xs font-mono"
+                          className="w-full bg-white border-2 border-neutral-300 rounded-none p-2 text-xs font-mono font-bold"
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-semibold text-onyx-700 mb-1">Transaction ID / TID (from SMS)</label>
+                        <label className="block text-xs font-black uppercase tracking-wider text-black mb-1">Transaction ID (TID)</label>
                         <input
                           type="text"
                           value={jazzcashCnic}
                           onChange={(e) => setJazzcashCnic(e.target.value.replace(/[^a-zA-Z0-9]/g, '').slice(0, 20))}
-                          placeholder="e.g. 19283746592"
                           maxLength={20}
-                          className="w-full bg-white border border-linen-300 rounded-none p-2 text-xs font-mono"
+                          className="w-full bg-white border-2 border-neutral-300 rounded-none p-2 text-xs font-mono font-bold"
                         />
                       </div>
                     </div>
@@ -810,14 +801,13 @@ export default function CheckoutModal({
                     </div>
 
                     <div className="pt-1">
-                      <label className="block text-xs font-semibold text-onyx-700 mb-1">Your Sender EasyPaisa Number (11 Digits) *</label>
+                      <label className="block text-xs font-black uppercase tracking-wider text-black mb-1">Sender EasyPaisa Number *</label>
                       <input
                         type="tel"
                         value={easypaisaPhone}
                         onChange={(e) => setEasypaisaPhone(e.target.value.replace(/[^0-9]/g, '').slice(0, 11))}
-                        placeholder="03451234567"
                         maxLength={11}
-                        className="w-full bg-white border border-linen-300 rounded-none p-2 text-xs font-mono"
+                        className="w-full bg-white border-2 border-neutral-300 rounded-none p-2 text-xs font-mono font-bold"
                       />
                     </div>
                   </div>
@@ -829,16 +819,13 @@ export default function CheckoutModal({
                     <div className="p-4 bg-white border-2 border-dashed border-sand-500 rounded-none space-y-3">
                       <div className="flex items-center justify-between">
                         <div>
-                          <strong className="text-xs uppercase tracking-wide text-onyx-950 block">
-                            Upload Payment Screenshot / Receipt *
+                          <strong className="text-xs uppercase tracking-widest text-black font-black block">
+                            PAYMENT PROOF ATTACHMENT *
                           </strong>
-                          <p className="text-xs text-onyx-500 mt-0.5">
-                            Screenshot of successful transfer showing TID, date &amp; amount. Required before order confirmation.
-                          </p>
                         </div>
                         {receiptPreview && (
-                          <span className="text-xs font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-none border border-emerald-300">
-                            Proof Attached
+                          <span className="text-xs font-black uppercase text-emerald-800 bg-emerald-100 px-2.5 py-1 rounded-none border border-emerald-300 tracking-wider">
+                            ✓ PROOF ATTACHED
                           </span>
                         )}
                       </div>
@@ -940,25 +927,26 @@ export default function CheckoutModal({
                 <button
                   type="button"
                   onClick={() => setStep('shipping')}
-                  className="text-xs text-onyx-600 hover:text-onyx-950 font-medium"
+                  className="text-xs font-bold uppercase tracking-wider text-black hover:underline"
                 >
-                  ← Back to Address
+                  ← BACK TO ADDRESS
                 </button>
-                <button
+                <SymbioteButton
                   type="button"
                   onClick={handleFinalizeOrder}
                   disabled={isSubmitting}
-                  className="bg-black hover:bg-neutral-800 text-white font-bold px-8 py-3.5 rounded-none text-xs uppercase tracking-wider transition shadow-lg flex items-center space-x-2"
+                  theme="camel"
+                  className="bg-black hover:bg-neutral-900 text-white font-black px-8 py-4 rounded-none text-xs uppercase tracking-widest transition shadow-xl flex items-center space-x-2"
                 >
                   {isSubmitting ? (
                     <>
                       <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                      <span>Registering Order...</span>
+                      <span>REGISTERING ORDER...</span>
                     </>
                   ) : (
-                    <span>Confirm & Place Order • Rs. {activePricing.finalTotal.toLocaleString()} →</span>
+                    <span>CONFIRM &amp; PLACE ORDER • RS. {activePricing.finalTotal.toLocaleString()} →</span>
                   )}
-                </button>
+                </SymbioteButton>
               </div>
             </div>
           )}

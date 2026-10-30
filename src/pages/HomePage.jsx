@@ -5,6 +5,7 @@ import ScrollReveal from '../components/ScrollReveal';
 import TypewriterHeadline from '../components/TypewriterHeadline';
 import { subscribeNewsletter } from '../services/api';
 import useMagnetic from '../hooks/useMagnetic';
+import SymbioteButton from '../components/SymbioteButton';
 
 /**
  * HomePage - Editorial Outfitters-Inspired Storefront
@@ -452,9 +453,9 @@ export default function HomePage({
             <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tight">
               NEW IN STORE
             </h2>
-            <p className="text-xs text-neutral-500 uppercase tracking-widest mt-1">
-              Autumn / Winter 2026 Core Collection
-            </p>
+            <span className="text-xs font-black uppercase tracking-[0.2em] text-[#C69F6F] mt-1 block">
+              AUTUMN / WINTER 2026
+            </span>
           </div>
           <div className="flex items-center justify-between sm:justify-end space-x-2">
             <div className="hidden sm:flex items-center space-x-2">
@@ -670,47 +671,49 @@ export default function HomePage({
       ========================================================================= */}
       <section className="w-full max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12 py-16 sm:py-24 border-t border-neutral-200 dark:border-onyx-800 text-center">
         <ScrollReveal distance={24}>
-          <div className="max-w-xl mx-auto space-y-4">
-            <h2 className="text-3xl sm:text-4xl font-black uppercase tracking-tight">
-              Join the Gazette
+          <div className="max-w-xl mx-auto space-y-5">
+            <h2 className="text-3xl sm:text-5xl font-black uppercase tracking-tight">
+              JOIN THE GAZETTE
             </h2>
-            <p className="text-xs sm:text-sm font-medium text-neutral-600 dark:text-neutral-400">
-              Receive private drop alerts, automated dispatch receipts, and new denim restock notifications.
-            </p>
             <form
               onSubmit={handleSubscribeSubmit}
-              className="flex flex-col sm:flex-row items-center justify-center gap-2 pt-3 max-w-md mx-auto"
+              className="flex flex-col sm:flex-row items-center justify-center gap-2 pt-2 max-w-md mx-auto"
             >
-              <input
-                type="email"
-                required
-                value={homeEmail}
-                onChange={(e) => setHomeEmail(e.target.value)}
-                placeholder="Enter your email"
-                className="w-full px-4 py-3 bg-neutral-50 dark:bg-onyx-900 border border-neutral-300 dark:border-onyx-700 rounded-none text-xs sm:text-sm text-black dark:text-white focus:outline-none focus:border-black dark:focus:border-white transition"
-              />
-              <button
+              <div className="w-full relative">
+                <input
+                  type="email"
+                  required
+                  value={homeEmail}
+                  onChange={(e) => setHomeEmail(e.target.value)}
+                  aria-label="Email address"
+                  className="w-full px-4 py-3 bg-neutral-50 dark:bg-onyx-900 border-2 border-neutral-300 dark:border-onyx-700 rounded-none text-xs sm:text-sm font-bold uppercase tracking-wider text-black dark:text-white focus:outline-none focus:border-black dark:focus:border-white transition"
+                />
+              </div>
+
+              <SymbioteButton
                 type="submit"
                 disabled={homeLoading}
-                className="btn-shimmer-sheen btn-tactile group w-full sm:w-auto px-7 py-3 rounded-none bg-black hover:bg-neutral-800 text-white dark:bg-white dark:text-black dark:hover:bg-neutral-200 text-xs font-bold uppercase tracking-wider transition whitespace-nowrap disabled:opacity-50 shadow-sm flex items-center justify-center gap-2"
+                theme="camel"
+                containerClassName="w-full sm:w-auto"
+                className="w-full sm:w-auto px-8 py-3.5 rounded-none bg-black hover:bg-neutral-900 text-white dark:bg-white dark:text-black dark:hover:bg-neutral-100 text-xs font-black uppercase tracking-widest transition whitespace-nowrap disabled:opacity-50 shadow-md flex items-center justify-center gap-2"
               >
                 {homeSubscribed ? (
-                  <span className="inline-flex items-center gap-1.5 text-emerald-400 dark:text-emerald-600 animate-pop">
+                  <span className="inline-flex items-center gap-1.5 text-emerald-400 dark:text-emerald-600 font-black uppercase">
                     <span>✓</span>
-                    <span>Subscribed</span>
+                    <span>SUBSCRIBED</span>
                   </span>
                 ) : homeLoading ? (
-                  <span>Subscribing...</span>
+                  <span className="font-black uppercase">SUBSCRIBING...</span>
                 ) : (
                   <>
-                    <span>Subscribe</span>
+                    <span className="font-black uppercase">SUBSCRIBE</span>
                     <span className="arrow-runway-right text-xs">
                       <span>→</span>
                       <span>→</span>
                     </span>
                   </>
                 )}
-              </button>
+              </SymbioteButton>
             </form>
           </div>
         </ScrollReveal>

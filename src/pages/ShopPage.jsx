@@ -62,15 +62,12 @@ export default function ShopPage({
         
         {/* Page Header */}
         <div className="mb-8">
-          <span className="text-xs font-mono uppercase tracking-widest text-neutral-400">
-            Catalog 2026
+          <span className="text-xs font-black uppercase tracking-[0.25em] text-[#C69F6F] block">
+            CATALOG 2026
           </span>
           <h1 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-black dark:text-white mt-1">
-            Complete Collection
+            COMPLETE COLLECTION
           </h1>
-          <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 max-w-xl font-light mt-1.5">
-            Authentic ring-spun denim, 280 GSM heavyweight tees, and European linen button-downs.
-          </p>
         </div>
 
         {/* Filter Bar with Demographics & Slot Tabs */}
@@ -89,10 +86,10 @@ export default function ShopPage({
             <div className="relative w-full sm:w-80">
               <input
                 type="text"
-                placeholder="Search jeans, tees, shirts..."
+                aria-label="Search collection"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-8 py-2.5 rounded-none text-xs bg-neutral-50 dark:bg-onyx-900 border border-neutral-300 dark:border-onyx-800 text-black dark:text-white placeholder-neutral-400 focus:outline-none focus:border-black dark:focus:border-white transition"
+                className="w-full pl-9 pr-8 py-2.5 rounded-none text-xs font-bold uppercase tracking-wider bg-neutral-50 dark:bg-onyx-900 border-2 border-neutral-300 dark:border-onyx-800 text-black dark:text-white focus:outline-none focus:border-black dark:focus:border-white transition"
               />
               <svg className="w-3.5 h-3.5 text-neutral-400 absolute left-3 top-1/2 -translate-y-1/2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
                 <circle cx="11" cy="11" r="8" />

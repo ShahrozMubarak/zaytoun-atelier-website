@@ -158,19 +158,16 @@ export default function OrderTrackingPage() {
         
         {/* Breadcrumb & Slogan */}
         <div className="text-center mb-8 space-y-2">
-          <span className="text-xs font-mono uppercase tracking-[0.25em] text-sand-700 dark:text-sand-400 font-bold">
-            Wear Less, Wear Longer • Nationwide Fulfillment
+          <span className="text-xs font-black uppercase tracking-[0.25em] text-[#C69F6F] block">
+            NATIONWIDE FULFILLMENT
           </span>
-          <h1 className="font-editorial text-3xl sm:text-5xl font-bold tracking-tight">
-            Order Consignment Tracking
+          <h1 className="text-3xl sm:text-5xl font-black uppercase tracking-tight">
+            ORDER CONSIGNMENT TRACKING
           </h1>
-          <p className="text-xs sm:text-sm text-onyx-600 dark:text-linen-400 max-w-lg mx-auto font-light">
-            Real-time live milestone updates for your bespoke slow-fashion garment parcels.
-          </p>
         </div>
 
         {/* Search Bar for Order Lookup */}
-        <div className="bg-white dark:bg-onyx-900 rounded-none p-4 sm:p-6 shadow-sm border border-linen-300 dark:border-onyx-800 mb-8">
+        <div className="bg-white dark:bg-onyx-900 rounded-none p-4 sm:p-6 shadow-sm border-2 border-neutral-300 dark:border-onyx-800 mb-8">
           <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1">
               <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-onyx-400 pointer-events-none">
@@ -180,15 +177,15 @@ export default function OrderTrackingPage() {
                 type="text"
                 value={searchId}
                 onChange={(e) => setSearchId(e.target.value)}
-                placeholder="Enter Order Tracking ID (e.g. ZYT-2026-9041)"
-                className="w-full pl-10 pr-4 py-3 bg-linen-100/70 dark:bg-onyx-950/70 border border-linen-300 dark:border-onyx-800 rounded-none text-xs sm:text-sm font-mono tracking-wider focus:outline-none focus:border-camel-500 transition"
+                aria-label="Order Tracking ID"
+                className="w-full pl-10 pr-4 py-3 bg-linen-100/70 dark:bg-onyx-950/70 border-2 border-neutral-300 dark:border-onyx-800 rounded-none text-xs sm:text-sm font-mono font-bold uppercase tracking-wider focus:outline-none focus:border-black dark:focus:border-white transition"
               />
             </div>
             <button
               type="submit"
-              className="bg-black hover:bg-neutral-800 dark:bg-camel-500 dark:hover:bg-camel-600 text-white dark:text-onyx-950 font-bold px-6 py-3 rounded-none text-xs uppercase tracking-widest transition active:scale-95 shadow-sm"
+              className="bg-black hover:bg-neutral-800 dark:bg-white dark:hover:bg-neutral-200 text-white dark:text-black font-black px-8 py-3.5 rounded-none text-xs uppercase tracking-widest transition active:scale-95 shadow-sm"
             >
-              Track Order
+              TRACK ORDER
             </button>
           </form>
         </div>
@@ -244,23 +241,23 @@ export default function OrderTrackingPage() {
 
             {/* Pending Studio Verification Notice */}
             {isPendingApproval && (
-              <div className="bg-[#FAF6F0] dark:bg-[#1A1815] border-l-4 border-camel-500 p-5 rounded-none shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="bg-[#FAF6F0] dark:bg-[#1A1815] border-l-4 border-[#C69F6F] p-5 rounded-none shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="space-y-1">
                   <div className="flex items-center space-x-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-camel-500 animate-pulse"></span>
-                    <strong className="text-xs uppercase font-mono tracking-wider text-camel-800 dark:text-camel-300">
-                      Payment Verification In Progress
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#C69F6F] animate-pulse"></span>
+                    <strong className="text-xs uppercase font-black tracking-wider text-black dark:text-white">
+                      PAYMENT VERIFICATION IN PROGRESS
                     </strong>
                   </div>
-                  <p className="text-xs text-onyx-600 dark:text-linen-300 font-light max-w-xl">
-                    Your order details and payment screenshot are currently with our studio concierge. Once approved, live courier consignment tracking will unlock automatically, and you will receive an automated WhatsApp confirmation.
-                  </p>
+                  <div className="text-xs font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400">
+                    STATUS: STUDIO CONCIERGE REVIEW • TCS COURIER ASSIGNED ON APPROVAL
+                  </div>
                 </div>
                 {order.paymentReceipt && (
                   <div className="flex-shrink-0">
-                    <span className="inline-flex items-center space-x-1.5 px-3 py-1.5 bg-white dark:bg-onyx-900 border border-camel-300 dark:border-camel-800 text-[11px] font-mono text-camel-700 dark:text-camel-300 font-medium">
+                    <span className="inline-flex items-center space-x-1.5 px-3 py-1.5 bg-white dark:bg-onyx-900 border border-neutral-300 dark:border-onyx-700 text-xs font-bold font-mono text-black dark:text-white uppercase">
                       <span>📎</span>
-                      <span>Payment Screenshot Attached</span>
+                      <span>PAYMENT PROOF ATTACHED</span>
                     </span>
                   </div>
                 )}
@@ -302,13 +299,10 @@ export default function OrderTrackingPage() {
                         </div>
 
                         <div className="sm:mt-3">
-                          <p className={`text-xs font-bold uppercase tracking-wider ${
-                            isDone ? 'text-onyx-950 dark:text-linen-50' : 'text-onyx-400 dark:text-linen-500'
+                          <p className={`text-xs font-black uppercase tracking-wider ${
+                            isDone ? 'text-black dark:text-white' : 'text-neutral-400'
                           }`}>
                             {stage.label}
-                          </p>
-                          <p className="text-xs text-onyx-500 dark:text-linen-400 mt-0.5">
-                            {stage.desc}
                           </p>
                         </div>
                       </div>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCurrency } from '../context/CurrencyContext';
+import SymbioteButton from './SymbioteButton';
 
 /**
  * ProductModal - High-end editorial product detail modal
@@ -259,20 +260,22 @@ export default function ProductModal({
 
             </div>
 
-            {/* Actions: Add to Bag (Clean Rectangular Button) */}
+            {/* Actions: Add to Bag (Clean Rectangular Button with Symbiote Tether) */}
             <div className="space-y-4 pt-4 border-t border-neutral-200 dark:border-onyx-800">
               <div className="flex items-center space-x-2.5">
-                <button
+                <SymbioteButton
                   onClick={handleAddToCart}
-                  className={`flex-1 py-3.5 rounded-none font-bold text-xs uppercase tracking-widest transition-all duration-300 shadow-sm flex items-center justify-center space-x-2 active:scale-95 ${
+                  theme="camel"
+                  containerClassName="flex-1"
+                  className={`w-full py-4 rounded-none font-black text-xs uppercase tracking-widest transition-all duration-300 shadow-md flex items-center justify-center space-x-2 active:scale-95 ${
                     isAdded
                       ? 'bg-emerald-700 text-white'
-                      : 'bg-black hover:bg-neutral-800 dark:bg-white dark:hover:bg-neutral-200 text-white dark:text-black'
+                      : 'bg-black hover:bg-neutral-900 dark:bg-white dark:hover:bg-neutral-100 text-white dark:text-black'
                   }`}
                 >
                   {isAdded ? (
                     <>
-                      <span>Added to Bag ✓</span>
+                      <span>ADDED TO BAG ✓</span>
                     </>
                   ) : (
                     <>
@@ -280,14 +283,14 @@ export default function ProductModal({
                         <path d="M6 7h12l2 14H4L6 7Z" />
                         <path d="M9 8V6a3 3 0 0 1 6 0v2" />
                       </svg>
-                      <span>Add to Bag • {formatPrice(product.price * quantity)}</span>
+                      <span>ADD TO BAG • {formatPrice(product.price * quantity)}</span>
                     </>
                   )}
-                </button>
+                </SymbioteButton>
 
                 <button
                   onClick={() => onToggleWishlist && onToggleWishlist(product.id)}
-                  className={`p-3.5 rounded-none border transition active:scale-90 ${
+                  className={`p-4 rounded-none border-2 transition active:scale-90 ${
                     isWishlisted 
                       ? 'bg-red-600 text-white border-red-600 shadow-sm' 
                       : 'border-neutral-300 dark:border-onyx-700 text-neutral-700 dark:text-neutral-300 hover:border-black dark:hover:border-white'
@@ -307,9 +310,9 @@ export default function ProductModal({
                     onClose();
                     navigate(`/product/${product.id}`);
                   }}
-                  className="text-[11px] font-mono uppercase tracking-widest text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white underline underline-offset-4 transition"
+                  className="text-xs font-mono font-bold uppercase tracking-widest text-black dark:text-white hover:underline transition"
                 >
-                  Open Full Product Page →
+                  VIEW FULL SPECIFICATIONS →
                 </button>
               </div>
 
@@ -318,29 +321,29 @@ export default function ProductModal({
                 <div className="flex border-b border-neutral-200 dark:border-onyx-800 space-x-5 mb-3 pb-1 font-mono uppercase text-[11px]">
                   <button
                     onClick={() => setActiveTab('fabric')}
-                    className={`pb-1.5 transition ${activeTab === 'fabric' ? 'text-black dark:text-white border-b-2 border-black dark:border-white font-bold' : 'text-neutral-400'}`}
+                    className={`pb-1.5 transition ${activeTab === 'fabric' ? 'text-black dark:text-white border-b-2 border-black dark:border-white font-black' : 'text-neutral-400'}`}
                   >
                     Fabric & Weave
                   </button>
                   <button
                     onClick={() => setActiveTab('care')}
-                    className={`pb-1.5 transition ${activeTab === 'care' ? 'text-black dark:text-white border-b-2 border-black dark:border-white font-bold' : 'text-neutral-400'}`}
+                    className={`pb-1.5 transition ${activeTab === 'care' ? 'text-black dark:text-white border-b-2 border-black dark:border-white font-black' : 'text-neutral-400'}`}
                   >
                     Wash & Care
                   </button>
                   <button
                     onClick={() => setActiveTab('delivery')}
-                    className={`pb-1.5 transition ${activeTab === 'delivery' ? 'text-black dark:text-white border-b-2 border-black dark:border-white font-bold' : 'text-neutral-400'}`}
+                    className={`pb-1.5 transition ${activeTab === 'delivery' ? 'text-black dark:text-white border-b-2 border-black dark:border-white font-black' : 'text-neutral-400'}`}
                   >
                     Courier & Delivery
                   </button>
                 </div>
 
-                <div className="text-neutral-600 dark:text-neutral-300 font-light leading-relaxed">
-                  {activeTab === 'fabric' && <p><strong>Fabric:</strong> {product.fabric || "100% Authentic Ring-Spun Cotton Denim (13.5oz)."}</p>}
-                  {activeTab === 'care' && <p><strong>Care:</strong> {product.care || "Machine wash cold inside out with similar colors. Line dry."}</p>}
+                <div className="text-xs font-mono font-bold uppercase tracking-wider text-neutral-800 dark:text-neutral-200 leading-relaxed">
+                  {activeTab === 'fabric' && <p>{product.fabric ? product.fabric.toUpperCase() : "100% AUTHENTIC RING-SPUN COTTON DENIM (13.5OZ)"}</p>}
+                  {activeTab === 'care' && <p>{product.care ? product.care.toUpperCase() : "MACHINE WASH COLD INSIDE OUT • LINE DRY"}</p>}
                   {activeTab === 'delivery' && (
-                    <p><strong>Courier:</strong> Standard courier delivery via TCS Express (2-3 business days across Pakistan). Automated tracking provided upon checkout.</p>
+                    <p>TCS WHITE-GLOVE COURIER • SAME-DAY DISPATCH • SECURE TAMPER PACKAGING</p>
                   )}
                 </div>
               </div>

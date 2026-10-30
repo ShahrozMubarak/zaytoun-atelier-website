@@ -1150,10 +1150,10 @@ Thank you for choosing Zaytoun Atelier.`;
               <div className="flex flex-wrap items-center gap-2">
                 <input
                   type="text"
-                  placeholder="Search order #, client, phone, city..."
+                  aria-label="Search orders"
                   value={orderSearchQuery}
                   onChange={(e) => setOrderSearchQuery(e.target.value)}
-                  className="px-3.5 py-2 rounded-xl bg-white border border-[#E6D3B3] text-xs text-black focus:outline-none focus:border-[#C69F6F] w-64 shadow-2xs"
+                  className="px-3.5 py-2 rounded-xl bg-white border border-[#E6D3B3] text-xs font-bold text-black focus:outline-none focus:border-[#C69F6F] w-64 shadow-2xs"
                 />
                 <select
                   value={orderFilterStatus}
@@ -1263,10 +1263,10 @@ Thank you for choosing Zaytoun Atelier.`;
               <div className="flex flex-wrap items-center gap-2">
                 <input
                   type="text"
-                  placeholder="Search title, category, shade..."
+                  aria-label="Search products"
                   value={productSearchQuery}
                   onChange={(e) => setProductSearchQuery(e.target.value)}
-                  className="px-3.5 py-2 rounded-xl bg-white border border-[#E6D3B3] text-xs text-black focus:outline-none focus:border-[#C69F6F] w-56 shadow-2xs"
+                  className="px-3.5 py-2 rounded-xl bg-white border border-[#E6D3B3] text-xs font-bold text-black focus:outline-none focus:border-[#C69F6F] w-56 shadow-2xs"
                 />
                 <div className="flex items-center space-x-1 bg-white p-1 border border-[#E6D3B3] rounded-xl text-xs font-bold">
                   {['all', 'women', 'men', 'kids'].map(dep => (
@@ -1658,10 +1658,9 @@ Thank you for choosing Zaytoun Atelier.`;
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Barrel Leg Washed Jeans"
                   value={productForm.name}
                   onChange={(e) => setProductForm({ ...productForm, name: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#E6D3B3] text-xs text-black focus:outline-none focus:border-[#C69F6F]"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#E6D3B3] text-xs font-bold text-black focus:outline-none focus:border-[#C69F6F]"
                 />
               </div>
 
@@ -1771,7 +1770,6 @@ Thank you for choosing Zaytoun Atelier.`;
                 ) : (
                   <input
                     type="url"
-                    placeholder="https://..."
                     value={productForm.imageUrl}
                     onChange={(e) => setProductForm({ ...productForm, imageUrl: e.target.value })}
                     className="w-full px-3.5 py-2.5 rounded-xl border border-[#E6D3B3] text-xs text-black"
