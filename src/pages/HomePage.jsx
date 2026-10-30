@@ -259,32 +259,39 @@ export default function HomePage({
 
         <ScrollReveal delay={0.15} distance={16}>
           <div className="flex flex-wrap items-center justify-center gap-3 pt-1">
+            {/* Little Motion Exp 008: Orbit Border Glow CTA */}
             <Link
               to="/shop"
               ref={magneticCtaRef}
-              className="group inline-flex items-center gap-2.5 px-7 py-3.5 bg-black hover:bg-neutral-800 text-white dark:bg-white dark:text-black dark:hover:bg-neutral-200 text-xs font-bold uppercase tracking-wider transition-all shadow-sm active:scale-95"
+              className="btn-orbit-border btn-tactile group shadow-sm active:scale-95"
             >
-              <span>Explore Collection</span>
-              <span className="arrow-runway text-sm">
-                <span>↘</span>
-                <span>↘</span>
+              <span className="btn-orbit-inner">
+                <span>Explore Collection</span>
+                <span className="arrow-runway text-sm">
+                  <span>↘</span>
+                  <span>↘</span>
+                </span>
               </span>
             </Link>
+
+            {/* Little Motion Exp 006: Liquid Fill CTAs */}
             <Link
               to="/shop?cat=men"
-              className="px-6 py-3.5 bg-white hover:bg-neutral-50 text-black dark:bg-onyx-900 dark:text-white dark:hover:bg-onyx-800 text-xs font-bold uppercase tracking-wider transition-all border border-neutral-300 dark:border-onyx-700 active:scale-95 shadow-sm"
+              className="btn-liquid-fill btn-tactile px-6 py-3.5 text-xs font-bold uppercase tracking-wider active:scale-95 shadow-sm"
             >
-              Shop Men
+              <span>Shop Men</span>
             </Link>
             <Link
               to="/shop?cat=women"
-              className="px-6 py-3.5 bg-white hover:bg-neutral-50 text-black dark:bg-onyx-900 dark:text-white dark:hover:bg-onyx-800 text-xs font-bold uppercase tracking-wider transition-all border border-neutral-300 dark:border-onyx-700 active:scale-95 shadow-sm"
+              className="btn-liquid-fill btn-tactile px-6 py-3.5 text-xs font-bold uppercase tracking-wider active:scale-95 shadow-sm"
             >
-              Shop Women
+              <span>Shop Women</span>
             </Link>
+
+            {/* Little Motion Exp 038 & 009: Shimmer Sheen & Upward Arrow Runway */}
             <Link
               to="/lookbook"
-              className="group inline-flex items-center gap-1.5 px-6 py-3.5 bg-neutral-100 hover:bg-neutral-200 text-neutral-800 dark:bg-onyx-800 dark:text-neutral-200 dark:hover:bg-onyx-700 text-xs font-bold uppercase tracking-wider transition-all border border-neutral-200 dark:border-onyx-700 active:scale-95"
+              className="btn-shimmer-sheen btn-tactile group inline-flex items-center gap-1.5 px-6 py-3.5 bg-neutral-100 hover:bg-neutral-200 text-neutral-800 dark:bg-onyx-800 dark:text-neutral-200 dark:hover:bg-onyx-700 text-xs font-bold uppercase tracking-wider transition-all border border-neutral-200 dark:border-onyx-700 active:scale-95"
             >
               <span>Lookbook</span>
               <span className="arrow-runway-up text-xs text-neutral-500 dark:text-neutral-400">
@@ -406,7 +413,7 @@ export default function HomePage({
             <div className="pt-2">
               <Link
                 to={bannerSlides[currentSlide].ctaLink}
-                className="group inline-flex items-center gap-2 px-7 py-3 rounded-none bg-white text-black hover:bg-[#E6D3B3] font-bold text-xs uppercase tracking-wider transition-all active:scale-95 shadow-sm"
+                className="btn-shimmer-sheen btn-tactile group inline-flex items-center gap-2 px-7 py-3 rounded-none bg-white text-black hover:bg-[#E6D3B3] font-bold text-xs uppercase tracking-wider transition-all active:scale-95 shadow-sm"
               >
                 <span>{bannerSlides[currentSlide].ctaText}</span>
                 <span className="arrow-runway-right text-xs">
@@ -522,7 +529,7 @@ export default function HomePage({
                 <h3 className="text-xl sm:text-2xl font-black uppercase tracking-tight">
                   BARREL JEANS
                 </h3>
-                <span className="inline-flex items-center gap-1.5 px-4 py-2 bg-white text-black text-xs font-bold uppercase tracking-wider rounded-none group-hover:bg-[#E6D3B3] transition-all shrink-0 shadow-sm">
+                <span className="btn-shimmer-sheen btn-tactile inline-flex items-center gap-1.5 px-4 py-2 bg-white text-black text-xs font-bold uppercase tracking-wider rounded-none group-hover:bg-[#E6D3B3] transition-all shrink-0 shadow-sm">
                   <span>Shop</span>
                   <span className="arrow-runway text-xs">
                     <span>↘</span>
@@ -552,7 +559,7 @@ export default function HomePage({
                 <h3 className="text-xl sm:text-2xl font-black uppercase tracking-tight">
                   CARPENTER FIT
                 </h3>
-                <span className="inline-flex items-center gap-1.5 px-4 py-2 bg-white text-black text-xs font-bold uppercase tracking-wider rounded-none group-hover:bg-[#E6D3B3] transition-all shrink-0 shadow-sm">
+                <span className="btn-shimmer-sheen btn-tactile inline-flex items-center gap-1.5 px-4 py-2 bg-white text-black text-xs font-bold uppercase tracking-wider rounded-none group-hover:bg-[#E6D3B3] transition-all shrink-0 shadow-sm">
                   <span>Shop</span>
                   <span className="arrow-runway text-xs">
                     <span>↘</span>
@@ -582,7 +589,7 @@ export default function HomePage({
                 <h3 className="text-xl sm:text-2xl font-black uppercase tracking-tight">
                   TAILORED PRET
                 </h3>
-                <span className="inline-flex items-center gap-1.5 px-4 py-2 bg-white text-black text-xs font-bold uppercase tracking-wider rounded-none group-hover:bg-[#E6D3B3] transition-all shrink-0 shadow-sm">
+                <span className="btn-shimmer-sheen btn-tactile inline-flex items-center gap-1.5 px-4 py-2 bg-white text-black text-xs font-bold uppercase tracking-wider rounded-none group-hover:bg-[#E6D3B3] transition-all shrink-0 shadow-sm">
                   <span>Shop</span>
                   <span className="arrow-runway text-xs">
                     <span>↘</span>
@@ -685,7 +692,7 @@ export default function HomePage({
               <button
                 type="submit"
                 disabled={homeLoading}
-                className="group w-full sm:w-auto px-7 py-3 rounded-none bg-black hover:bg-neutral-800 text-white dark:bg-white dark:text-black dark:hover:bg-neutral-200 text-xs font-bold uppercase tracking-wider transition whitespace-nowrap disabled:opacity-50 shadow-sm flex items-center justify-center gap-2"
+                className="btn-shimmer-sheen btn-tactile group w-full sm:w-auto px-7 py-3 rounded-none bg-black hover:bg-neutral-800 text-white dark:bg-white dark:text-black dark:hover:bg-neutral-200 text-xs font-bold uppercase tracking-wider transition whitespace-nowrap disabled:opacity-50 shadow-sm flex items-center justify-center gap-2"
               >
                 {homeSubscribed ? (
                   <span className="inline-flex items-center gap-1.5 text-emerald-400 dark:text-emerald-600 animate-pop">
