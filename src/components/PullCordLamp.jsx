@@ -98,7 +98,13 @@ export default function PullCordLamp({
                 cx="14.5"
                 cy="17"
                 r="1.2"
-                className={isLit ? 'fill-[#C69F6F]' : 'fill-[#D4D4D8]'}
+                className={isLit ? 'fill-[#C69F6F]' : 'fill-[#2563EB]'}
+              />
+              <circle
+                cx="14.5"
+                cy="17"
+                r="0.45"
+                className="fill-[#93C5FD]"
               />
             </g>
           </svg>
@@ -184,12 +190,14 @@ export default function PullCordLamp({
               backgroundSize: '2px 4px'
             }}
           />
-          {/* Hanging Brass Acorn Drop Bead */}
+          {/* Hanging Brass & Sapphire Acorn Drop Bead */}
           <span
-            className={`w-2.5 h-4 rounded-full transition-colors duration-300 shadow-sm ${
-              isLit ? 'bg-[#C69F6F] border border-[#8C6A3E]' : 'bg-[#52525B] border border-[#3F3F46]'
+            className={`w-2.5 h-4 rounded-full transition-colors duration-300 shadow-sm flex items-center justify-center ${
+              isLit ? 'bg-[#C69F6F] border border-[#8C6A3E]' : 'bg-[#1E3A8A] border border-[#2563EB]'
             }`}
-          />
+          >
+            <span className="w-1 h-1 rounded-full bg-[#60A5FA]/80"></span>
+          </span>
         </button>
       </div>
 

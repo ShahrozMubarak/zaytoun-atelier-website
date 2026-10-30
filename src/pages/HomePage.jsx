@@ -198,6 +198,12 @@ export default function HomePage({
       ========================================================================= */}
       <section className="w-full max-w-4xl mx-auto text-center py-10 sm:py-14 px-4 space-y-5">
         <ScrollReveal distance={20}>
+          <div className="flex items-center justify-center space-x-2.5 mb-3">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#1D4ED8] animate-pulse"></span>
+            <span className="text-[10px] uppercase font-bold tracking-[0.25em] text-[#8C6A3E] dark:text-[#E6D3B3]">
+              ATELIER RAW FIBERS
+            </span>
+          </div>
           <h1 className="text-3xl sm:text-5xl md:text-6xl font-black uppercase tracking-tight text-black dark:text-white leading-tight min-h-[1.25em] flex items-center justify-center">
             <TypewriterHeadline
               words={[
@@ -570,8 +576,9 @@ export default function HomePage({
                   required
                   value={homeEmail}
                   onChange={(e) => setHomeEmail(e.target.value)}
+                  placeholder="Enter Atelier Email"
                   aria-label="Email address"
-                  className="w-full px-4 py-3 bg-neutral-50 dark:bg-onyx-900 border-2 border-neutral-300 dark:border-onyx-700 rounded-none text-xs sm:text-sm font-bold uppercase tracking-wider text-black dark:text-white focus:outline-none focus:border-black dark:focus:border-white transition"
+                  className="w-full px-4 py-3.5 bg-[#FAF9F6] dark:bg-[#1E1915] border border-[#D8CEBF] dark:border-[#382F26] rounded-xl text-xs sm:text-sm font-bold uppercase tracking-wider text-black dark:text-white focus:outline-none focus:border-[#9A6E3E] transition shadow-inner"
                 />
               </div>
 
@@ -580,7 +587,7 @@ export default function HomePage({
                 disabled={homeLoading}
                 theme="camel"
                 containerClassName="w-full sm:w-auto"
-                className="w-full sm:w-auto px-8 py-3.5 rounded-none bg-black hover:bg-neutral-900 text-white dark:bg-white dark:text-black dark:hover:bg-neutral-100 text-xs font-black uppercase tracking-widest transition whitespace-nowrap disabled:opacity-50 shadow-md flex items-center justify-center gap-2"
+                className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-[#1C1612] hover:bg-[#9A6E3E] text-white text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap disabled:opacity-50 shadow-md flex items-center justify-center gap-2 active:scale-95"
               >
                 {homeSubscribed ? (
                   <span className="inline-flex items-center gap-1.5 text-emerald-400 dark:text-emerald-600 font-black uppercase">

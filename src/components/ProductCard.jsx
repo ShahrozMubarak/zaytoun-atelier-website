@@ -82,8 +82,11 @@ export default function ProductCard({
         {/* Subtle Badge (e.g. "NEW ARRIVAL", "BESTSELLER") - Minimalist sharp box */}
         {product.badge && (
           <div className="absolute top-2.5 left-2.5 z-10 pointer-events-none">
-            <span className="text-xs uppercase tracking-widest font-black bg-black text-white dark:bg-white dark:text-black px-2.5 py-1 rounded-none shadow-sm">
-              {product.badge}
+            <span className="text-xs uppercase tracking-widest font-black bg-black text-white dark:bg-white dark:text-black px-2.5 py-1 rounded-none shadow-sm flex items-center gap-1.5 border-l-2 border-[#C69F6F]">
+              {['EXCLUSIVE', 'ATELIER', 'RAW SILK'].some(b => (product.badge || '').toUpperCase().includes(b)) && (
+                <span className="w-1.5 h-1.5 rounded-full bg-[#2563EB]"></span>
+              )}
+              <span>{product.badge}</span>
             </span>
           </div>
         )}

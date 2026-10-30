@@ -123,29 +123,32 @@ export default function Navbar({
             <div className="relative">
               <button
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
-                className="flex items-center space-x-1 p-1 sm:pl-1.5 sm:pr-2.5 rounded-full border border-sand-400/50 dark:border-sand-500/40 hover:border-sand-500 bg-sand-50/50 dark:bg-onyx-900 transition-all text-xs font-bold text-neutral-900 dark:text-white"
+                className="flex items-center space-x-1.5 p-1 sm:pl-1.5 sm:pr-2.5 rounded-full border border-[#D8CEBF] dark:border-[#382F26] hover:border-[#C69F6F] bg-[#FAF9F6] dark:bg-[#1A1613] transition-all text-xs font-bold text-neutral-900 dark:text-white"
                 title={`Signed in as ${user.name}`}
               >
-                <img
-                  src={user.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(user.name)}`}
-                  alt={user.name}
-                  className="w-6 h-6 rounded-full object-cover border border-sand-400/60"
-                />
+                <div className="relative">
+                  <img
+                    src={user.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(user.name)}`}
+                    alt={user.name}
+                    className="w-6 h-6 rounded-full object-cover border border-[#D8CEBF] dark:border-[#382F26]"
+                  />
+                  <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-[#2563EB] ring-2 ring-white dark:ring-[#1A1613]" title="Verified Patron"></span>
+                </div>
                 <span className="hidden sm:inline max-w-[110px] truncate text-left">{user.firstName || user.name}</span>
-                <svg className="w-3 h-3 text-neutral-400 hidden sm:block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-3 h-3 text-[#A6865A] hidden sm:block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
 
               {/* User Dropdown Menu */}
               {userMenuOpen && (
-                <div className="absolute right-0 mt-2 w-56 rounded-none bg-white dark:bg-onyx-950 border border-neutral-200 dark:border-onyx-800 shadow-2xl py-2 z-50 animate-fadeIn">
-                  <div className="px-4 py-2.5 border-b border-neutral-100 dark:border-onyx-800">
+                <div className="absolute right-0 mt-2 w-56 rounded-xl bg-white dark:bg-[#1A1613] border border-[#E6D3B3] dark:border-[#382F26] shadow-2xl py-2 z-50 animate-fadeIn">
+                  <div className="px-4 py-2.5 border-b border-[#F0EAE1] dark:border-[#2C241D]">
                     <p className="font-bold text-neutral-900 dark:text-white truncate">{user.name}</p>
                     <p className="text-[11px] text-neutral-500 dark:text-neutral-400 truncate">{user.email}</p>
-                    <span className="inline-flex items-center space-x-1.5 mt-1 px-2 py-0.5 rounded-none bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/40 text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                      <span>Google Verified</span>
+                    <span className="inline-flex items-center space-x-1.5 mt-1 px-2 py-0.5 rounded-full bg-blue-50/80 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/50 text-[10px] font-bold uppercase tracking-wider text-blue-700 dark:text-blue-300">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#2563EB] animate-pulse"></span>
+                      <span>Atelier Verified Patron</span>
                     </span>
                   </div>
 

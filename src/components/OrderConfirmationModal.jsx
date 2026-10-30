@@ -548,10 +548,11 @@ Track Order: ${trackingUrl}`;
                     </span>
                   </div>
                   <span
-                    className="px-2.5 py-1 rounded border-2 font-bold text-[10px] tracking-widest uppercase"
-                    style={{ borderColor: '#C69F6F', color: '#C69F6F' }}
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded border-2 font-bold text-[10px] tracking-widest uppercase"
+                    style={{ borderColor: '#C69F6F', color: '#A6865A' }}
                   >
-                    PAID • TCS AUTH
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#2563EB]"></span>
+                    <span>AUTHENTIC • TCS</span>
                   </span>
                 </div>
 
