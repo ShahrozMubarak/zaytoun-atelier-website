@@ -100,7 +100,7 @@ export default function CartDrawer({
 
   return (
     <div className="fixed inset-0 z-50 overflow-hidden bg-onyx-950/70 backdrop-blur-sm flex justify-end">
-      <div className="w-full max-w-md bg-white dark:bg-onyx-900 h-full shadow-2xl flex flex-col justify-between border-l border-linen-300 dark:border-onyx-800 transition-colors">
+      <div className="w-full max-w-md bg-white dark:bg-onyx-900 h-full shadow-2xl flex flex-col justify-between border-l border-linen-300 dark:border-onyx-800 transition-colors animate-drawerSlide">
         
         {/* Drawer Header */}
         <div className="p-5 border-b border-linen-300 dark:border-onyx-800 flex items-center justify-between bg-linen-100 dark:bg-onyx-950">
@@ -305,10 +305,13 @@ export default function CartDrawer({
             {/* Checkout Action Button */}
             <button
               onClick={handleCheckoutClick}
-              className="w-full bg-black hover:bg-neutral-800 dark:bg-white dark:hover:bg-neutral-200 text-white dark:text-black font-bold py-3.5 rounded-none shadow-sm transition active:scale-95 flex items-center justify-center space-x-2 text-xs uppercase tracking-widest"
+              className="group w-full bg-black hover:bg-neutral-800 dark:bg-white dark:hover:bg-neutral-200 text-white dark:text-black font-bold py-3.5 rounded-none shadow-sm transition active:scale-95 flex items-center justify-center space-x-2 text-xs uppercase tracking-widest"
             >
               <span>Proceed to Checkout</span>
-              <span>→</span>
+              <span className="arrow-runway-right text-xs">
+                <span>→</span>
+                <span>→</span>
+              </span>
             </button>
 
             {/* Secure Atelier Checkout Note */}

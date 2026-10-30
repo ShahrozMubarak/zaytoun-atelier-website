@@ -88,6 +88,22 @@ export default function ProductCard({
           </div>
         )}
 
+        {/* Wishlist Button - Little Motion Pop Interaction */}
+        {onToggleWishlist && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleWishlist(product.id);
+            }}
+            aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+            className="absolute top-2.5 right-2.5 z-10 w-7 h-7 rounded-none bg-white/90 dark:bg-onyx-900/90 backdrop-blur-sm border border-neutral-200 dark:border-onyx-700 flex items-center justify-center text-xs transition-transform active:scale-90 hover:border-black dark:hover:border-white shadow-sm"
+          >
+            <span className={`transition-transform duration-200 ${isWishlisted ? 'text-red-500 scale-110' : 'text-neutral-500 hover:text-black dark:hover:text-white'}`}>
+              {isWishlisted ? '♥' : '♡'}
+            </span>
+          </button>
+        )}
+
       </div>
 
       {/* Product Details Block - Exactly Styled like Outfitters */}

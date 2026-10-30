@@ -34,8 +34,9 @@
 }
 
 /* Custom smooth transitions & animations */
-.fade-in {
-  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+.fade-in,
+.animate-fadeIn {
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 @keyframes fadeIn {
@@ -137,8 +138,155 @@
 .btn-press:hover { transform: translateY(-1px); }
 .btn-press:active { transform: scale(.96); }
 
+/* --- Little Motion Micro-Interactions (Refined for Slow Luxury) --- */
+
+/* 1. Arrow Runway (Little Motion Exp 015) */
+.arrow-runway {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 1.15em;
+  height: 1.15em;
+  overflow: hidden;
+  vertical-align: middle;
+}
+.arrow-runway span {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.arrow-runway span:nth-child(2) {
+  transform: translate(-120%, 120%);
+}
+.group:hover .arrow-runway span:first-child,
+button:hover .arrow-runway span:first-child,
+a:hover .arrow-runway span:first-child {
+  transform: translate(120%, -120%);
+}
+.group:hover .arrow-runway span:nth-child(2),
+button:hover .arrow-runway span:nth-child(2),
+a:hover .arrow-runway span:nth-child(2) {
+  transform: translate(0, 0);
+}
+
+/* Horizontal Arrow Runway */
+.arrow-runway-right {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 1.15em;
+  height: 1.15em;
+  overflow: hidden;
+  vertical-align: middle;
+}
+.arrow-runway-right span {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.arrow-runway-right span:nth-child(2) {
+  transform: translateX(-120%);
+}
+.group:hover .arrow-runway-right span:first-child,
+button:hover .arrow-runway-right span:first-child,
+a:hover .arrow-runway-right span:first-child {
+  transform: translateX(120%);
+}
+.group:hover .arrow-runway-right span:nth-child(2),
+button:hover .arrow-runway-right span:nth-child(2),
+a:hover .arrow-runway-right span:nth-child(2) {
+  transform: translateX(0);
+}
+
+/* Up-Right Arrow Runway */
+.arrow-runway-up {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 1.15em;
+  height: 1.15em;
+  overflow: hidden;
+  vertical-align: middle;
+}
+.arrow-runway-up span {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.arrow-runway-up span:nth-child(2) {
+  transform: translate(-120%, 120%);
+}
+.group:hover .arrow-runway-up span:first-child,
+button:hover .arrow-runway-up span:first-child,
+a:hover .arrow-runway-up span:first-child {
+  transform: translate(120%, -120%);
+}
+.group:hover .arrow-runway-up span:nth-child(2),
+button:hover .arrow-runway-up span:nth-child(2),
+a:hover .arrow-runway-up span:nth-child(2) {
+  transform: translate(0, 0);
+}
+
+/* 2. Spotlight Card Sheen (Little Motion Exp 010 & 038) */
+.spotlight-card {
+  position: relative;
+  overflow: hidden;
+}
+.spotlight-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle 240px at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(230, 211, 179, 0.16), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  z-index: 15;
+}
+.spotlight-card:hover::after {
+  opacity: 1;
+}
+
+/* 3. Luxury Drawer Slide Animation */
+@keyframes drawerSlideIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+.animate-drawerSlide {
+  animation: drawerSlideIn 0.38s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* 4. Tactile Ripple Feedback (Little Motion Exp 011) */
+.luxury-ripple {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  pointer-events: none;
+  border-radius: 50%;
+  background: rgba(198, 159, 111, 0.35);
+  transform: translate(-50%, -50%);
+  animation: rippleGrow 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes rippleGrow {
+  to {
+    transform: translate(-50%, -50%) scale(24);
+    opacity: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) { 
-  .page-enter, .animate-pop, .card-lift, .btn-press, .animate-video-fade, .subtle-pulse, .camel-glow { 
+  .page-enter, .animate-pop, .card-lift, .btn-press, .animate-video-fade, .subtle-pulse, .camel-glow, .animate-drawerSlide, .arrow-runway span, .arrow-runway-right span, .arrow-runway-up span { 
     animation: none !important; 
     transition: none !important; 
   } 

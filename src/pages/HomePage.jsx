@@ -4,6 +4,7 @@ import ProductCard from '../components/ProductCard';
 import ScrollReveal from '../components/ScrollReveal';
 import TypewriterHeadline from '../components/TypewriterHeadline';
 import { subscribeNewsletter } from '../services/api';
+import useMagnetic from '../hooks/useMagnetic';
 
 /**
  * HomePage - Editorial Outfitters-Inspired Storefront
@@ -30,6 +31,15 @@ export default function HomePage({
   const [homeSubscribed, setHomeSubscribed] = useState(false);
   const [homeLoading, setHomeLoading] = useState(false);
   const videoRef = useRef(null);
+
+  // Little Motion hooks & handlers
+  const magneticCtaRef = useMagnetic(0.22);
+
+  const handleSpotlight = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    e.currentTarget.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
+    e.currentTarget.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+  };
 
   // Panoramic Banner Carousel State
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -251,10 +261,14 @@ export default function HomePage({
           <div className="flex flex-wrap items-center justify-center gap-3 pt-1">
             <Link
               to="/shop"
+              ref={magneticCtaRef}
               className="group inline-flex items-center gap-2.5 px-7 py-3.5 bg-black hover:bg-neutral-800 text-white dark:bg-white dark:text-black dark:hover:bg-neutral-200 text-xs font-bold uppercase tracking-wider transition-all shadow-sm active:scale-95"
             >
               <span>Explore Collection</span>
-              <span className="text-sm transition-transform duration-200 group-hover:translate-x-0.5 group-hover:translate-y-0.5">↘</span>
+              <span className="arrow-runway text-sm">
+                <span>↘</span>
+                <span>↘</span>
+              </span>
             </Link>
             <Link
               to="/shop?cat=men"
@@ -270,10 +284,13 @@ export default function HomePage({
             </Link>
             <Link
               to="/lookbook"
-              className="inline-flex items-center gap-1.5 px-6 py-3.5 bg-neutral-100 hover:bg-neutral-200 text-neutral-800 dark:bg-onyx-800 dark:text-neutral-200 dark:hover:bg-onyx-700 text-xs font-bold uppercase tracking-wider transition-all border border-neutral-200 dark:border-onyx-700 active:scale-95"
+              className="group inline-flex items-center gap-1.5 px-6 py-3.5 bg-neutral-100 hover:bg-neutral-200 text-neutral-800 dark:bg-onyx-800 dark:text-neutral-200 dark:hover:bg-onyx-700 text-xs font-bold uppercase tracking-wider transition-all border border-neutral-200 dark:border-onyx-700 active:scale-95"
             >
               <span>Lookbook</span>
-              <span className="text-xs text-neutral-500 dark:text-neutral-400">↗</span>
+              <span className="arrow-runway-up text-xs text-neutral-500 dark:text-neutral-400">
+                <span>↗</span>
+                <span>↗</span>
+              </span>
             </Link>
           </div>
         </ScrollReveal>
@@ -392,7 +409,10 @@ export default function HomePage({
                 className="group inline-flex items-center gap-2 px-7 py-3 rounded-none bg-white text-black hover:bg-[#E6D3B3] font-bold text-xs uppercase tracking-wider transition-all active:scale-95 shadow-sm"
               >
                 <span>{bannerSlides[currentSlide].ctaText}</span>
-                <span className="text-xs transition-transform duration-200 group-hover:translate-x-0.5 group-hover:translate-y-0.5">↘</span>
+                <span className="arrow-runway-right text-xs">
+                  <span>→</span>
+                  <span>→</span>
+                </span>
               </Link>
             </div>
           </div>
@@ -487,7 +507,8 @@ export default function HomePage({
           <ScrollReveal delay={0.1} distance={20}>
             <Link
               to="/shop?cat=men"
-              className="group relative h-[250px] sm:h-[280px] md:h-[300px] rounded-none overflow-hidden block border border-neutral-300 dark:border-onyx-800 bg-white shadow-sm hover:border-black dark:hover:border-white transition-colors"
+              onMouseMove={handleSpotlight}
+              className="group spotlight-card relative h-[250px] sm:h-[280px] md:h-[300px] rounded-none overflow-hidden block border border-neutral-300 dark:border-onyx-800 bg-white shadow-sm hover:border-black dark:hover:border-white transition-colors"
             >
               <img
                 src="/images/catalog/men_barrel_jeans_flat.jpg"
@@ -497,13 +518,16 @@ export default function HomePage({
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent pointer-events-none" />
 
-              <div className="absolute bottom-5 left-5 right-5 text-white flex items-end justify-between gap-3">
+              <div className="absolute bottom-5 left-5 right-5 text-white flex items-end justify-between gap-3 z-10">
                 <h3 className="text-xl sm:text-2xl font-black uppercase tracking-tight">
                   BARREL JEANS
                 </h3>
                 <span className="inline-flex items-center gap-1.5 px-4 py-2 bg-white text-black text-xs font-bold uppercase tracking-wider rounded-none group-hover:bg-[#E6D3B3] transition-all shrink-0 shadow-sm">
                   <span>Shop</span>
-                  <span className="text-xs transition-transform duration-200 group-hover:translate-x-0.5 group-hover:translate-y-0.5">↘</span>
+                  <span className="arrow-runway text-xs">
+                    <span>↘</span>
+                    <span>↘</span>
+                  </span>
                 </span>
               </div>
             </Link>
@@ -513,7 +537,8 @@ export default function HomePage({
           <ScrollReveal delay={0.2} distance={20}>
             <Link
               to="/shop?cat=men"
-              className="group relative h-[250px] sm:h-[280px] md:h-[300px] rounded-none overflow-hidden block border border-neutral-300 dark:border-onyx-800 bg-white shadow-sm hover:border-black dark:hover:border-white transition-colors"
+              onMouseMove={handleSpotlight}
+              className="group spotlight-card relative h-[250px] sm:h-[280px] md:h-[300px] rounded-none overflow-hidden block border border-neutral-300 dark:border-onyx-800 bg-white shadow-sm hover:border-black dark:hover:border-white transition-colors"
             >
               <img
                 src="/images/catalog/men_model_carpenter.jpg"
@@ -523,13 +548,16 @@ export default function HomePage({
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent pointer-events-none" />
 
-              <div className="absolute bottom-5 left-5 right-5 text-white flex items-end justify-between gap-3">
+              <div className="absolute bottom-5 left-5 right-5 text-white flex items-end justify-between gap-3 z-10">
                 <h3 className="text-xl sm:text-2xl font-black uppercase tracking-tight">
                   CARPENTER FIT
                 </h3>
                 <span className="inline-flex items-center gap-1.5 px-4 py-2 bg-white text-black text-xs font-bold uppercase tracking-wider rounded-none group-hover:bg-[#E6D3B3] transition-all shrink-0 shadow-sm">
                   <span>Shop</span>
-                  <span className="text-xs transition-transform duration-200 group-hover:translate-x-0.5 group-hover:translate-y-0.5">↘</span>
+                  <span className="arrow-runway text-xs">
+                    <span>↘</span>
+                    <span>↘</span>
+                  </span>
                 </span>
               </div>
             </Link>
@@ -539,7 +567,8 @@ export default function HomePage({
           <ScrollReveal delay={0.3} distance={20}>
             <Link
               to="/shop?cat=women"
-              className="group relative h-[250px] sm:h-[280px] md:h-[300px] rounded-none overflow-hidden block border border-neutral-300 dark:border-onyx-800 bg-white shadow-sm hover:border-black dark:hover:border-white transition-colors"
+              onMouseMove={handleSpotlight}
+              className="group spotlight-card relative h-[250px] sm:h-[280px] md:h-[300px] rounded-none overflow-hidden block border border-neutral-300 dark:border-onyx-800 bg-white shadow-sm hover:border-black dark:hover:border-white transition-colors"
             >
               <img
                 src="/images/catalog/women_model_camel_trouser.jpg"
@@ -549,13 +578,16 @@ export default function HomePage({
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent pointer-events-none" />
 
-              <div className="absolute bottom-5 left-5 right-5 text-white flex items-end justify-between gap-3">
+              <div className="absolute bottom-5 left-5 right-5 text-white flex items-end justify-between gap-3 z-10">
                 <h3 className="text-xl sm:text-2xl font-black uppercase tracking-tight">
                   TAILORED PRET
                 </h3>
                 <span className="inline-flex items-center gap-1.5 px-4 py-2 bg-white text-black text-xs font-bold uppercase tracking-wider rounded-none group-hover:bg-[#E6D3B3] transition-all shrink-0 shadow-sm">
                   <span>Shop</span>
-                  <span className="text-xs transition-transform duration-200 group-hover:translate-x-0.5 group-hover:translate-y-0.5">↘</span>
+                  <span className="arrow-runway text-xs">
+                    <span>↘</span>
+                    <span>↘</span>
+                  </span>
                 </span>
               </div>
             </Link>
@@ -653,9 +685,24 @@ export default function HomePage({
               <button
                 type="submit"
                 disabled={homeLoading}
-                className="w-full sm:w-auto px-7 py-3 rounded-none bg-black hover:bg-neutral-800 text-white dark:bg-white dark:text-black dark:hover:bg-neutral-200 text-xs font-bold uppercase tracking-wider transition whitespace-nowrap disabled:opacity-50 shadow-sm"
+                className="group w-full sm:w-auto px-7 py-3 rounded-none bg-black hover:bg-neutral-800 text-white dark:bg-white dark:text-black dark:hover:bg-neutral-200 text-xs font-bold uppercase tracking-wider transition whitespace-nowrap disabled:opacity-50 shadow-sm flex items-center justify-center gap-2"
               >
-                {homeSubscribed ? '✓ Subscribed' : homeLoading ? 'Subscribing...' : 'Subscribe'}
+                {homeSubscribed ? (
+                  <span className="inline-flex items-center gap-1.5 text-emerald-400 dark:text-emerald-600 animate-pop">
+                    <span>✓</span>
+                    <span>Subscribed</span>
+                  </span>
+                ) : homeLoading ? (
+                  <span>Subscribing...</span>
+                ) : (
+                  <>
+                    <span>Subscribe</span>
+                    <span className="arrow-runway-right text-xs">
+                      <span>→</span>
+                      <span>→</span>
+                    </span>
+                  </>
+                )}
               </button>
             </form>
           </div>
