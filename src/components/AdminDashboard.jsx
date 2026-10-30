@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import BrandLogo from './BrandLogo';
+import BrandLogo from './BrandLogo';// Executive 3D Analytics Section with Perspective Depth Cards and Dynamic SVG Charts
+
 import { 
   fetchProductsFromDB, 
   saveProductToDB, 
