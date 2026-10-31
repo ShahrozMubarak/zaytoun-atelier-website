@@ -400,6 +400,11 @@ export default function App() {
   // Sign out handler
   const handleLogout = () => {
     setCurrentUser(null);
+    try {
+      localStorage.removeItem('zaytoun_client_user');
+      sessionStorage.removeItem('zaytoun_admin_session');
+      sessionStorage.removeItem('zaytoun_admin_jwt');
+    } catch {}
     setToastNotification({
       title: "Signed Out",
       message: "You have signed out of your Google client account."

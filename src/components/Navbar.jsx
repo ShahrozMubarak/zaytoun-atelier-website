@@ -4,6 +4,7 @@ import { useCurrency } from '../context/CurrencyContext';
 import BrandLogo from './BrandLogo';
 import SymbioteButton from './SymbioteButton';
 import PullCordLamp from './PullCordLamp';
+import { isOwnerAuthorized } from '../utils/adminAuth';
 
 /**
  * Navbar - Bold, modern luxury navigation bar.
@@ -30,9 +31,11 @@ export default function Navbar({
     setUserMenuOpen(false);
   }, [location.pathname]);
 
-  // On Studio / Admin routes, AdminDashboard renders its own website-style header with admin tabs
+  // On Studio / Admin routes, if the owner is authorized, AdminDashboard renders its own workspace
   if (location.pathname.startsWith('/studio') || location.pathname.startsWith('/admin')) {
-    return null;
+    if (isOwnerAuthorized(user)) {
+      return null;
+    }
   }
 
   // Bold navigation link style with Sand #E6D3B3 active indicator
@@ -63,19 +66,6 @@ export default function Navbar({
           </NavLink>
           <NavLink to="/track" className={navLinkClass}>
             Track Order
-          </NavLink>
-          <NavLink
-            to="/admin"
-            className={({ isActive }) =>
-              `text-xs sm:text-sm font-extrabold uppercase tracking-wider transition-all py-1.5 px-3 rounded-xl flex items-center space-x-1.5 ${
-                isActive
-                  ? 'bg-[#9A6E3E] text-white shadow-sm'
-                  : 'text-[#9A6E3E] hover:text-black dark:hover:text-[#E6D3B3] hover:bg-[#FAF6F0] dark:hover:bg-white/5'
-              }`
-            }
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-[#C69F6F] animate-pulse"></span>
-            <span>Admin Panel</span>
           </NavLink>
         </nav>
 
@@ -176,17 +166,19 @@ export default function Navbar({
                     </svg>
                   </Link>
 
-                  <Link
-                    to="/admin"
-                    onClick={() => setUserMenuOpen(false)}
-                    className="block px-4 py-2.5 text-xs text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-onyx-900 transition flex items-center justify-between font-bold"
-                  >
-                    <span className="flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full bg-[#C69F6F]"></span>
-                      <span>Admin Panel</span>
-                    </span>
-                    <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-[#FAF6F0] text-[#8C6A3E] font-bold">OS</span>
-                  </Link>
+                  {isOwnerAuthorized(user) && (
+                    <Link
+                      to="/studio"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="block px-4 py-2.5 text-xs text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-onyx-900 transition flex items-center justify-between font-bold"
+                    >
+                      <span className="flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-[#C69F6F]"></span>
+                        <span>Admin Studio</span>
+                      </span>
+                      <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-[#FAF6F0] text-[#8C6A3E] font-bold">OWNER</span>
+                    </Link>
+                  )}
 
                   <div className="border-t border-neutral-100 dark:border-onyx-800 my-1"></div>
 
@@ -314,14 +306,6 @@ export default function Navbar({
             className="block text-black dark:text-white py-1"
           >
             Track Order
-          </NavLink>
-          <NavLink
-            to="/admin"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block text-[#C69F6F] font-bold py-1 flex items-center justify-between"
-          >
-            <span>Admin Panel</span>
-            <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-[#FAF6F0] text-[#8C6A3E] font-bold">OS</span>
           </NavLink>
 
           {/* Mobile Currency & Lamp Theme Settings Row */}

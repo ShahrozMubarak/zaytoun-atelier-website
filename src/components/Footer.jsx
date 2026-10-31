@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import BrandLogo from './BrandLogo';
+import { isOwnerAuthorized } from '../utils/adminAuth';
 
 /**
  * Footer - Luxury Camel Signature Editorial Split Footer
@@ -10,7 +11,9 @@ export default function Footer({ onOpenSizeGuide }) {
   const location = useLocation();
 
   if (location.pathname.startsWith('/studio') || location.pathname.startsWith('/admin')) {
-    return null;
+    if (isOwnerAuthorized()) {
+      return null;
+    }
   }
 
   return (
@@ -48,11 +51,6 @@ export default function Footer({ onOpenSizeGuide }) {
                 <li>
                   <Link to="/shop?cat=men" className="hover:text-white transition">
                     Men's Denim
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/admin" className="hover:text-white transition font-black underline">
-                    Admin Studio
                   </Link>
                 </li>
               </ul>

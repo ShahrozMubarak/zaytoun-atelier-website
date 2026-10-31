@@ -9,11 +9,11 @@ import BrandLogo from '../components/BrandLogo';
  */
 export default function NotFoundPage({ onOpenAuthModal }) {
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4 py-16 bg-white dark:bg-onyx-950 text-black dark:text-white transition-colors">
+    <div className="min-h-[80vh] flex items-center justify-center px-4 py-16 bg-white dark:bg-onyx-950 text-black dark:text-white transition-colors select-none">
       <div className="max-w-md w-full text-center space-y-6">
         
         {/* Monogram Mark */}
-        <div className="flex justify-center">
+        <div className="flex justify-center" title="FOOLISH ARC">
           <BrandLogo size="lg" showWordmark={false} />
         </div>
 
