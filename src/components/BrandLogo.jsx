@@ -16,12 +16,12 @@ export default function BrandLogo({
   className = '',
   asLink = true
 }) {
-  // Dimensions based on size preset with responsive mobile scaling
+  // Dimensions based on size preset with responsive mobile scaling (refined, smaller, unclipped)
   const sizeMap = {
-    sm: { icon: 'h-6 sm:h-7', text: 'text-xs sm:text-base', sub: 'text-[8px] sm:text-[10px]', wordmarkImg: 'h-5 sm:h-6' },
-    md: { icon: 'h-7 sm:h-9', text: 'text-sm sm:text-xl lg:text-2xl', sub: 'text-[9px] sm:text-xs', wordmarkImg: 'h-6 sm:h-8' },
-    lg: { icon: 'h-9 sm:h-12', text: 'text-lg sm:text-3xl', sub: 'text-[10px] sm:text-sm', wordmarkImg: 'h-8 sm:h-11' },
-    xl: { icon: 'h-12 sm:h-16', text: 'text-xl sm:text-4xl', sub: 'text-xs sm:text-sm', wordmarkImg: 'h-10 sm:h-14' }
+    sm: { icon: 'h-4 sm:h-5', text: 'text-[11px] sm:text-xs font-bold tracking-[0.14em]' },
+    md: { icon: 'h-5 sm:h-6', text: 'text-xs sm:text-sm font-extrabold tracking-[0.16em]' },
+    lg: { icon: 'h-6 sm:h-8', text: 'text-sm sm:text-base font-extrabold tracking-[0.18em]' },
+    xl: { icon: 'h-8 sm:h-10', text: 'text-base sm:text-xl font-black tracking-[0.2em]' }
   };
 
   const currentSize = sizeMap[size] || sizeMap.md;
@@ -33,26 +33,21 @@ export default function BrandLogo({
     >
       <img
         src="/images/brand/foolish/arc_emblem.png"
-        alt="Foolish Arc Emblem"
+        alt="FOOLISH ARC Emblem"
         className="h-full w-auto object-contain drop-shadow-xs"
         loading="eager"
       />
     </div>
   );
 
-  // The Wide-Tracked Editorial Wordmark
+  // The Refined Editorial Wordmark (clean, no tags)
   const Wordmark = showWordmark && (
-    <div className={`flex flex-col leading-none ${stacked ? 'items-center text-center mt-2.5' : 'text-left'}`}>
+    <div className={`flex flex-col leading-none ${stacked ? 'items-center text-center mt-1.5' : 'text-left'}`}>
       <span
-        className={`font-editorial ${currentSize.text} font-black tracking-[0.16em] sm:tracking-[0.24em] text-black dark:text-white uppercase transition-colors flex items-center gap-1.5`}
+        className={`font-editorial ${currentSize.text} text-black dark:text-white uppercase transition-colors flex items-center gap-1`}
       >
         <span>FOOLISH</span>
         <span className="text-[#9A6E3E] dark:text-[#E6D3B3]">ARC</span>
-      </span>
-      <span
-        className={`${currentSize.sub} font-bold tracking-[0.28em] sm:tracking-[0.38em] text-[#7C6A58] dark:text-[#D8CEBF] uppercase mt-0.5 transition-colors`}
-      >
-        NEW YORK • SINCE 1988
       </span>
     </div>
   );

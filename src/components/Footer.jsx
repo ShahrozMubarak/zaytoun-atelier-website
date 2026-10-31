@@ -21,19 +21,11 @@ export default function Footer({ onOpenSizeGuide }) {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start pb-12 border-b border-[#B58E5C]/70">
           
           {/* Left Half: Purely Spacious with FOOLISH ARC Logo Suite */}
-          <div className="lg:col-span-7 flex flex-col items-start space-y-4">
-            <BrandLogo size="lg" />
-            <p className="text-xs font-mono font-bold uppercase tracking-[0.25em] text-[#3D2916] max-w-sm">
-              Architectural Slow Luxury • Crafted from 100% Ring-Spun Cotton & European Flax Linen
+          <div className="lg:col-span-7 flex flex-col items-start space-y-3">
+            <BrandLogo size="md" />
+            <p className="text-xs font-mono font-medium tracking-[0.18em] text-[#3D2916] max-w-sm">
+              Architectural Slow Luxury • Crafted from Ring-Spun Cotton & European Flax Linen
             </p>
-            <div className="flex items-center gap-3 pt-2">
-              <span className="text-[10px] bg-[#1C1612] text-white px-3 py-1 font-mono font-black uppercase tracking-widest rounded-full">
-                NEW YORK
-              </span>
-              <span className="text-[10px] bg-[#FAF8F5] text-[#1C1612] px-3 py-1 font-mono font-black uppercase tracking-widest rounded-full border border-[#B58E5C]">
-                SINCE 1988
-              </span>
-            </div>
           </div>
 
           {/* Right Half: Condensed Essential Links */}

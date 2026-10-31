@@ -133,12 +133,12 @@ export default function ProductCard({
 
         {/* Quick Add to Bag Action with Little Motion Tactile Animation */}
         {onAddToCart && (
-          <div className="absolute inset-x-2.5 bottom-2.5 z-20 sm:opacity-0 sm:group-hover:opacity-100 transition-all duration-200">
+          <div className="absolute inset-x-2 bottom-2 z-20 sm:opacity-0 sm:group-hover:opacity-100 transition-all duration-200">
             <button
               type="button"
               onClick={handleQuickAdd}
               aria-label={`Add ${product.name} to bag`}
-              className={`btn-ripple-pulse w-full py-2.5 px-3 rounded-none font-black text-[11px] uppercase tracking-wider transition-all duration-200 shadow-md flex items-center justify-center space-x-1.5 active:scale-95 cursor-pointer ${
+              className={`btn-ripple-pulse w-full py-2 px-2 rounded-none font-bold text-[10px] uppercase tracking-wider transition-all duration-200 shadow-md flex items-center justify-center space-x-1.5 active:scale-95 cursor-pointer ${
                 justAdded
                   ? 'bg-[#9A6E3E] text-white'
                   : 'bg-black/90 hover:bg-[#9A6E3E] text-white backdrop-blur-xs'
@@ -146,21 +146,21 @@ export default function ProductCard({
             >
               {justAdded ? (
                 <>
-                  <span className="text-white text-xs font-black animate-bounce">✓</span>
-                  <span>Added to Bag</span>
+                  <span className="text-white text-[11px] font-bold">✓</span>
+                  <span>Added</span>
                 </>
               ) : isAdding ? (
                 <>
-                  <span className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                  <span className="w-2.5 h-2.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
                   <span>Adding...</span>
                 </>
               ) : (
                 <>
-                  <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                  <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
                     <path d="M6 7h12l2 14H4L6 7Z" />
                     <path d="M9 8V6a3 3 0 0 1 6 0v2" />
                   </svg>
-                  <span>+ Add to Bag</span>
+                  <span>Add to Bag</span>
                 </>
               )}
             </button>
