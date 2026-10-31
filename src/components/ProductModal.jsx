@@ -55,12 +55,12 @@ export default function ProductModal({
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 select-none animate-fadeIn">
-      <div className="bg-white dark:bg-onyx-950 rounded-none max-w-4xl w-full overflow-hidden shadow-2xl border-2 border-black dark:border-white relative">
+      <div className="bg-white dark:bg-[#1A1613] rounded-2xl max-w-4xl w-full overflow-hidden shadow-2xl border border-[#E8E0D5] dark:border-[#2C241D] relative">
         
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-20 w-8 h-8 rounded-none bg-neutral-100 dark:bg-onyx-800 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black text-black dark:text-white flex items-center justify-center transition active:scale-90 font-bold"
+          className="absolute top-4 right-4 z-20 w-8 h-8 rounded-xl bg-white/95 dark:bg-[#201A16] border border-[#D8CEBF] dark:border-[#382F26] hover:border-[#9A6E3E] text-black dark:text-white flex items-center justify-center transition active:scale-90 font-bold cursor-pointer"
           aria-label="Close modal"
         >
           ✕
@@ -69,31 +69,31 @@ export default function ProductModal({
         <div className="grid grid-cols-1 md:grid-cols-2">
           
           {/* Left Column: Image Gallery with Clean Pure White Studio BG */}
-          <div className="p-4 sm:p-6 bg-white dark:bg-onyx-900 border-b md:border-b-0 md:border-r border-neutral-200 dark:border-onyx-800 flex flex-col justify-between">
-            <div className="relative rounded-none overflow-hidden bg-white dark:bg-onyx-950 aspect-[3/4] border border-neutral-200 dark:border-onyx-800">
+          <div className="p-4 sm:p-6 bg-white dark:bg-onyx-900 border-b md:border-b-0 md:border-r border-[#E8E0D5] dark:border-[#2C241D] flex flex-col justify-between">
+            <div className="relative rounded-xl overflow-hidden bg-white dark:bg-onyx-950 aspect-[3/4] border border-[#E8E0D5] dark:border-[#2C241D]">
               <img
                 src={productImages[activeImageIndex] || productImages[0]}
                 alt={product.name}
                 className="w-full h-full object-cover object-center transition-opacity duration-300"
               />
               {product.badge && (
-                <span className="absolute top-3 left-3 bg-black dark:bg-white text-white dark:text-black text-[9px] font-mono font-bold tracking-widest uppercase px-2.5 py-1 rounded-none shadow-sm">
+                <span className="absolute top-3 left-3 bg-[#1C1612] text-white text-[9px] font-mono font-bold tracking-widest uppercase px-2.5 py-1 rounded-lg shadow-sm">
                   {product.badge}
                 </span>
               )}
             </div>
 
-            {/* Thumbnail Gallery (Sharp Squares) */}
+            {/* Thumbnail Gallery */}
             {productImages.length > 1 && (
               <div className="flex items-center space-x-2.5 mt-3">
                 {productImages.map((img, idx) => (
                   <button
                     key={idx}
                     onClick={() => setActiveImageIndex(idx)}
-                    className={`w-16 h-20 rounded-none overflow-hidden border-2 transition active:scale-95 bg-white ${
+                    className={`w-16 h-20 rounded-xl overflow-hidden border-2 transition active:scale-95 bg-white cursor-pointer ${
                       activeImageIndex === idx
-                        ? 'border-black dark:border-white shadow-sm'
-                        : 'border-neutral-200 dark:border-onyx-700 opacity-60 hover:opacity-100'
+                        ? 'border-[#9A6E3E] shadow-sm'
+                        : 'border-[#E8E0D5] dark:border-[#382F26] opacity-70 hover:opacity-100'
                     }`}
                   >
                     <img src={img} alt="Thumb" className="w-full h-full object-cover" />
@@ -104,23 +104,22 @@ export default function ProductModal({
           </div>
 
           {/* Right Column: Garment Specs & Purchase Controls */}
-          <div className="p-5 sm:p-7 flex flex-col justify-between space-y-5 overflow-y-auto max-h-[85vh] bg-white dark:bg-onyx-950">
+          <div className="p-5 sm:p-7 flex flex-col justify-between space-y-5 overflow-y-auto max-h-[85vh] bg-white dark:bg-[#1A1613]">
             <div className="space-y-3.5">
               
               {/* Category & Collection */}
               <div className="flex items-center justify-between text-xs font-mono text-neutral-500 uppercase tracking-widest">
                 <span>{product.fitLine || product.collection || "Permanent Edition"}</span>
-                <span>SKU: {product.id.toUpperCase()}</span>
               </div>
 
               {/* Title */}
-              <h2 className="font-sans text-xl sm:text-2xl font-bold uppercase tracking-wide text-neutral-900 dark:text-neutral-100">
+              <h2 className="font-serif text-xl sm:text-2xl font-bold uppercase tracking-wide text-neutral-900 dark:text-neutral-100">
                 {product.name}
               </h2>
 
               {/* Price Row */}
               <div className="flex items-baseline space-x-3">
-                <span className="font-sans text-2xl font-black text-black dark:text-white">
+                <span className="font-serif text-2xl font-black text-black dark:text-white">
                   {formatPrice(product.price)}
                 </span>
                 {product.originalPrice && (
@@ -128,9 +127,6 @@ export default function ProductModal({
                     {formatPrice(product.originalPrice)}
                   </span>
                 )}
-                <span className="text-[10px] font-mono font-bold text-black dark:text-white bg-neutral-100 dark:bg-onyx-800 px-2 py-0.5 rounded-none border border-neutral-300 dark:border-onyx-700">
-                  Ready to Dispatch
-                </span>
               </div>
 
               {/* Description */}
@@ -150,13 +146,13 @@ export default function ProductModal({
                     <button
                       key={c.name}
                       onClick={() => setSelectedColor(c.name)}
-                      className={`flex items-center space-x-2 px-3 py-1.5 rounded-none border text-xs font-mono transition active:scale-95 ${
+                      className={`flex items-center space-x-2 px-3 py-1.5 rounded-xl border text-xs font-mono transition active:scale-95 cursor-pointer ${
                         selectedColor === c.name
-                          ? 'border-black dark:border-white bg-neutral-100 dark:bg-onyx-800 font-bold shadow-sm'
-                          : 'border-neutral-200 dark:border-onyx-700 text-neutral-700 dark:text-neutral-300'
+                          ? 'border-[#9A6E3E] bg-[#FAF6F0] dark:bg-[#201A16] font-bold shadow-xs'
+                          : 'border-[#D8CEBF] dark:border-[#382F26] text-neutral-700 dark:text-neutral-300'
                       }`}
                     >
-                      <span className="w-3 h-3 rounded-none border border-neutral-300 shrink-0" style={{ backgroundColor: c.hex }} />
+                      <span className="w-3 h-3 rounded-full border border-black/10 shrink-0" style={{ backgroundColor: c.hex }} />
                       <span>{c.name}</span>
                     </button>
                   ))}
@@ -172,14 +168,14 @@ export default function ProductModal({
                   <div className="flex items-center space-x-3">
                     <button
                       onClick={() => setShowFitHelper(!showFitHelper)}
-                      className="text-neutral-900 dark:text-neutral-100 underline font-bold"
+                      className="text-[#9A6E3E] underline font-bold cursor-pointer"
                     >
                       Find Fit
                     </button>
                     {onOpenSizeGuide && (
                       <button
                         onClick={onOpenSizeGuide}
-                        className="text-neutral-500 hover:underline"
+                        className="text-neutral-500 hover:underline cursor-pointer"
                       >
                         Size Guide
                       </button>
@@ -192,10 +188,10 @@ export default function ProductModal({
                     <button
                       key={s}
                       onClick={() => setSelectedSize(s)}
-                      className={`min-w-[44px] h-10 rounded-none text-xs font-mono font-bold border transition active:scale-95 flex items-center justify-center ${
+                      className={`min-w-[44px] h-10 rounded-xl text-xs font-mono font-bold border transition active:scale-95 flex items-center justify-center cursor-pointer ${
                         selectedSize === s
-                          ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white shadow-sm'
-                          : 'bg-white dark:bg-onyx-900 text-neutral-800 dark:text-neutral-200 border-neutral-300 dark:border-onyx-700 hover:border-black dark:hover:border-white'
+                          ? 'bg-[#1C1612] text-white border-[#1C1612] shadow-sm'
+                          : 'bg-white dark:bg-[#1A1613] text-neutral-800 dark:text-neutral-200 border-[#D8CEBF] dark:border-[#382F26] hover:border-[#9A6E3E]'
                       }`}
                     >
                       {s}
@@ -213,7 +209,7 @@ export default function ProductModal({
 
                   return (
                     <div className="mt-2.5 flex items-center space-x-2 text-xs">
-                      <span className="w-2 h-2 rounded-none bg-emerald-500"></span>
+                      <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
                       <span className="font-mono text-[11px] text-neutral-600 dark:text-neutral-400">
                         {sizeStock <= 0 ? (
                           <strong className="text-red-600">Out of Stock in Size {selectedSize}</strong>
@@ -292,10 +288,10 @@ export default function ProductModal({
 
                 <button
                   onClick={() => onToggleWishlist && onToggleWishlist(product.id)}
-                  className={`p-4 rounded-none border-2 transition active:scale-90 ${
+                  className={`w-12 h-12 rounded-xl border transition active:scale-90 flex items-center justify-center shrink-0 shadow-2xs cursor-pointer ${
                     isWishlisted 
                       ? 'bg-red-600 text-white border-red-600 shadow-sm' 
-                      : 'border-neutral-300 dark:border-onyx-700 text-neutral-700 dark:text-neutral-300 hover:border-black dark:hover:border-white'
+                      : 'border-[#D8CEBF] dark:border-[#382F26] text-neutral-700 dark:text-neutral-300 hover:border-[#9A6E3E]'
                   }`}
                   title={isWishlisted ? "Wishlisted" : "Add to Wishlist"}
                 >

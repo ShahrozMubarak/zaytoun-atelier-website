@@ -27,7 +27,7 @@ export default function SearchOverlay({ products = [], onSelect }) {
 
   return (
     <>
-      <button onClick={() => setOpen(true)} title="Quick Search (⌘K or /)" aria-label="Search" className="btn-press fixed bottom-6 left-6 z-40 w-12 h-12 rounded-full bg-olive-800 dark:bg-camel-500 text-linen-100 dark:text-onyx-950 shadow-xl grid place-items-center hover:scale-105 transition-transform">
+      <button onClick={() => setOpen(true)} title="Quick Search (⌘K or /)" aria-label="Search" className="btn-press fixed bottom-6 left-6 z-40 w-12 h-12 rounded-xl bg-[#1C1612] hover:bg-[#9A6E3E] text-white shadow-xl grid place-items-center hover:scale-105 transition-all cursor-pointer">
         <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><circle cx="11" cy="11" r="7" /><path strokeLinecap="round" d="M20 20l-3.5-3.5" /></svg>
       </button>
       {open && (

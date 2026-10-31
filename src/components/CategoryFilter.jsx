@@ -18,63 +18,43 @@ export default function CategoryFilter({
   activeGender = "all",
   onSelectGender,
   activeSlot = "all",
-  onSelectSlot,
-  totalCount = 0
+  onSelectSlot
 }) {
   return (
-    <div className="py-6 border-b border-neutral-200 dark:border-onyx-800 space-y-4">
+    <div className="py-4 border-b border-[#E8E0D5] dark:border-[#2C241D] space-y-3">
       
-      {/* Top Row: Gender Collection Tabs + Count */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        
-        {/* Main Gender Tabs: All | Men | Women */}
-        <div className="flex items-center space-x-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
-          {GENDER_FILTERS.map((g) => {
-            const isActive = activeGender === g.id;
-            return (
-              <button
-                key={g.id}
-                onClick={() => onSelectGender(g.id)}
-                className={`px-5 py-2 rounded-none text-xs font-bold tracking-wider uppercase transition-all whitespace-nowrap ${
-                  isActive
-                    ? 'bg-black text-white dark:bg-white dark:text-black shadow-sm'
-                    : 'bg-white dark:bg-onyx-900 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-onyx-800 border border-neutral-300 dark:border-onyx-800'
-                }`}
-              >
-                {g.label}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Counter and Status */}
-        <div className="flex items-center space-x-3 text-xs text-neutral-500 font-medium">
-          <span>
-            Showing <strong className="text-black dark:text-white font-bold">{totalCount}</strong> pieces
-          </span>
-          <div className="flex items-center space-x-1.5 pl-3 border-l border-neutral-300 dark:border-onyx-800">
-            <span className="w-2 h-2 rounded-none bg-emerald-600"></span>
-            <span className="text-[11px] font-mono text-black dark:text-white font-semibold uppercase">In Stock</span>
-          </div>
-        </div>
-
+      {/* Top Row: Gender Collection Tabs */}
+      <div className="flex items-center space-x-2 overflow-x-auto pb-1 scrollbar-none">
+        {GENDER_FILTERS.map((g) => {
+          const isActive = activeGender === g.id;
+          return (
+            <button
+              key={g.id}
+              onClick={() => onSelectGender(g.id)}
+              className={`px-5 py-2 rounded-xl text-xs font-bold tracking-wider uppercase transition-all whitespace-nowrap cursor-pointer ${
+                isActive
+                  ? 'bg-[#1C1612] text-white shadow-sm'
+                  : 'bg-white dark:bg-[#1A1613] text-neutral-700 dark:text-neutral-300 hover:text-black dark:hover:text-white border border-[#D8CEBF] dark:border-[#382F26] hover:border-[#9A6E3E]'
+              }`}
+            >
+              {g.label}
+            </button>
+          );
+        })}
       </div>
 
       {/* Sub-Row: Garment Slot Category Filters */}
-      <div className="flex items-center space-x-2 overflow-x-auto pb-1 text-xs">
-        <span className="text-[10px] uppercase font-bold text-neutral-400 tracking-wider mr-1">
-          Category:
-        </span>
+      <div className="flex items-center space-x-2 overflow-x-auto pb-1 text-xs scrollbar-none">
         {SLOT_FILTERS.map((s) => {
           const isActive = activeSlot === s.id;
           return (
             <button
               key={s.id}
               onClick={() => onSelectSlot(s.id)}
-              className={`px-3 py-1 rounded-none text-[11px] font-bold uppercase transition ${
+              className={`px-3.5 py-1.5 rounded-xl text-[11px] font-bold uppercase transition cursor-pointer whitespace-nowrap ${
                 isActive
-                  ? 'bg-neutral-800 text-white dark:bg-neutral-200 dark:text-black'
-                  : 'text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white bg-neutral-100 dark:bg-onyx-900 border border-neutral-200 dark:border-onyx-800'
+                  ? 'bg-[#9A6E3E] text-white shadow-sm'
+                  : 'bg-[#FAF6F0] dark:bg-[#201A16] text-[#7C6A58] dark:text-[#D8CEBF] border border-[#E6D3B3] dark:border-[#332A22] hover:border-[#9A6E3E]'
               }`}
             >
               {s.label}

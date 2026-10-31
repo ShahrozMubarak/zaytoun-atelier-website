@@ -72,16 +72,16 @@ export default function ProductCard({
 
   return (
     <div
-      className="group relative flex flex-col bg-white dark:bg-onyx-950 rounded-none border border-neutral-200 dark:border-onyx-800 transition-colors cursor-pointer select-none"
+      className="group relative flex flex-col bg-white dark:bg-[#1A1613] rounded-2xl border border-[#E8E0D5] dark:border-[#2C241D] transition-colors cursor-pointer select-none overflow-hidden"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={handleCardClick}
       id={`product-${product.id}`}
     >
-      {/* Tall 3:4 Vertical Image Container with Zero Rounded Corners */}
-      <div className="relative aspect-[3/4] w-full overflow-hidden bg-white dark:bg-onyx-900 rounded-none border-b border-neutral-100 dark:border-onyx-900">
+      {/* Tall 3:4 Vertical Image Container */}
+      <div className="relative aspect-[3/4] w-full overflow-hidden bg-white dark:bg-onyx-900 border-b border-[#E8E0D5] dark:border-[#2C241D]">
         
-        {/* Primary Product Studio Image (No Zoom Scale) */}
+        {/* Primary Product Studio Image */}
         <img
           src={primaryImage}
           alt={product.name}
@@ -91,7 +91,7 @@ export default function ProductCard({
           loading="lazy"
         />
 
-        {/* Secondary / Alternate Hover Image (Model View or Alternate Angle, No Zoom Scale) */}
+        {/* Secondary / Alternate Hover Image */}
         {hoverImage !== primaryImage && (
           <img
             src={hoverImage}
@@ -103,10 +103,10 @@ export default function ProductCard({
           />
         )}
 
-        {/* Subtle Badge (e.g. "NEW ARRIVAL", "BESTSELLER") - Minimalist sharp box */}
+        {/* Subtle Badge */}
         {product.badge && (
           <div className="absolute top-2.5 left-2.5 z-10 pointer-events-none">
-            <span className="text-xs uppercase tracking-widest font-black bg-black text-white dark:bg-white dark:text-black px-2.5 py-1 rounded-none shadow-sm flex items-center gap-1.5 border-l-2 border-[#C69F6F]">
+            <span className="text-[10px] uppercase tracking-widest font-black bg-[#1C1612] text-white px-2.5 py-1 rounded-lg shadow-sm flex items-center gap-1.5 border-l-2 border-[#C69F6F]">
               {typeof product.badge === 'string' && ['EXCLUSIVE', 'ATELIER', 'RAW SILK'].some(b => product.badge.toUpperCase().includes(b)) && (
                 <span className="w-1.5 h-1.5 rounded-full bg-[#C69F6F]"></span>
               )}
@@ -115,7 +115,7 @@ export default function ProductCard({
           </div>
         )}
 
-        {/* Wishlist Button - Little Motion Pop Interaction */}
+        {/* Wishlist Button */}
         {onToggleWishlist && (
           <button
             onClick={(e) => {
@@ -123,7 +123,7 @@ export default function ProductCard({
               onToggleWishlist(product.id);
             }}
             aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
-            className="absolute top-2.5 right-2.5 z-10 w-7 h-7 rounded-none bg-white/90 dark:bg-onyx-900/90 backdrop-blur-sm border border-neutral-200 dark:border-onyx-700 flex items-center justify-center text-xs transition-transform active:scale-90 hover:border-black dark:hover:border-white shadow-sm"
+            className="absolute top-2.5 right-2.5 z-10 w-8 h-8 rounded-xl bg-white/95 dark:bg-[#1A1613]/95 backdrop-blur-sm border border-[#D8CEBF] dark:border-[#382F26] flex items-center justify-center text-xs transition-transform active:scale-90 hover:border-[#9A6E3E] shadow-sm cursor-pointer"
           >
             <span className={`transition-transform duration-200 ${isWishlisted ? 'text-red-500 scale-110' : 'text-neutral-500 hover:text-black dark:hover:text-white'}`}>
               {isWishlisted ? '♥' : '♡'}
@@ -131,17 +131,17 @@ export default function ProductCard({
           </button>
         )}
 
-        {/* Quick Add to Bag Action with Little Motion Tactile Animation */}
+        {/* Quick Add to Bag Action */}
         {onAddToCart && (
-          <div className="absolute inset-x-2 bottom-2 z-20 sm:opacity-0 sm:group-hover:opacity-100 transition-all duration-200">
+          <div className="absolute inset-x-2.5 bottom-2.5 z-20 sm:opacity-0 sm:group-hover:opacity-100 transition-all duration-200">
             <button
               type="button"
               onClick={handleQuickAdd}
               aria-label={`Add ${product.name} to bag`}
-              className={`btn-ripple-pulse w-full py-2 px-2 rounded-none font-bold text-[10px] uppercase tracking-wider transition-all duration-200 shadow-md flex items-center justify-center space-x-1.5 active:scale-95 cursor-pointer ${
+              className={`btn-ripple-pulse w-full py-2.5 px-3 rounded-xl font-bold text-[10px] uppercase tracking-wider transition-all duration-200 shadow-md flex items-center justify-center space-x-1.5 active:scale-95 cursor-pointer ${
                 justAdded
                   ? 'bg-[#9A6E3E] text-white'
-                  : 'bg-black/90 hover:bg-[#9A6E3E] text-white backdrop-blur-xs'
+                  : 'bg-[#1C1612] hover:bg-[#9A6E3E] text-white'
               }`}
             >
               {justAdded ? (

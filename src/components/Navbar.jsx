@@ -86,7 +86,7 @@ export default function Navbar({
           {onOpenSearch && (
             <button
               onClick={onOpenSearch}
-              className="p-1.5 rounded-none text-neutral-700 dark:text-neutral-300 hover:text-black dark:hover:text-white transition-colors"
+              className="p-2 rounded-xl text-neutral-700 dark:text-neutral-300 hover:text-black dark:hover:text-white transition-colors cursor-pointer"
               title="Search"
               aria-label="Search"
             >
@@ -103,7 +103,7 @@ export default function Navbar({
               const nextIdx = (order.indexOf(currency) + 1) % order.length;
               setCurrency(order[nextIdx]);
             }}
-            className="hidden sm:inline-block text-xs font-bold px-2 py-1 rounded-none border border-neutral-300 dark:border-neutral-700 hover:border-black dark:hover:border-white transition uppercase"
+            className="hidden sm:inline-block text-xs font-bold px-3 py-1.5 rounded-xl border border-[#D8CEBF] dark:border-[#382F26] hover:border-[#9A6E3E] transition uppercase cursor-pointer"
             title="Switch Currency"
           >
             {currency}
@@ -121,7 +121,7 @@ export default function Navbar({
           {!user ? (
             <button
               onClick={() => onOpenAuthModal && onOpenAuthModal({ title: "Sign in with Google", subtitle: "Access your saved bag, couture orders, and concierge." })}
-              className="flex items-center space-x-1 sm:space-x-1.5 px-2 py-1.5 sm:px-3 sm:py-1.5 rounded-none border border-neutral-300 dark:border-onyx-700 hover:border-black dark:hover:border-white bg-white dark:bg-onyx-900 text-xs font-bold transition-all shadow-sm active:scale-95 text-neutral-800 dark:text-white"
+              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border border-[#D8CEBF] dark:border-[#382F26] hover:border-[#9A6E3E] bg-white dark:bg-[#1A1613] text-xs font-bold transition-all shadow-2xs active:scale-95 text-neutral-800 dark:text-white cursor-pointer"
               title="Sign in with Google"
             >
               <svg className="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 24 24">
@@ -211,7 +211,7 @@ export default function Navbar({
           <SymbioteButton
             onClick={onOpenCart}
             theme="camel"
-            className="flex items-center space-x-1.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-none bg-black hover:bg-neutral-900 text-white dark:bg-[#E6D3B3] dark:hover:bg-[#d9c19b] dark:text-black transition-all font-black text-xs uppercase tracking-wider shadow-sm active:scale-95"
+            className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-[#1C1612] hover:bg-[#9A6E3E] text-white transition-all font-bold text-xs uppercase tracking-wider shadow-sm active:scale-95 cursor-pointer"
             title="Shopping Bag"
             ariaLabel="Shopping Bag"
           >
@@ -219,7 +219,7 @@ export default function Navbar({
               <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
             </svg>
             <span className="hidden sm:inline">BAG</span>
-            <span className="w-4 h-4 rounded-none bg-[#E6D3B3] text-black dark:bg-black dark:text-[#E6D3B3] text-[10px] flex items-center justify-center font-black shadow-sm">
+            <span className="w-4 h-4 rounded-full bg-[#9A6E3E] text-white text-[10px] flex items-center justify-center font-bold shadow-xs">
               {cartCount}
             </span>
           </SymbioteButton>

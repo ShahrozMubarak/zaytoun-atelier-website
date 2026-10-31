@@ -56,7 +56,7 @@ export default function GoogleAuthModal({
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-lg bg-[#121110] text-white rounded-none border-2 border-[#C69F6F]/60 shadow-[0_25px_90px_-15px_rgba(198,159,111,0.35)] overflow-hidden transition-all duration-300 transform scale-100"
+        className="relative w-full max-w-lg bg-[#121110] text-white rounded-2xl border border-[#C69F6F]/50 shadow-[0_25px_90px_-15px_rgba(198,159,111,0.35)] overflow-hidden transition-all duration-300 transform scale-100"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Top Gold Shimmer Bar */}
@@ -65,7 +65,7 @@ export default function GoogleAuthModal({
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 p-2 rounded-none text-[#C69F6F]/70 hover:text-white hover:bg-white/10 transition-colors z-10 cursor-pointer"
+          className="absolute top-5 right-5 p-2 rounded-xl text-[#C69F6F]/70 hover:text-white hover:bg-white/10 transition-colors z-10 cursor-pointer"
           aria-label="Close Authentication Portal"
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -79,7 +79,7 @@ export default function GoogleAuthModal({
 
           {/* Luxury Brand Crest & Monogram */}
           <div className="text-center mb-7 relative z-10">
-            <div className="inline-flex items-center justify-center w-16 h-14 mb-4 rounded-none border border-[#C69F6F] bg-gradient-to-br from-[#E6D3B3] via-[#C69F6F] to-[#8C6D45] text-black shadow-lg shadow-[#C69F6F]/20 p-2">
+            <div className="inline-flex items-center justify-center w-16 h-14 mb-4 rounded-xl border border-[#C69F6F] bg-gradient-to-br from-[#E6D3B3] via-[#C69F6F] to-[#8C6D45] text-black shadow-lg shadow-[#C69F6F]/20 p-2">
               <img 
                 src="/images/brand/foolish/arc_emblem.png" 
                 alt="FOOLISH ARC" 
@@ -151,7 +151,7 @@ export default function GoogleAuthModal({
               type="button"
               onClick={handleGooglePopupClick}
               disabled={loading}
-              className="w-full flex items-center justify-center space-x-3.5 py-4 px-6 rounded-none bg-white hover:bg-[#FAF4EB] text-black font-black text-xs uppercase tracking-[0.15em] border-2 border-[#C69F6F] hover:border-white shadow-[0_10px_30px_-5px_rgba(198,159,111,0.4)] transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-60 cursor-pointer group"
+              className="w-full flex items-center justify-center space-x-3.5 py-4 px-6 rounded-xl bg-white hover:bg-[#FAF4EB] text-black font-black text-xs uppercase tracking-[0.15em] border border-[#C69F6F] hover:border-white shadow-[0_10px_30px_-5px_rgba(198,159,111,0.4)] transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-60 cursor-pointer group"
             >
               {/* Official Google 4-Color 'G' Vector */}
               <svg className="w-4 h-4 flex-shrink-0 group-hover:scale-110 transition-transform" viewBox="0 0 24 24">

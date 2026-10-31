@@ -89,53 +89,53 @@ export default function FittingRoomPage({
           {/* Model Display & Lighting Controls */}
           <div className="flex flex-wrap items-center gap-3">
             {/* 3D vs 2D Mode Switcher */}
-            <div className="inline-flex rounded-full p-1 bg-linen-200 dark:bg-onyx-900 border border-linen-300 dark:border-onyx-800 text-xs">
+            <div className="inline-flex rounded-xl p-1 bg-white dark:bg-onyx-900 border border-[#D8CEBF] dark:border-onyx-800 text-xs">
               <button
                 onClick={() => setModelMode('3d')}
-                className={`px-3.5 py-1.5 rounded-full font-medium transition ${
+                className={`px-4 py-1.5 rounded-xl font-bold uppercase text-[11px] tracking-wider transition cursor-pointer ${
                   modelMode === '3d'
-                    ? 'bg-olive-800 text-linen-100 dark:bg-camel-500 dark:text-onyx-950 shadow-sm'
-                    : 'text-onyx-700 dark:text-linen-300 hover:text-onyx-950'
+                    ? 'bg-[#1C1612] text-white shadow-sm'
+                    : 'text-neutral-700 dark:text-neutral-300 hover:text-black'
                 }`}
               >
-                3D GLB Model
+                3D Model
               </button>
               <button
                 onClick={() => setModelMode('2d')}
-                className={`px-3.5 py-1.5 rounded-full font-medium transition ${
+                className={`px-4 py-1.5 rounded-xl font-bold uppercase text-[11px] tracking-wider transition cursor-pointer ${
                   modelMode === '2d'
-                    ? 'bg-olive-800 text-linen-100 dark:bg-camel-500 dark:text-onyx-950 shadow-sm'
-                    : 'text-onyx-700 dark:text-linen-300 hover:text-onyx-950'
+                    ? 'bg-[#1C1612] text-white shadow-sm'
+                    : 'text-neutral-700 dark:text-neutral-300 hover:text-black'
                 }`}
               >
-                2D FORME Studio
+                2D Studio
               </button>
             </div>
 
             {/* Studio Lighting Mood Switch */}
             {modelMode === '3d' && (
-              <div className="inline-flex rounded-full p-1 bg-linen-200 dark:bg-onyx-900 border border-linen-300 dark:border-onyx-800 text-xs">
+              <div className="inline-flex rounded-xl p-1 bg-white dark:bg-onyx-900 border border-[#D8CEBF] dark:border-onyx-800 text-xs">
                 <button
                   onClick={() => setLightingMode('studio')}
-                  className={`px-3 py-1 rounded-full font-medium transition ${
+                  className={`px-3 py-1.5 rounded-xl font-bold uppercase text-[10px] tracking-wider transition cursor-pointer ${
                     lightingMode === 'studio'
-                      ? 'bg-linen-100 dark:bg-onyx-800 text-onyx-900 dark:text-linen-100 shadow-sm'
-                      : 'text-onyx-600 dark:text-linen-400'
+                      ? 'bg-[#FAF6F0] dark:bg-onyx-800 text-[#9A6E3E] border border-[#E6D3B3] shadow-2xs'
+                      : 'text-neutral-600 dark:text-neutral-400'
                   }`}
-                  title="Studio Daylight (5500K)"
+                  title="Studio Daylight"
                 >
                   Daylight
                 </button>
                 <button
                   onClick={() => setLightingMode('warm')}
-                  className={`px-3 py-1 rounded-full font-medium transition ${
+                  className={`px-3 py-1.5 rounded-xl font-bold uppercase text-[10px] tracking-wider transition cursor-pointer ${
                     lightingMode === 'warm'
-                      ? 'bg-linen-100 dark:bg-onyx-800 text-onyx-900 dark:text-linen-100 shadow-sm'
-                      : 'text-onyx-600 dark:text-linen-400'
+                      ? 'bg-[#FAF6F0] dark:bg-onyx-800 text-[#9A6E3E] border border-[#E6D3B3] shadow-2xs'
+                      : 'text-neutral-600 dark:text-neutral-400'
                   }`}
-                  title="Warm Atelier Lamp (3000K)"
+                  title="Warm Atelier"
                 >
-                  Warm Atelier
+                  Warm
                 </button>
               </div>
             )}
@@ -143,22 +143,19 @@ export default function FittingRoomPage({
         </div>
 
         {/* Demographic Selector Tabs */}
-        <div className="flex items-center space-x-2 mb-8">
-          <span className="text-xs font-mono uppercase tracking-wider text-onyx-500 dark:text-linen-400 mr-2">
-            Silhouettes:
-          </span>
+        <div className="flex items-center space-x-2 mb-8 overflow-x-auto pb-1 scrollbar-none">
           {[
-            { id: 'women', label: "Women's Pret" },
+            { id: 'women', label: "Women's Collection" },
             { id: 'men', label: "Men's Collection" },
-            { id: 'kids', label: "Kids Pret" }
+            { id: 'kids', label: "Kids Collection" }
           ].map(p => (
             <button
               key={p.id}
               onClick={() => onSelectPerson && onSelectPerson(p.id)}
-              className={`px-4 py-2 rounded-full text-xs font-medium uppercase tracking-wider transition ${
+              className={`px-5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition whitespace-nowrap cursor-pointer ${
                 selectedPerson === p.id
-                  ? 'bg-onyx-950 dark:bg-linen-100 text-linen-100 dark:text-onyx-950 shadow-sm'
-                  : 'bg-linen-200/80 dark:bg-onyx-900 text-onyx-700 dark:text-linen-300 border border-linen-300 dark:border-onyx-800 hover:bg-linen-300 dark:hover:bg-onyx-800'
+                  ? 'bg-[#1C1612] text-white shadow-sm'
+                  : 'bg-white dark:bg-onyx-900 text-neutral-700 dark:text-neutral-300 border border-[#D8CEBF] dark:border-onyx-800 hover:border-[#9A6E3E]'
               }`}
             >
               {p.label}
@@ -280,10 +277,10 @@ export default function FittingRoomPage({
                         <button
                           key={sz}
                           onClick={() => setSelectedSize(sz)}
-                          className={`w-8 h-8 rounded-full text-xs font-mono font-bold transition ${
+                          className={`w-9 h-9 rounded-xl text-xs font-mono font-bold transition cursor-pointer ${
                             selectedSize === sz
-                              ? 'bg-onyx-950 dark:bg-linen-100 text-linen-100 dark:text-onyx-950'
-                              : 'bg-linen-100 dark:bg-onyx-950 text-onyx-700 dark:text-linen-300 border border-linen-300 dark:border-onyx-800 hover:border-onyx-950'
+                              ? 'bg-[#1C1612] text-white shadow-sm'
+                              : 'bg-white dark:bg-onyx-950 text-neutral-700 dark:text-neutral-300 border border-[#D8CEBF] dark:border-onyx-800 hover:border-[#9A6E3E]'
                           }`}
                         >
                           {sz}
@@ -301,7 +298,7 @@ export default function FittingRoomPage({
                         outfitItems.forEach(item => onAddToCart(item, selectedSize));
                       }
                     }}
-                    className="w-full py-3.5 rounded-full bg-olive-800 hover:bg-olive-900 dark:bg-camel-500 dark:hover:bg-camel-600 text-linen-100 dark:text-onyx-950 font-medium text-xs uppercase tracking-widest transition shadow-md active:scale-95 flex items-center justify-center space-x-2"
+                    className="w-full py-3.5 rounded-xl bg-[#1C1612] hover:bg-[#9A6E3E] text-white font-bold text-xs uppercase tracking-widest transition shadow-md active:scale-95 flex items-center justify-center space-x-2 cursor-pointer"
                   >
                     <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
                       <path d="M6 7h12l2 14H4L6 7Z" />

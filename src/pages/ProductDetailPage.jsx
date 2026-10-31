@@ -59,9 +59,9 @@ export default function ProductDetailPage({
         </p>
         <Link
           to="/shop"
-          className="px-6 py-3 bg-black dark:bg-white text-white dark:text-black font-bold uppercase text-xs tracking-widest rounded-none hover:bg-neutral-800 transition"
+          className="px-6 py-3 bg-[#1C1612] hover:bg-[#9A6E3E] text-white font-bold uppercase text-xs tracking-widest rounded-xl transition shadow-sm cursor-pointer"
         >
-          Return to All Collections
+          Return to Collection
         </Link>
       </div>
     );
@@ -127,10 +127,10 @@ export default function ProductDetailPage({
                   <button
                     key={idx}
                     onClick={() => setActiveImageIndex(idx)}
-                    className={`w-16 h-20 sm:w-20 sm:h-26 rounded-none overflow-hidden border-2 transition active:scale-95 bg-white shrink-0 ${
+                    className={`w-16 h-20 sm:w-20 sm:h-26 rounded-xl overflow-hidden border-2 transition active:scale-95 bg-white shrink-0 cursor-pointer ${
                       activeImageIndex === idx
-                        ? 'border-black dark:border-white shadow-sm'
-                        : 'border-neutral-200 dark:border-onyx-800 opacity-60 hover:opacity-100'
+                        ? 'border-[#9A6E3E] shadow-sm'
+                        : 'border-[#E8E0D5] dark:border-[#332A22] opacity-70 hover:opacity-100'
                     }`}
                   >
                     <img src={img} alt={`${product.name} thumbnail ${idx + 1}`} className="w-full h-full object-cover" />
@@ -141,7 +141,7 @@ export default function ProductDetailPage({
 
             {/* Main Stage Studio Image */}
             <div
-              className={`relative flex-1 aspect-[3/4] bg-white dark:bg-onyx-900 border border-neutral-200 dark:border-onyx-800 overflow-hidden cursor-${isZoomed ? 'zoom-out' : 'zoom-in'}`}
+              className={`relative flex-1 aspect-[3/4] bg-white dark:bg-onyx-900 border border-[#E8E0D5] dark:border-[#2C241D] rounded-2xl overflow-hidden cursor-${isZoomed ? 'zoom-out' : 'zoom-in'}`}
               onClick={() => setIsZoomed(!isZoomed)}
             >
               <img
@@ -154,13 +154,13 @@ export default function ProductDetailPage({
 
               {product.badge && (
                 <div className="absolute top-4 left-4 z-10 pointer-events-none">
-                  <span className="text-xs uppercase tracking-widest font-black bg-black text-white dark:bg-white dark:text-black px-3 py-1 rounded-none shadow-md">
+                  <span className="text-[10px] uppercase tracking-widest font-black bg-[#1C1612] text-white px-3 py-1 rounded-lg shadow-sm">
                     {product.badge}
                   </span>
                 </div>
               )}
 
-              <div className="absolute bottom-3 right-3 bg-black/60 backdrop-blur-sm text-white text-xs font-mono px-2.5 py-1 rounded-none pointer-events-none">
+              <div className="absolute bottom-3 right-3 bg-black/60 backdrop-blur-sm text-white text-[10px] font-mono px-2.5 py-1 rounded-lg pointer-events-none">
                 {isZoomed ? "Click to reset" : "Click to zoom"}
               </div>
             </div>
@@ -172,15 +172,12 @@ export default function ProductDetailPage({
             
             {/* Subtitle & Title */}
             <div>
-              <p className="text-xs font-mono font-bold tracking-widest text-neutral-500 uppercase mb-1">
+              <p className="text-xs font-mono font-bold tracking-widest text-[#9A6E3E] uppercase mb-1">
                 {product.fitLine || `${String(product.fit || 'REGULAR').toUpperCase()} FIT | ${String(product.person || 'MEN').toUpperCase()}`}
               </p>
-              <h1 className="text-2xl sm:text-3xl font-extrabold uppercase tracking-wide text-neutral-900 dark:text-neutral-100">
+              <h1 className="text-2xl sm:text-3xl font-serif font-bold uppercase tracking-wide text-neutral-900 dark:text-neutral-100">
                 {product.name}
               </h1>
-              <p className="text-xs font-mono text-neutral-400 mt-1 uppercase">
-                SKU: {String(product.id || '').toUpperCase()} • EDITION 2026
-              </p>
             </div>
 
             {/* Price & Rating */}

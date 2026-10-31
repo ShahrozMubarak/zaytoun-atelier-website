@@ -48,19 +48,19 @@ export default function SizeGuideModal({ isOpen, onClose }) {
           <p className="text-xs text-onyx-600">
             All measurements represent body measurements unless specified.
           </p>
-          <div className="inline-flex bg-linen-200 p-1 rounded-lg border border-linen-300">
+          <div className="inline-flex bg-[#FAF6F0] p-1 rounded-xl border border-[#D8CEBF]">
             <button
               onClick={() => setUnit('in')}
-              className={`px-3 py-1 text-xs font-semibold rounded-md transition ${
-                unit === 'in' ? 'bg-olive-700 text-white shadow' : 'text-onyx-700'
+              className={`px-3.5 py-1.5 text-xs font-bold rounded-lg transition cursor-pointer ${
+                unit === 'in' ? 'bg-[#1C1612] text-white shadow-sm' : 'text-neutral-700'
               }`}
             >
               Inches (in)
             </button>
             <button
               onClick={() => setUnit('cm')}
-              className={`px-3 py-1 text-xs font-semibold rounded-md transition ${
-                unit === 'cm' ? 'bg-olive-700 text-white shadow' : 'text-onyx-700'
+              className={`px-3.5 py-1.5 text-xs font-bold rounded-lg transition cursor-pointer ${
+                unit === 'cm' ? 'bg-[#1C1612] text-white shadow-sm' : 'text-neutral-700'
               }`}
             >
               Centimeters (cm)
@@ -115,7 +115,7 @@ export default function SizeGuideModal({ isOpen, onClose }) {
           <span>🌿 <strong>Complimentary Size Exchange:</strong> In case the fit isn't perfect, we arrange an instant pickup within 7 days.</span>
           <button
             onClick={onClose}
-            className="ml-4 bg-olive-700 text-white px-4 py-1.5 rounded-lg font-semibold hover:bg-olive-800 transition"
+            className="ml-4 bg-[#1C1612] hover:bg-[#9A6E3E] text-white px-5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition cursor-pointer shadow-sm active:scale-95"
           >
             Got It
           </button>

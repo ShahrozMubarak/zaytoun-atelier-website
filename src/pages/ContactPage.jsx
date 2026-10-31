@@ -22,37 +22,37 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen bg-linen-100 dark:bg-onyx-950 text-onyx-950 dark:text-linen-100 transition-colors py-12 sm:py-16">
-      <div className="max-w-[1500px] mx-auto px-4 sm:px-8 lg:px-12 space-y-16">
+    <div className="min-h-screen bg-[#FAF9F6] dark:bg-onyx-950 text-neutral-900 dark:text-neutral-100 transition-colors py-12 sm:py-20 select-none">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-8 lg:px-12 space-y-16">
         
         {/* Header */}
         <div className="max-w-2xl space-y-3">
-          <span className="text-xs font-mono uppercase tracking-widest text-camel-600 dark:text-camel-400 font-semibold">
+          <span className="text-xs font-mono uppercase tracking-widest text-[#9A6E3E] font-semibold">
             Atelier Concierge
           </span>
-          <h1 className="font-editorial text-4xl sm:text-5xl font-bold tracking-tight text-onyx-950 dark:text-linen-50">
+          <h1 className="font-serif text-3xl sm:text-5xl font-light tracking-tight text-[#1C1612] dark:text-white">
             How May We Assist You?
           </h1>
-          <p className="text-sm text-onyx-600 dark:text-linen-400 font-light leading-relaxed">
-            Whether you need sizing advice, bespoke alterations, custom ensemble styling, or order tracking, our Lahore concierge is ready to assist.
+          <p className="text-sm text-neutral-600 dark:text-neutral-400 font-light leading-relaxed">
+            Our atelier concierge in Lahore is available for bespoke inquiries, styling guidance, and order support.
           </p>
         </div>
 
-        {/* Two-Column Grid: Left Information & FAQs, Right Inquiry Form */}
+        {/* Two-Column Grid: Left Information, Right Inquiry Form */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           
           {/* Left Column (5 cols): Atelier Info & Direct Contact */}
-          <div className="lg:col-span-5 space-y-8">
+          <div className="lg:col-span-5 space-y-6">
             
             {/* Atelier Card */}
-            <div className="p-6 rounded-3xl bg-linen-200/50 dark:bg-onyx-900/50 border border-linen-300 dark:border-onyx-800 space-y-4">
-              <h3 className="font-editorial text-xl font-bold">Lahore Atelier & Showroom</h3>
-              <p className="text-xs text-onyx-600 dark:text-linen-400 font-light leading-relaxed">
-                Plot 14-B, MM Alam Road, Gulberg III, Lahore, Punjab, Pakistan
+            <div className="p-7 rounded-2xl bg-white dark:bg-[#1A1613] border border-[#E8E0D5] dark:border-[#2C241D] space-y-3 shadow-2xs">
+              <h3 className="font-serif text-lg font-bold text-[#1C1612] dark:text-white">Lahore Atelier & Showroom</h3>
+              <p className="text-xs text-neutral-600 dark:text-neutral-400 font-light leading-relaxed">
+                Plot 14-B, MM Alam Road, Gulberg III, Lahore, Pakistan
               </p>
-              <div className="pt-2 text-xs font-mono space-y-1 text-onyx-700 dark:text-linen-300">
+              <div className="pt-2 text-xs font-mono space-y-1 text-neutral-700 dark:text-neutral-300">
                 <p>Mon – Sat: 11:00 AM – 9:00 PM PKT</p>
-                <p>Sunday: By Private Appointment Only</p>
+                <p>Sunday: By Private Appointment</p>
               </div>
             </div>
 
@@ -62,62 +62,52 @@ export default function ContactPage() {
                 href="https://wa.me/923001234567"
                 target="_blank"
                 rel="noreferrer"
-                className="p-5 rounded-2xl bg-olive-900/10 dark:bg-onyx-900 border border-olive-800/20 dark:border-onyx-800 hover:border-olive-800 transition block group"
+                className="p-5 rounded-2xl bg-white dark:bg-[#1A1613] border border-[#E8E0D5] dark:border-[#2C241D] hover:border-[#9A6E3E] transition block group shadow-2xs"
               >
-                <div className="flex items-center space-x-2 text-olive-800 dark:text-camel-400 mb-1">
-                  <span className="font-bold text-sm">💬 WhatsApp</span>
+                <div className="flex items-center space-x-2 text-[#9A6E3E] mb-1">
+                  <span className="font-bold text-xs uppercase tracking-wider">WhatsApp</span>
                 </div>
-                <p className="text-[11px] font-mono text-onyx-900 dark:text-linen-100">+92 300 1234567</p>
-                <p className="text-[10px] text-onyx-500 dark:text-linen-400 mt-1">Instant sizing & styling concierge</p>
+                <p className="text-xs font-mono text-neutral-900 dark:text-white font-bold">+92 300 1234567</p>
+                <p className="text-[11px] text-neutral-500 dark:text-neutral-400 mt-1">Instant stylist assistance</p>
               </a>
 
               <a
                 href="mailto:concierge@foolisharc.com"
-                className="p-5 rounded-2xl bg-linen-200/50 dark:bg-onyx-900 border border-linen-300 dark:border-onyx-800 hover:border-onyx-950 dark:hover:border-linen-200 transition block group"
+                className="p-5 rounded-2xl bg-white dark:bg-[#1A1613] border border-[#E8E0D5] dark:border-[#2C241D] hover:border-[#9A6E3E] transition block group shadow-2xs"
               >
-                <div className="flex items-center space-x-2 text-camel-600 dark:text-camel-400 mb-1">
-                  <span className="font-bold text-sm">✉ Concierge Email</span>
+                <div className="flex items-center space-x-2 text-[#9A6E3E] mb-1">
+                  <span className="font-bold text-xs uppercase tracking-wider">Email Concierge</span>
                 </div>
-                <p className="text-[11px] font-mono text-onyx-900 dark:text-linen-100">atelier@foolisharc.com</p>
-                <p className="text-[10px] text-onyx-500 dark:text-linen-400 mt-1">Replies within 4 business hours</p>
+                <p className="text-xs font-mono text-neutral-900 dark:text-white font-bold">atelier@foolisharc.com</p>
+                <p className="text-[11px] text-neutral-500 dark:text-neutral-400 mt-1">Replies within 4 business hours</p>
               </a>
-            </div>
-
-            {/* Exchange Policy Summary */}
-            <div className="p-6 rounded-3xl bg-linen-100 dark:bg-onyx-900/40 border border-linen-300 dark:border-onyx-800 space-y-2">
-              <h4 className="font-editorial text-base font-bold text-onyx-950 dark:text-linen-50">
-                14-Day Nationwide Returns & Exchanges
-              </h4>
-              <p className="text-xs text-onyx-600 dark:text-linen-400 font-light leading-relaxed">
-                If the fit isn’t quite perfect, hand it back to our courier rider or WhatsApp our team for a free pickup and size replacement anywhere in Pakistan.
-              </p>
             </div>
 
           </div>
 
           {/* Right Column (7 cols): Inquiry Form */}
           <div className="lg:col-span-7">
-            <div className="p-8 sm:p-10 rounded-3xl bg-white dark:bg-[#1A1613] border border-[#E6D3B3] dark:border-[#332A22] shadow-sm">
-              <h3 className="font-serif text-2xl font-black mb-2 text-[#1C1612] dark:text-white tracking-tight">Send an Inquiry</h3>
-              <p className="text-xs text-[#7C6A58] dark:text-neutral-400 mb-6 font-medium">
-                Our atelier concierge in Lahore responds within 4 business hours.
+            <div className="p-8 sm:p-10 rounded-2xl bg-white dark:bg-[#1A1613] border border-[#E8E0D5] dark:border-[#2C241D] shadow-2xs">
+              <h3 className="font-serif text-xl font-bold mb-1 text-[#1C1612] dark:text-white">Send an Inquiry</h3>
+              <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-6">
+                Direct inquiry to our Lahore studio concierge.
               </p>
 
               {submitted ? (
                 <div className="py-12 text-center space-y-3 bg-[#FAF6F0] dark:bg-[#201A16] rounded-2xl border border-[#E8E0D5] dark:border-[#332A22]">
-                  <span className="text-3xl text-emerald-600">✓</span>
-                  <h4 className="text-xl font-black text-[#1C1612] dark:text-white">
-                    Message Received
+                  <span className="text-3xl text-[#9A6E3E]">✓</span>
+                  <h4 className="text-lg font-serif font-bold text-[#1C1612] dark:text-white">
+                    Inquiry Received
                   </h4>
-                  <p className="text-xs text-neutral-600 dark:text-neutral-300 max-w-sm mx-auto font-medium">
-                    Our atelier team in Lahore has received your note and will contact you shortly via email or WhatsApp.
+                  <p className="text-xs text-neutral-600 dark:text-neutral-300 max-w-sm mx-auto">
+                    Our atelier concierge has received your note and will contact you shortly.
                   </p>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-[11px] font-black uppercase tracking-[0.16em] text-[#8C6A3E] dark:text-[#E6D3B3] mb-1.5">
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-300 mb-1.5">
                         Full Name *
                       </label>
                       <input
@@ -126,11 +116,11 @@ export default function ContactPage() {
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         placeholder="e.g. Ayesha Malik"
-                        className="w-full px-4 py-3 rounded-xl bg-[#FAF9F6] dark:bg-[#201A16] border border-[#D8CEBF] dark:border-[#382F26] text-xs font-bold text-black dark:text-white focus:outline-none focus:border-[#9A6E3E] focus:ring-2 focus:ring-[#9A6E3E]/20 transition shadow-inner"
+                        className="w-full px-4 py-3 rounded-xl bg-[#FAF9F6] dark:bg-[#201A16] border border-[#D8CEBF] dark:border-[#382F26] text-xs font-medium text-black dark:text-white focus:outline-none focus:border-[#9A6E3E] transition"
                       />
                     </div>
                     <div>
-                      <label className="block text-[11px] font-black uppercase tracking-[0.16em] text-[#8C6A3E] dark:text-[#E6D3B3] mb-1.5">
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-300 mb-1.5">
                         Email Address *
                       </label>
                       <input
@@ -139,35 +129,35 @@ export default function ContactPage() {
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         placeholder="ayesha@example.com"
-                        className="w-full px-4 py-3 rounded-xl bg-[#FAF9F6] dark:bg-[#201A16] border border-[#D8CEBF] dark:border-[#382F26] text-xs font-bold text-black dark:text-white focus:outline-none focus:border-[#9A6E3E] focus:ring-2 focus:ring-[#9A6E3E]/20 transition shadow-inner"
+                        className="w-full px-4 py-3 rounded-xl bg-[#FAF9F6] dark:bg-[#201A16] border border-[#D8CEBF] dark:border-[#382F26] text-xs font-medium text-black dark:text-white focus:outline-none focus:border-[#9A6E3E] transition"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-black uppercase tracking-[0.16em] text-[#8C6A3E] dark:text-[#E6D3B3] mb-1.5">
-                      Order / Tracking Number (Optional)
+                    <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-300 mb-1.5">
+                      Order Number (Optional)
                     </label>
                     <input
                       type="text"
                       value={formData.orderNumber}
                       onChange={(e) => setFormData({ ...formData, orderNumber: e.target.value })}
                       placeholder="e.g. TCS-99482104-LHE"
-                      className="w-full px-4 py-3 rounded-xl bg-[#FAF9F6] dark:bg-[#201A16] border border-[#D8CEBF] dark:border-[#382F26] text-xs font-mono font-bold text-black dark:text-white focus:outline-none focus:border-[#9A6E3E] focus:ring-2 focus:ring-[#9A6E3E]/20 transition shadow-inner"
+                      className="w-full px-4 py-3 rounded-xl bg-[#FAF9F6] dark:bg-[#201A16] border border-[#D8CEBF] dark:border-[#382F26] text-xs font-mono font-medium text-black dark:text-white focus:outline-none focus:border-[#9A6E3E] transition"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-black uppercase tracking-[0.16em] text-[#8C6A3E] dark:text-[#E6D3B3] mb-1.5">
-                      Message / Sizing Question *
+                    <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-300 mb-1.5">
+                      Message *
                     </label>
                     <textarea
                       required
                       rows={5}
                       value={formData.message}
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                      placeholder="Provide specific details regarding measurements, custom tailoring, or dispatch inquiries..."
-                      className="w-full px-4 py-3 rounded-xl bg-[#FAF9F6] dark:bg-[#201A16] border border-[#D8CEBF] dark:border-[#382F26] text-xs font-medium text-black dark:text-white focus:outline-none focus:border-[#9A6E3E] focus:ring-2 focus:ring-[#9A6E3E]/20 transition resize-none shadow-inner"
+                      placeholder="Details regarding your sizing or inquiry..."
+                      className="w-full px-4 py-3 rounded-xl bg-[#FAF9F6] dark:bg-[#201A16] border border-[#D8CEBF] dark:border-[#382F26] text-xs font-medium text-black dark:text-white focus:outline-none focus:border-[#9A6E3E] transition resize-none"
                     />
                   </div>
 
@@ -176,12 +166,12 @@ export default function ContactPage() {
                     disabled={loading}
                     theme="camel"
                     containerClassName="w-full"
-                    className="w-full py-4 rounded-xl bg-[#1C1612] hover:bg-[#9A6E3E] text-white font-black text-xs uppercase tracking-widest transition-all shadow-md active:scale-95 flex items-center justify-center space-x-2"
+                    className="w-full py-4 rounded-xl bg-[#1C1612] hover:bg-[#9A6E3E] text-white font-bold text-xs uppercase tracking-widest transition-all shadow-md active:scale-95 flex items-center justify-center space-x-2 cursor-pointer"
                   >
                     {loading ? (
-                      <span>TRANSMITTING INQUIRY...</span>
+                      <span>SENDING INQUIRY...</span>
                     ) : (
-                      <span>TRANSMIT TO ATELIER CONCIERGE →</span>
+                      <span>SUBMIT INQUIRY →</span>
                     )}
                   </SymbioteButton>
                 </form>
