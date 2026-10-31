@@ -18,8 +18,6 @@ export default function ProductModal({
   isWishlisted,
   onToggleWishlist
 }) {
-  if (!isOpen || !product) return null;
-
   const navigate = useNavigate();
   const productImages = Array.isArray(product?.images) && product.images.length > 0 
     ? product.images 
@@ -52,6 +50,8 @@ export default function ProductModal({
       }, 1800);
     }
   };
+
+  if (!isOpen || !product) return null;
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 select-none animate-fadeIn">

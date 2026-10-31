@@ -13,7 +13,6 @@ export default function CheckoutModal({
   user = null
 }) {
   const navigate = useNavigate();
-  if (!isOpen) return null;
 
   const rawList = propCartItems || cart || [];
   const normalizedCartItems = rawList.map(item => {
@@ -230,6 +229,8 @@ export default function CheckoutModal({
       navigate(`/track/${generatedOrderNumber}`);
     }, 400);
   };
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-onyx-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6">

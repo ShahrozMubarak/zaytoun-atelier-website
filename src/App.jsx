@@ -911,37 +911,44 @@ export default function App() {
           }}
         />
 
-        <CheckoutModal
-          isOpen={isCheckoutOpen}
-          onClose={() => setIsCheckoutOpen(false)}
-          cart={cart}
-          user={currentUser}
-          onConfirmOrder={handleConfirmOrder}
-        />
+        {isCheckoutOpen && (
+          <CheckoutModal
+            isOpen={isCheckoutOpen}
+            onClose={() => setIsCheckoutOpen(false)}
+            cart={cart}
+            user={currentUser}
+            onConfirmOrder={handleConfirmOrder}
+          />
+        )}
 
+        {isAutomatedOrderModalOpen && confirmedOrder && (
+          <AutomatedOrderNoticeModal
+            order={confirmedOrder}
+            isOpen={isAutomatedOrderModalOpen}
+            onClose={() => setIsAutomatedOrderModalOpen(false)}
+          />
+        )}
 
-        <AutomatedOrderNoticeModal
-          order={confirmedOrder}
-          isOpen={isAutomatedOrderModalOpen}
-          onClose={() => setIsAutomatedOrderModalOpen(false)}
-        />
+        {Boolean(confirmedOrder) && (
+          <OrderConfirmationModal
+            order={confirmedOrder}
+            isOpen={Boolean(confirmedOrder)}
+            onClose={() => setConfirmedOrder(null)}
+          />
+        )}
 
-        <OrderConfirmationModal
-          order={confirmedOrder}
-          isOpen={Boolean(confirmedOrder)}
-          onClose={() => setConfirmedOrder(null)}
-        />
-
-        <ProductModal
-          product={selectedProductModal}
-          isOpen={Boolean(selectedProductModal)}
-          onClose={() => setSelectedProductModal(null)}
-          onAddToCart={handleAddToCart}
-          onTryOn={handleTryOnProduct}
-          onToggleWishlist={handleToggleWishlist}
-          isWishlisted={selectedProductModal ? wishlist.includes(selectedProductModal.id) : false}
-          onOpenSizeGuide={() => setIsSizeGuideOpen(true)}
-        />
+        {Boolean(selectedProductModal) && (
+          <ProductModal
+            product={selectedProductModal}
+            isOpen={Boolean(selectedProductModal)}
+            onClose={() => setSelectedProductModal(null)}
+            onAddToCart={handleAddToCart}
+            onTryOn={handleTryOnProduct}
+            onToggleWishlist={handleToggleWishlist}
+            isWishlisted={selectedProductModal ? wishlist.includes(selectedProductModal.id) : false}
+            onOpenSizeGuide={() => setIsSizeGuideOpen(true)}
+          />
+        )}
 
         <BrandPaletteGuide
           isOpen={isPaletteGuideOpen}

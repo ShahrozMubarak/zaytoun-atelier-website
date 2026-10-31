@@ -8,9 +8,9 @@ import { Link } from 'react-router-dom';
  * and that an automated confirmation email has been dispatched.
  */
 export default function AutomatedOrderNoticeModal({ order, isOpen, onClose }) {
+  const { formatPrice } = useCurrency();
   if (!isOpen || !order) return null;
 
-  const { formatPrice } = useCurrency();
   const items = order.items || [];
   const trackingNumber = order.trackingNumber || `TCS-${Math.floor(10000000 + Math.random() * 90000000)}-PK`;
 

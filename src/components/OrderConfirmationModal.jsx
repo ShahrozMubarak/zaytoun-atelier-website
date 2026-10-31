@@ -25,13 +25,12 @@ export default function OrderConfirmationModal({ order, isOpen, onClose }) {
   const audioCtxRef = useRef(null);
   const timersRef = useRef([]);
 
-  if (!order || (isOpen !== undefined && !isOpen)) return null;
-
-  const orderId = order.orderNumber || order.id || `ZYT-2026-${Math.floor(1000 + Math.random() * 9000)}`;
-  const trackingNumber = order.trackingNumber || `TCS-${Math.floor(10000000 + Math.random() * 90000000)}-PK`;
+  const safeOrder = order || {};
+  const orderId = safeOrder.orderNumber || safeOrder.id || `ARC-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+  const trackingNumber = safeOrder.trackingNumber || `TCS-${Math.floor(10000000 + Math.random() * 90000000)}-PK`;
   const trackingUrl = typeof window !== 'undefined' ? `${window.location.origin}/track/${orderId}` : `/track/${orderId}`;
-  const orderItems = Array.isArray(order.items) ? order.items : [];
-  const rawDate = order.date || order.createdAt;
+  const orderItems = Array.isArray(safeOrder.items) ? safeOrder.items : [];
+  const rawDate = safeOrder.date || safeOrder.createdAt;
   const parsedDate = rawDate ? new Date(rawDate) : new Date();
   const orderDate = isNaN(parsedDate.getTime()) ? new Date() : parsedDate;
   const formattedDate = orderDate.toLocaleDateString('en-PK', {
@@ -43,7 +42,7 @@ export default function OrderConfirmationModal({ order, isOpen, onClose }) {
     hour: '2-digit',
     minute: '2-digit'
   });
-  const orderTotal = Number(order.total || order.pricing?.finalTotal || 0);
+  const orderTotal = Number(safeOrder.total || safeOrder.pricing?.finalTotal || 0);
 
   // Audio synthesis engine (Web Audio API)
   const getAudioContext = () => {
@@ -156,12 +155,13 @@ export default function OrderConfirmationModal({ order, isOpen, onClose }) {
   };
 
   useEffect(() => {
+    if (!order || (isOpen !== undefined && !isOpen)) return;
     startPrintSequence();
     return () => {
       timersRef.current.forEach(t => clearTimeout(t));
       timersRef.current = [];
     };
-  }, [orderId]);
+  }, [orderId, Boolean(order), isOpen]);
 
   // Interactive Tear Off action
   const handleTearOff = () => {
@@ -267,6 +267,8 @@ Track Order: ${trackingUrl}`;
     if (onClose) onClose();
     navigate(`/track/${orderId}`);
   };
+
+  if (!order || (isOpen !== undefined && !isOpen)) return null;
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-black/80 backdrop-blur-md flex items-start sm:items-center justify-center p-3 sm:p-6 animate-fadeIn">
