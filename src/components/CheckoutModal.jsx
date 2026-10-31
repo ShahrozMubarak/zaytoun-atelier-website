@@ -490,7 +490,7 @@ export default function CheckoutModal({
                 </button>
                 <button
                   type="submit"
-                  className="arrow-runway bg-[#9A6E3E] hover:bg-[#835d34] text-white font-black px-7 py-3.5 rounded-xl text-xs uppercase tracking-wider transition-all shadow-md active:scale-95 flex items-center gap-2 cursor-pointer"
+                  className="arrow-runway bg-[#1C1612] hover:bg-[#7A4B26] text-white font-bold px-7 py-3.5 rounded-xl text-xs uppercase tracking-wider transition-all shadow-md active:scale-95 flex items-center gap-2 cursor-pointer"
                 >
                   <span>Continue to Payment Options</span>
                   <span className="arrow-runway-box">
@@ -920,7 +920,7 @@ export default function CheckoutModal({
                   type="button"
                   onClick={handleFinalizeOrder}
                   disabled={isSubmitting}
-                  className={`btn-confirm-payment bg-[#1C1612] text-white font-black px-8 py-4 rounded-xl text-xs uppercase tracking-widest transition-all shadow-xl flex items-center space-x-2 active:scale-95 cursor-pointer disabled:cursor-not-allowed ${
+                  className={`btn-confirm-payment bg-[#1C1612] hover:bg-[#7A4B26] text-white font-bold px-8 py-3.5 rounded-xl text-xs uppercase tracking-wider transition-all shadow-xl flex items-center space-x-2 active:scale-95 cursor-pointer disabled:cursor-not-allowed ${
                     isSubmitting ? 'confirming' : ''
                   }`}
                 >

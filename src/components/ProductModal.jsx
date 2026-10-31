@@ -263,10 +263,10 @@ export default function ProductModal({
                   onClick={handleAddToCart}
                   theme="camel"
                   containerClassName="flex-1"
-                  className={`w-full py-3 px-4 rounded-xl font-bold text-[11px] sm:text-xs uppercase tracking-wider transition-all duration-300 shadow-md flex items-center justify-center space-x-2 active:scale-95 ${
+                  className={`w-full py-3 px-4 rounded-xl font-bold text-[11px] sm:text-xs uppercase tracking-wider transition-all duration-300 shadow-md flex items-center justify-center space-x-2 active:scale-95 cursor-pointer ${
                     isAdded
-                      ? 'bg-[#9A6E3E] text-white cart-journey-active'
-                      : 'bg-[#1C1612] hover:bg-[#9A6E3E] dark:bg-white dark:hover:bg-neutral-200 text-white dark:text-black'
+                      ? 'bg-[#7A4B26] text-white cart-journey-active'
+                      : 'bg-[#1C1612] hover:bg-[#7A4B26] dark:bg-white dark:hover:bg-neutral-200 text-white dark:text-black'
                   }`}
                 >
                   {isAdded ? (

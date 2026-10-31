@@ -330,6 +330,9 @@ export default function HomePage({
         </div>
       </section>
 
+      {/* Wood tone divider between Hero and Store Shelf */}
+      <div className="divider-wood max-w-6xl mx-auto my-6 sm:my-8" />
+
       {/* =========================================================================
           5. NEW ARRIVALS HORIZONTAL PRODUCT SHELF (OUTFITTERS STYLE 3:4 CARDS)
       ========================================================================= */}
@@ -394,6 +397,9 @@ export default function HomePage({
           ))}
         </div>
       </section>
+
+      {/* Wood tone divider between New Arrivals and Featured Postures */}
+      <div className="divider-wood max-w-6xl mx-auto my-6 sm:my-8" />
 
       {/* =========================================================================
           6. 3 FEATURED POSTURES (SHARP RECTANGULAR BLOCKS, NO CLUTTER)
@@ -494,6 +500,9 @@ export default function HomePage({
         </div>
       </section>
 
+      {/* Wood tone divider between Featured Postures and Collection */}
+      <div className="divider-wood max-w-6xl mx-auto my-6 sm:my-8" />
+
       {/* =========================================================================
           7. CURATED COLLECTION GRID (OUTFITTERS 3:4 SHARP BLOCK CARDS)
       ========================================================================= */}
@@ -522,10 +531,10 @@ export default function HomePage({
                 <button
                   key={tab.id}
                   onClick={() => setSelectedCategory(tab.id)}
-                  className={`px-4 py-2 rounded-full border text-xs font-bold tracking-wider uppercase transition-all whitespace-nowrap active:scale-95 ${
+                  className={`px-4 py-2 rounded-xl border text-xs font-bold tracking-wider uppercase transition-all whitespace-nowrap active:scale-95 ${
                     selectedCategory === tab.id
-                      ? 'bg-black text-white dark:bg-white dark:text-black border-black dark:border-white shadow-sm'
-                      : 'bg-transparent text-neutral-600 dark:text-neutral-400 border-neutral-300 dark:border-onyx-700 hover:border-black dark:hover:border-white hover:text-black dark:hover:text-white'
+                      ? 'bg-[#1C1612] text-white dark:bg-white dark:text-black border-[#1C1612] dark:border-white shadow-sm'
+                      : 'bg-transparent text-neutral-600 dark:text-neutral-400 border-neutral-300 dark:border-onyx-700 hover:border-[#7A4B26] hover:text-[#7A4B26] dark:hover:text-white'
                   }`}
                 >
                   {tab.label}
@@ -556,10 +565,13 @@ export default function HomePage({
 
       </section>
 
+      {/* Wood tone divider before Gazette Subscription */}
+      <div className="divider-wood max-w-6xl mx-auto my-6 sm:my-8" />
+
       {/* =========================================================================
           8. GAZETTE SUBSCRIPTION WITH AUTOMATED NOTIFICATION
       ========================================================================= */}
-      <section className="w-full max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12 py-16 sm:py-24 border-t border-neutral-200 dark:border-onyx-800 text-center">
+      <section className="w-full max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12 py-16 sm:py-24 border-t border-[#7A4B26]/20 text-center">
         <ScrollReveal distance={24}>
           <div className="max-w-xl mx-auto space-y-5">
             <h2 className="text-3xl sm:text-5xl font-black uppercase tracking-tight">

@@ -824,6 +824,36 @@ a:hover .arrow-runway-up span:nth-child(2) {
   z-index: 1;
 }
 
+/* 8. Luxury Wood Tone Dividers & Accents ("wood color in between") */
+.divider-wood {
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(122, 75, 38, 0.35) 25%, rgba(122, 75, 38, 0.45) 50%, rgba(122, 75, 38, 0.35) 75%, transparent 100%);
+  border: none;
+}
+.dark .divider-wood {
+  background: linear-gradient(90deg, transparent 0%, rgba(184, 143, 111, 0.3) 25%, rgba(184, 143, 111, 0.4) 50%, rgba(184, 143, 111, 0.3) 75%, transparent 100%);
+}
+
+.divider-wood-strong {
+  height: 1px;
+  background: linear-gradient(90deg, transparent 5%, rgba(122, 75, 38, 0.65) 50%, transparent 95%);
+  border: none;
+}
+.dark .divider-wood-strong {
+  background: linear-gradient(90deg, transparent 5%, rgba(198, 159, 111, 0.55) 50%, transparent 95%);
+}
+
+.wood-accent-badge {
+  background-color: rgba(122, 75, 38, 0.08);
+  border: 1px solid rgba(122, 75, 38, 0.25);
+  color: #7A4B26;
+}
+.dark .wood-accent-badge {
+  background-color: rgba(198, 159, 111, 0.12);
+  border: 1px solid rgba(198, 159, 111, 0.3);
+  color: #E6D3B3;
+}
+
 @media (prefers-reduced-motion: reduce) { 
   .page-enter, .animate-pop, .card-lift, .btn-press, .animate-video-fade, .subtle-pulse, .camel-glow, .animate-drawerSlide, .arrow-runway span, .arrow-runway-right span, .arrow-runway-up span, .thermal-invoice-slip.extruding, .cart-item-deleting { 
     animation: none !important; 

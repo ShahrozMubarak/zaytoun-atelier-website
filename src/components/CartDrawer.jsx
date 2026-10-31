@@ -327,7 +327,7 @@ export default function CartDrawer({
               onClick={handleCheckoutClick}
               theme="camel"
               containerClassName="w-full"
-              className="w-full bg-[#1C1612] hover:bg-[#9A6E3E] text-white font-bold py-3 px-4 rounded-xl shadow-md transition-all active:scale-95 flex items-center justify-center space-x-2 text-[11px] sm:text-xs uppercase tracking-wider"
+              className="w-full bg-[#1C1612] hover:bg-[#7A4B26] text-white font-bold py-3.5 px-4 rounded-xl shadow-md transition-all active:scale-95 flex items-center justify-center space-x-2 text-[11px] sm:text-xs uppercase tracking-wider cursor-pointer"
             >
               <span>PROCEED TO CHECKOUT</span>
               <span className="arrow-runway-right text-xs">

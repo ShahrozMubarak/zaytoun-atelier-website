@@ -1463,9 +1463,11 @@ FOOLISH ARC Atelier | contact@foolisharc.com
                               <select
                                 value={status}
                                 onChange={(e) => handleStatusChange(ord._id || ord.id || ord.orderNumber, e.target.value)}
-                                className={`px-2.5 py-1 rounded-lg text-xs font-black uppercase tracking-wider focus:outline-none cursor-pointer border-none shadow-2xs ${
+                                className={`px-2.5 py-1 rounded-xl text-xs font-black uppercase tracking-wider focus:outline-none cursor-pointer border-none shadow-2xs ${
                                   status === 'approved' || status === 'delivered'
                                     ? 'bg-emerald-100 text-emerald-800'
+                                    : status === 'cancelled'
+                                    ? 'bg-red-100 text-red-800'
                                     : status === 'pending'
                                     ? 'bg-amber-100 text-amber-800'
                                     : 'bg-neutral-100 text-neutral-800'
@@ -1938,6 +1940,52 @@ FOOLISH ARC Atelier | contact@foolisharc.com
                 </div>
               </div>
             </div>
+
+            {/* Cancellation Notice if Cancelled */}
+            {selectedOrderDetails.status === 'cancelled' && (
+              <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-xs space-y-1">
+                <span className="font-bold text-red-800 uppercase tracking-wider block">
+                  Consignment Cancelled
+                </span>
+                <p className="text-red-700">
+                  Reason: <strong>{selectedOrderDetails.cancelReason || 'Client request'}</strong>
+                </p>
+                {selectedOrderDetails.cancelNote && (
+                  <p className="italic text-neutral-600 font-mono text-[11px]">
+                    "{selectedOrderDetails.cancelNote}"
+                  </p>
+                )}
+                {selectedOrderDetails.cancelledAt && (
+                  <span className="text-[10px] text-neutral-400 font-mono block">
+                    Cancelled: {new Date(selectedOrderDetails.cancelledAt).toLocaleString()}
+                  </span>
+                )}
+              </div>
+            )}
+
+            {/* Client Review if Delivered & Reviewed */}
+            {selectedOrderDetails.review && (
+              <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-xs space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="font-black text-emerald-900 uppercase tracking-wider">
+                    Verified Client Review
+                  </span>
+                  <span className="text-amber-500 font-bold text-sm">
+                    {'★'.repeat(selectedOrderDetails.review.rating || 5)}
+                  </span>
+                </div>
+                {selectedOrderDetails.review.fitRating && (
+                  <span className="text-[10px] uppercase font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-md inline-block">
+                    Fit: {selectedOrderDetails.review.fitRating}
+                  </span>
+                )}
+                {selectedOrderDetails.review.comment && (
+                  <p className="italic text-neutral-700 leading-relaxed pt-1">
+                    "{selectedOrderDetails.review.comment}"
+                  </p>
+                )}
+              </div>
+            )}
 
             {/* Items Manifest */}
             <div className="space-y-2">

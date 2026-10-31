@@ -2,12 +2,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 /**
- * BrandLogo - FOOLISH ARC Atelier Monogram & Typographic Identity
+ * BrandLogo - FOOLISH ARC Atelier Monogram & Identity
  * 
  * Uses the authentic Canva logo suite:
- * - Camel & Black Arc Wave emblem (/images/brand/foolish/arc_emblem.png)
- * - Horizontal foolish arc wordmark (/images/brand/foolish/foolish_arc_wordmark.png)
- * - Stacked mark & New York Since 1988
+ * - Primary Lockup (showWordmark=true): The authentic 3rd logo graphic (/images/brand/foolish/foolish_arc_stacked.png)
+ * - Emblem Only (showWordmark=false): Camel & Black Arc Wave emblem (/images/brand/foolish/arc_emblem.png)
  */
 export default function BrandLogo({
   size = 'md',
@@ -16,50 +15,36 @@ export default function BrandLogo({
   className = '',
   asLink = true
 }) {
-  // Dimensions based on size preset with responsive mobile scaling (refined, smaller, unclipped)
+  // Dimensions calibrated for crisp display without overflow
   const sizeMap = {
-    sm: { icon: 'h-4 sm:h-5', text: 'text-[11px] sm:text-xs font-bold tracking-[0.14em]' },
-    md: { icon: 'h-5 sm:h-6', text: 'text-xs sm:text-sm font-extrabold tracking-[0.16em]' },
-    lg: { icon: 'h-6 sm:h-8', text: 'text-sm sm:text-base font-extrabold tracking-[0.18em]' },
-    xl: { icon: 'h-8 sm:h-10', text: 'text-base sm:text-xl font-black tracking-[0.2em]' }
+    sm: { height: 'h-6 sm:h-7', iconOnly: 'h-5 sm:h-6' },
+    md: { height: 'h-7 sm:h-8', iconOnly: 'h-6 sm:h-7' },
+    lg: { height: 'h-9 sm:h-11', iconOnly: 'h-8 sm:h-9' },
+    xl: { height: 'h-12 sm:h-14', iconOnly: 'h-10 sm:h-12' }
   };
 
   const currentSize = sizeMap[size] || sizeMap.md;
 
-  // The Exquisite Foolish Arc Wave Emblem
-  const MonogramEmblem = (
-    <div
-      className={`relative ${currentSize.icon} flex items-center justify-center select-none group-hover:scale-105 transition-transform duration-300 shrink-0`}
-    >
-      <img
-        src="/images/brand/foolish/arc_emblem.png"
-        alt="FOOLISH ARC Emblem"
-        className="h-full w-auto object-contain drop-shadow-xs"
-        loading="eager"
-      />
-    </div>
-  );
-
-  // The Refined Editorial Wordmark (clean, no tags)
-  const Wordmark = showWordmark && (
-    <div className={`flex flex-col leading-none ${stacked ? 'items-center text-center mt-1.5' : 'text-left'}`}>
-      <span
-        className={`font-editorial ${currentSize.text} text-black dark:text-white uppercase transition-colors flex items-center gap-1`}
-      >
-        <span>FOOLISH</span>
-        <span className="text-[#9A6E3E] dark:text-[#E6D3B3]">ARC</span>
-      </span>
-    </div>
-  );
-
   const innerContent = (
     <div
-      className={`inline-flex ${
-        stacked ? 'flex-col items-center' : 'items-center space-x-2.5 sm:space-x-3.5'
-      } ${className}`}
+      className={`relative inline-flex items-center select-none group-hover:scale-105 transition-transform duration-300 ${className}`}
     >
-      {MonogramEmblem}
-      {Wordmark}
+      {showWordmark ? (
+        <img
+          src="/images/brand/foolish/foolish_arc_stacked.png"
+          alt="FOOLISH ARC"
+          className={`${currentSize.height} w-auto object-contain drop-shadow-xs dark:brightness-110`}
+          loading="eager"
+        />
+      ) : (
+        <img
+          src="/images/brand/foolish/arc_emblem.png"
+          alt="FOOLISH ARC Emblem"
+          className={`${currentSize.iconOnly} w-auto object-contain drop-shadow-xs`}
+          loading="eager"
+        />
+      )}
+      <span className="sr-only">FOOLISH ARC</span>
     </div>
   );
 
@@ -76,3 +61,4 @@ export default function BrandLogo({
 
   return innerContent;
 }
+

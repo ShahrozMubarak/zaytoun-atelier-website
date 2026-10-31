@@ -267,18 +267,34 @@ export async function saveOrderToDB(order) {
   }
 }
 
-export async function updateOrderStatusInDB(orderId, status) {
+export async function updateOrderStatusInDB(orderId, status, extraFields = {}) {
+  // Synchronize immediately to local storage cache so all views update in real-time
+  try {
+    const localOrders = JSON.parse(localStorage.getItem('zaytoun_orders') || '[]');
+    const updated = localOrders.map(o => {
+      if (
+        (o.orderNumber && o.orderNumber.toUpperCase() === String(orderId).toUpperCase()) ||
+        (o.id && o.id.toUpperCase() === String(orderId).toUpperCase()) ||
+        (o._id && String(o._id) === String(orderId))
+      ) {
+        return { ...o, status, ...extraFields };
+      }
+      return o;
+    });
+    localStorage.setItem('zaytoun_orders', JSON.stringify(updated));
+  } catch {}
+
   try {
     const res = await fetch(`${API_BASE}/orders/${encodeURIComponent(orderId)}/status`, {
       method: 'PATCH',
       headers: getAuthHeaders(),
-      body: JSON.stringify({ status })
+      body: JSON.stringify({ status, ...extraFields })
     });
     if (res.ok) return await res.json();
   } catch (err) {
     console.warn('Could not update order status in MongoDB:', err.message);
   }
-  return null;
+  return { status, ...extraFields };
 }
 
 export async function approveOrderInDB(orderId) {

@@ -44,7 +44,7 @@ export default function Navbar({
     }`;
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-white dark:bg-onyx-950 border-b border-neutral-200 dark:border-onyx-800 transition-colors shadow-sm">
+    <header className="sticky top-0 z-40 w-full bg-white dark:bg-onyx-950 border-b border-[#7A4B26]/20 dark:border-[#7A4B26]/30 transition-colors shadow-sm">
       <div className="max-w-[1600px] mx-auto px-3 sm:px-8 lg:px-12 h-16 sm:h-20 flex items-center justify-between">
         
         {/* Brand Logo - Bespoke Luxury Atelier Monogram & Wide-Tracked Wordmark */}
@@ -67,7 +67,7 @@ export default function Navbar({
           <NavLink
             to="/admin"
             className={({ isActive }) =>
-              `text-xs sm:text-sm font-extrabold uppercase tracking-wider transition-all py-1.5 px-3 rounded-full flex items-center space-x-1.5 ${
+              `text-xs sm:text-sm font-extrabold uppercase tracking-wider transition-all py-1.5 px-3 rounded-xl flex items-center space-x-1.5 ${
                 isActive
                   ? 'bg-[#9A6E3E] text-white shadow-sm'
                   : 'text-[#9A6E3E] hover:text-black dark:hover:text-[#E6D3B3] hover:bg-[#FAF6F0] dark:hover:bg-white/5'

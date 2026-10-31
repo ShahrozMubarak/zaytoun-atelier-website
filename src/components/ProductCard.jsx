@@ -140,8 +140,8 @@ export default function ProductCard({
               aria-label={`Add ${product.name} to bag`}
               className={`btn-ripple-pulse w-full py-2.5 px-3 rounded-xl font-bold text-[10px] uppercase tracking-wider transition-all duration-200 shadow-md flex items-center justify-center space-x-1.5 active:scale-95 cursor-pointer ${
                 justAdded
-                  ? 'bg-[#9A6E3E] text-white'
-                  : 'bg-[#1C1612] hover:bg-[#9A6E3E] text-white'
+                  ? 'bg-[#7A4B26] text-white'
+                  : 'bg-[#1C1612] hover:bg-[#7A4B26] text-white'
               }`}
             >
               {justAdded ? (

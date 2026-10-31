@@ -14,7 +14,7 @@ export default function Footer({ onOpenSizeGuide }) {
   }
 
   return (
-    <footer className="bg-[#C69F6F] text-[#1C1612] border-t border-[#B58E5C] select-none transition-colors">
+    <footer className="bg-[#C69F6F] text-[#1C1612] border-t-2 border-[#7A4B26] select-none transition-colors">
       <div className="max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12 py-14 sm:py-20">
         
         {/* Split Grid: Left Half Just Logo & Heritage, Right Half Condensed Links */}
